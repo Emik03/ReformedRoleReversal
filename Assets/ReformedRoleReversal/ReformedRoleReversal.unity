@@ -299,11 +299,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 33394094504133854, guid: 0131841f76bd7d24e98616a0d54e7be3,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 1871006895480042, guid: 0131841f76bd7d24e98616a0d54e7be3, type: 2}
+      propertyPath: m_Name
+      value: reformedRoleReversal
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0131841f76bd7d24e98616a0d54e7be3, type: 2}
   m_IsPrefabParent: 0

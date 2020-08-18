@@ -9,14 +9,18 @@ internal class HandleManual
         Init = init;
     }
 
-    protected internal Condition[,] Conditions = new Condition[7, 7];
-    protected internal int Seed = Rnd.Next(0, 1000000000);
+
+
+    protected internal readonly int Seed = Rnd.Next(0, 1000000000);
 
     private readonly Init Init;
     private static readonly System.Random Rnd = new System.Random();
     private int[] _wires;
 
-    protected internal void GenerateSeed()
+    /// <summary>
+    /// Converts the random number generated into wires, and a seed for the module to display.
+    /// </summary>
+    protected internal void FormatSeed()
     {
         _wires = new int[(Seed % 7) + 3];
 
@@ -33,26 +37,29 @@ internal class HandleManual
         GenerateManual();
     }
 
+    /// <summary>
+    /// Generates a manual with random conditions in random order.
+    /// </summary>
     private void GenerateManual()
     {
         Type classType = typeof(Manual);
-        const string randomMethods = "ABCDWXYZ";
+        //const string randomMethods = "ABCDEFGWXYZ";
+        const string randomMethods = "GG";
         int rng, previous = 0;
-        
-        for (int i = 0; i < Conditions.GetLength(0); i++)
-            for (int j = 0; j < Conditions.GetLength(1); j++)
+
+        for (int i = 0; i < Init.Conditions.GetLength(1); i++)
+            Init.Conditions[0, i] = StaticArrays.Tutorial[i];
+
+        for (int i = 1; i < Init.Conditions.GetLength(0); i++)
+            for (int j = 0; j < Init.Conditions.GetLength(1); j++)
             {
                 MethodInfo methodInfo;
 
                 switch (j)
                 {
-                    case 0:
-                        methodInfo = classType.GetMethod("First");
-                        break;
+                    case 0: methodInfo = Rnd.NextDouble() > 0.5 ? classType.GetMethod("FirstA") : classType.GetMethod("FirstB"); break;
 
-                    case 6:
-                        methodInfo = classType.GetMethod("Last");
-                        break;
+                    case 6: methodInfo = Rnd.NextDouble() > 0.5 ? classType.GetMethod("LastA") : classType.GetMethod("LastB"); break;
 
                     default:
                         do rng = Rnd.Next(0, randomMethods.Length);
@@ -61,12 +68,11 @@ internal class HandleManual
                         previous = rng;
                         methodInfo = classType.GetMethod(randomMethods[rng].ToString());
 
-                        //Debug.Log(randomMethods[rng]);
                         break;
                 }
                 
-                Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { _wires, Init.RoleReversal.Info });
-                Debug.Log(Conditions[i, j].Text + " Correct Answer: " + Conditions[i, j].Wire + ", Go To Condition: " + Conditions[i, j].Skip);
+                Init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { _wires, Init.RoleReversal.Info });
+                Debug.Log(Init.Conditions[i, j].Text + " Correct Answer: " + Init.Conditions[i, j].Wire + ", Go To Condition: " + Init.Conditions[i, j].Skip);
             }
     }
 }

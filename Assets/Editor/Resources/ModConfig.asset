@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: roleReversal
-  title: Role Reversal
+  id: reformedRoleReversal
+  title: Reformed Role Reversal
   author: Emik
   description: 'Perhaps they didn''t have enough printing paper since most of the
     instructions lie within the module. Maybe they were environmentalists? Either
@@ -29,6 +29,6 @@ MonoBehaviour:
 
 
     Is there a bug? Do you have a question? Discord: @Emik#0001'
-  version: 1.6.3
+  version: 1
   outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
   previewImage: {fileID: 2800000, guid: ca12db878111c414598284b5782de620, type: 3}

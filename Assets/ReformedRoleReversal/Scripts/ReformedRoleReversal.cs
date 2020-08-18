@@ -5,7 +5,8 @@ public class ReformedRoleReversal : MonoBehaviour
 {
     public ReformedRoleReversal()
     {
-        Init = new Init(this);
+        _animate = new Animate(this);
+        _init = new Init(this);
     }
 
     public Component Background;
@@ -16,13 +17,22 @@ public class ReformedRoleReversal : MonoBehaviour
     public KMSelectable Screen;
     public TextMesh Text;
 
-    private Init Init;
+    private Animate _animate;
+    private Init _init;
     private TwitchPlaysHandler _tp;
-    
+
     private void Start()
     {
-        Init.Activate();
+        Module.OnActivate += _init.Activate;
     }
+
+    internal void UpdateScreen(string text, int instructionX, int instructionY, int wireSelected)
+    {
+        StopAllCoroutines();
+        StartCoroutine(_animate.UpdateScreen(text, instructionX, instructionY, wireSelected));
+    }
+
+    
 
 #pragma warning disable 414
     private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' | valid numbers are from 1-7) !{0} manual <#>.<#> (Left digit refers to amount of wires, right digit refers to instruction count. If you don't know how this module works, do manual 1:3, manual 1:4, manual 1:5...)";

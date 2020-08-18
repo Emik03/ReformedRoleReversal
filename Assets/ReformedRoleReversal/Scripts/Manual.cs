@@ -6,12 +6,11 @@ using System.Linq;
 sealed class Manual
 {
     private static readonly Random Rnd = new Random();
-
-    #region Conditional Statements
-    public static Condition First(int[] wires, KMBombInfo Info)
+    
+    public static Condition FirstA(int[] wires, KMBombInfo Info)
     {
-        Edgework edgework = new Edgework(Info);
-        int[] parameters = Randomize(3, 0, Edgework.Strings.Length);
+        StaticArrays edgework = new StaticArrays(Info);
+        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
         bool inversion = Rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
@@ -20,8 +19,8 @@ sealed class Manual
         Condition condition = new Condition
         {
             Text = inversion
-            ? string.Format("If there's at most {0} {1}, skip to condition {2}.", parameters[0], Edgework.Strings[parameters[1]], parameters[2])
-            : string.Format("If there's at least {0} {1}, skip to condition {2}.", parameters[0], Edgework.Strings[parameters[1]], parameters[2])
+                 ? string.Format("If there's at most {0} {1}, skip to condition {2}.", parameters[0], StaticArrays.Strings[parameters[1]], parameters[2])
+                 : string.Format("If there's at least {0} {1}, skip to condition {2}.", parameters[0], StaticArrays.Strings[parameters[1]], parameters[2])
         };
 
         if ((!inversion && parameters[0] <= edgework.GetNumbers(parameters[1])) || (inversion && parameters[0] >= edgework.GetNumbers(parameters[1])))
@@ -30,18 +29,39 @@ sealed class Manual
         return condition;
     }
 
-    public static Condition A(int[] wires, KMBombInfo Info)
+    public static Condition FirstB(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(2, 0, 10);
+        StaticArrays edgework = new StaticArrays(Info);
+        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        bool moreThan = Rnd.NextDouble() > 0.5;
+
+        parameters[2] = (parameters[2] % 2) + 3;
+
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0} wire is right of a {1} wire, cut the first {0} wire.", _colors[parameters[0]], _colors[parameters[1]])
+            Text = moreThan
+                 ? string.Format("If there's more {0} than {1}, skip to condition {2}.", StaticArrays.Strings[parameters[0]], StaticArrays.Strings[parameters[1]], parameters[2])
+                 : string.Format("If there's less {0} than {1}, skip to condition {2}.", StaticArrays.Strings[parameters[0]], StaticArrays.Strings[parameters[1]], parameters[2])
+        };
+
+        if ((!moreThan && edgework.GetNumbers(parameters[0]) < edgework.GetNumbers(parameters[1])) || (moreThan && edgework.GetNumbers(parameters[0]) > edgework.GetNumbers(parameters[1])))
+            condition.Skip = parameters[2];
+
+        return condition;
+    }
+
+    public static Condition A(int[] wires, KMBombInfo Info)
+    {
+        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
+        Condition condition = new Condition
+        {
+            Text = string.Format("If a {0} wire is right of a {1} wire, cut the first {0} wire.", StaticArrays.Colors[parameters[0]], StaticArrays.Colors[parameters[1]])
         };
 
         for (int i = 1; i < wires.Length; i++)
             if (wires[i] == parameters[0] && wires[i - 1] == parameters[1])
             {
-                condition.Wire = Find("firstInstanceOfKey", ref parameters[0], wires);
+                condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[0], wires: wires);
                 break;
             }
 
@@ -50,18 +70,18 @@ sealed class Manual
 
     public static Condition B(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(4, 0, 10);
+        int[] parameters = Algorithms.Randomize(length: 4, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0} wire is left of a {1}, {2}, or {3} wire, cut the first {1}, {2}, or {3} wire.", _colors[parameters[0]], _colors[parameters[1]], _colors[parameters[2]], _colors[parameters[3]])
+            Text = string.Format("If a {0} wire is left of a {1}, {2}, or {3} wire, cut the first {1}, {2}, or {3} wire.", StaticArrays.Colors[parameters[0]], StaticArrays.Colors[parameters[1]], StaticArrays.Colors[parameters[2]], StaticArrays.Colors[parameters[3]])
         };
 
         for (int i = 1; i < wires.Length; i++)
             if (wires[i - 1] == parameters[0] && (wires[i] == parameters[1] || wires[i] == parameters[2] || wires[i] == parameters[3]))
             {
-                condition.Wire = EarliestIndex(new int[] { Find("firstInstanceOfKey", ref parameters[1], wires),
-                                                           Find("firstInstanceOfKey", ref parameters[2], wires),
-                                                           Find("firstInstanceOfKey", ref parameters[3], wires) });
+                condition.Wire = Algorithms.EarliestIndex(new int[] { Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[1], wires: wires),
+                                                                      Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[2], wires: wires),
+                                                                      Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[3], wires: wires) });
                 break;
             }
 
@@ -70,23 +90,23 @@ sealed class Manual
 
     public static Condition C(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(3, 0, wires.Length);
+        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: wires.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", _ordinals[parameters[0]], _ordinals[parameters[1]], _ordinals[parameters[2]])
+            Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", StaticArrays.Ordinals[parameters[0]], StaticArrays.Ordinals[parameters[1]], StaticArrays.Ordinals[parameters[2]])
         };
 
         int matchingWire = wires[parameters[0]] == wires[parameters[1]] ? wires[parameters[0]] : wires[parameters[2]];
 
         if (wires[parameters[0]] == wires[parameters[1]] || wires[parameters[1]] == wires[parameters[2]] || wires[parameters[2]] == wires[parameters[0]])
-            condition.Wire = Find("firstInstanceOfNotKey", ref matchingWire, wires);
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfNotKey", key: ref matchingWire, wires: wires);
 
         return condition;
     }
 
     public static Condition D(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(1, (wires.Length / 2) + 1, wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: (wires.Length / 2) + 1, maxValue: wires.Length - 1);
         Condition condition = new Condition
         {
             Text = string.Format("If there are {0} wires with matching colors, cut the last wire that isn't the matching color.", parameters[0])
@@ -100,7 +120,7 @@ sealed class Manual
         for (int i = 0; i < colors.Length; i++)
             if (colors[i] >= (wires.Length / 2) + 1)
             {
-                condition.Wire = Find("lastInstanceOfNotKey", ref i, wires);
+                condition.Wire = Algorithms.Find(method: "lastInstanceOfNotKey", key: ref i, wires: wires);
                 break;
             }
 
@@ -109,69 +129,148 @@ sealed class Manual
 
     public static Condition E(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(1, (wires.Length / 2) + 1, wires.Length - 1);
+        int highestValue = wires.Max();
         Condition condition = new Condition
         {
-            Text = string.Format("If there are {0} wires with matching colors, cut the last wire that isn't the matching color.", parameters[0])
+            Text = string.Format("If all wires are unique, cut the wire with the highest value.")
         };
 
-        int[] colors = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        if (wires.Distinct().Count() == wires.Count())
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref highestValue, wires: wires);
+
+        return condition;
+    }
+
+    public static Condition F(int[] wires, KMBombInfo Info)
+    {
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: 1, maxValue: wires.Length - 1);
+        int lowestWire = wires.Min();
+        bool seenNotUnique = false;
+
+        Condition condition = new Condition
+        {
+            Text = string.Format("If all wires are unique except for 1 {0} with matching colors, cut the first wire with the lowest value.", StaticArrays.Tuplets[parameters[0]])
+        };
+
+        foreach (IGrouping<int, int> number in wires.GroupBy(x => x))
+        {
+            if (number.Count() == 1)
+                continue;
+            
+            if (number.Count() == parameters[0] + 1 && !seenNotUnique)
+            {
+                seenNotUnique = true;
+                continue;
+            }
+
+            goto conditionFalse;
+        }
+
+        if (seenNotUnique)
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref lowestWire, wires: wires);
+
+    conditionFalse:
+
+        return condition;
+    }
+
+    public static Condition G(int[] wires, KMBombInfo Info)
+    {
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: 1, maxValue: (wires.Length / 2) + 1);
+        Array.Sort(wires);
+
+        int exceptions = 0,
+            middleWire1 = wires[wires.Length / 2],
+            middleWire2 = wires.Length % 2 == 0
+                        ? wires[(int)(((float)wires.Length / 2) + 0.6f)]
+                        : middleWire1;
+
+        Condition condition = new Condition
+        {
+            Text = wires.Count() % 2 == 0
+                 ? string.Format("If all wires aren't unique excluding {0}, cut the last wire with either medians.", parameters[0])
+                 : string.Format("If all wires aren't unique excluding {0}, cut the last wire with the median.", parameters[0])
+        };
+
+        foreach (IGrouping<int, int> number in wires.GroupBy(x => x))
+        {
+            if (number.Count() != 1)
+                continue;
+
+            exceptions++;
+
+            if (exceptions > parameters[0])
+                goto conditionFalse;
+        }
+
+        condition.Wire = Math.Max(Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
+                                  Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
+
+    conditionFalse:
+
+        return condition;
+    }
+
+    public static Condition V(int[] wires, KMBombInfo Info)
+    {
+        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
+        Condition condition = new Condition
+        {
+            Text = string.Format("If there are less batteries than {0} wires, cut the last non-{1}ish wire.", StaticArrays.Colors[parameters[0]], StaticArrays.GeneralColors[parameters[0]])
+        };
+
+        int matches = 0;
 
         for (int i = 0; i < wires.Length; i++)
-            colors[wires[i]]++;
+            if (wires[i] == parameters[0])
+                matches++;
 
-        for (int i = 0; i < colors.Length; i++)
-            if (colors[i] >= (wires.Length / 2) + 1)
-            {
-                condition.Wire = Find("lastInstanceOfNotKey", ref i, wires);
-                break;
-            }
+        if (Info.GetBatteryCount() < matches)
+            condition.Wire = parameters[1] < 5
+                ? Algorithms.Find(method: "lastInstanceOfPurple", key: ref parameters[0], wires: wires)
+                : Algorithms.Find(method: "lastInstanceOfBlue", key: ref parameters[0], wires: wires);
 
         return condition;
     }
 
     public static Condition W(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(2, 0, 10);
+        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
-            Text = string.Format("If there are less batteries than {0} wires, cut the last non-{1}ish wire.", _colors[parameters[0]], _generalColors[parameters[0]])
+            Text = string.Format("If there are less batteries than {0} wires, cut the last non-{1}ish wire.", StaticArrays.Colors[parameters[0]], StaticArrays.GeneralColors[parameters[0]])
         };
 
         int matches = 0;
 
         for (int i = 0; i < wires.Length; i++)
-        {
             if (wires[i] == parameters[0])
                 matches++;
-        }
 
         if (Info.GetBatteryCount() < matches)
             condition.Wire = parameters[1] < 5
-                ? Find("lastInstanceOfPurple", ref parameters[0], wires)
-                : Find("lastInstanceOfBlue", ref parameters[0], wires);
+                ? Algorithms.Find(method: "lastInstanceOfPurple", key: ref parameters[0], wires: wires)
+                : Algorithms.Find(method: "lastInstanceOfBlue", key: ref parameters[0], wires: wires);
 
         return condition;
     }
 
     public static Condition X(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(1, 0, 10);
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
-            Text = string.Format("If there are less batteries than {0} wires, cut the first non-{0} wire.", _colors[parameters[0]])
+            Text = string.Format("If there are less batteries than {0} wires, cut the first non-{0} wire.", StaticArrays.Colors[parameters[0]])
         };
 
         int matches = 0;
 
         for (int i = 0; i < wires.Length; i++)
-        {
             if (wires[i] == parameters[0])
                 matches++;
-        }
 
         if (Info.GetBatteryCount() < matches)
-            condition.Wire = Find("firstInstanceOfNotKey", ref parameters[0], wires);
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfNotKey", key: ref parameters[0], wires: wires);
 
         return condition;
     }
@@ -201,8 +300,8 @@ sealed class Manual
                     for (int k = 0; k < potentialWires.Count; k++)
                     {
                         int check = potentialWires[k];
-                        potentialWires[k] = Find("lastInstanceOfKey", ref check, wires);
-                        condition.Wire = EarliestIndex(potentialWires);
+                        potentialWires[k] = Algorithms.Find(method: "lastInstanceOfKey", key: ref check, wires: wires);
+                        condition.Wire = Algorithms.EarliestIndex(potentialWires);
                     }
                 }
 
@@ -225,177 +324,47 @@ sealed class Manual
             for (int i = 1; i <= 9; i++)
             {
                 List<int> potentialWires = new List<int>(0);
+
                 for (int j = 0; j < colors.Length; j++)
-                {
                     if (colors[j] == i)
                         potentialWires.Add(j);
-                        
-                }
 
                 for (int j = 0; j < potentialWires.Count; j++)
                 {
                     int check = potentialWires[j];
-                    potentialWires[j] = Find("firstInstanceOfKey", ref check, wires);
-                    condition.Wire = EarliestIndex(potentialWires);
+                    potentialWires[j] = Algorithms.Find(method: "firstInstanceOfKey", key: ref check, wires: wires);
+                    condition.Wire = Algorithms.EarliestIndex(potentialWires);
                 }
             }
 
         return condition;
     }
 
-    public static Condition Last(int[] wires, KMBombInfo Info)
+    public static Condition LastA(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Randomize(1, 0, wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: wires.Length - 1);
         Condition condition = new Condition
         {
-            Text = string.Format("Otherwise, cut the {0} wire.", _ordinals[parameters[0]])
+            Text = string.Format("Otherwise, cut the {0} wire.", StaticArrays.Ordinals[parameters[0]])
         };
 
         condition.Wire = ++parameters[0];
 
         return condition;
     }
-    #endregion
 
-    #region Algorithms
-    public static int Find(string method, ref int key, int[] wires)
+    public static Condition LastB(int[] wires, KMBombInfo Info)
     {
-        switch (method)
+        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: wires.Length - 1);
+        parameters[0] = wires[parameters[0]];
+
+        Condition condition = new Condition
         {
-            case "firstInstanceOfKey":
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] == key)
-                        return i + 1;
-                break;
+            Text = string.Format("Otherwise, cut the first {0} wire.", StaticArrays.Colors[parameters[0]])
+        };
 
-            case "firstInstanceOfNotKey":
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] != key)
-                        return i + 1;
-                break;
+        condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[0], wires: wires);
 
-            case "lastInstanceOfKey":
-                for (int i = wires.Length - 1; i >= 0; i--)
-                    if (wires[i] == key)
-                        return i + 1;
-                break;
-
-            case "lastInstanceOfNotKey":
-                for (int i = wires.Length - 1; i >= 0; i--)
-                    if (wires[i] != key)
-                        return i + 1;
-                break;
-
-            case "firstInstanceOfBlue":
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] < 5)
-                        return i + 1;
-                break;
-
-            case "firstInstanceOfPurple":
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] >= 5)
-                        return i + 1;
-                break;
-
-            case "lastInstanceOfBlue":
-                for (int i = wires.Length - 1; i >= 0; i--)
-                    if (wires[i] < 5)
-                        return i + 1;
-                break;
-
-            case "lastInstanceOfPurple":
-                for (int i = wires.Length - 1; i >= 0; i--)
-                    if (wires[i] >= 5)
-                        return i + 1;
-                break;
-
-            default:
-                throw new NotImplementedException();
-        }
-        
-        return 0;
+        return condition;
     }
-
-    public static int EarliestIndex(int[] array)
-    {
-        int min = 10;
-
-        for (int i = 0; i < array.Length; i++)
-            if (min > array[i] && array[i] != 0)
-                min = array[i];
-
-        return min;
-    }
-
-    private static int EarliestIndex(List<int> array)
-    {
-        int min = 10;
-
-        for (int i = 0; i < array.Count; i++)
-            if (min > array[i] && array[i] != 0)
-                min = array[i];
-
-        return min;
-    }
-
-    public static int[] Randomize(int length, int minValue, int maxValue)
-    {
-        int[] parameters = new int[length];
-        for (int i = 0; i < length; i += 0)
-        {
-            int random = Rnd.Next(minValue, maxValue);
-
-            if (!parameters.Contains(random))
-            {
-                parameters[i] = random;
-                i++;
-            }
-        }
-        return parameters;
-    }
-    #endregion
-
-    #region String Arrays
-    private static readonly string[] _colors = new string[10]
-    {
-        "navy",
-        "lapis",
-        "blue",
-        "sky",
-        "teal",
-        "plum",
-        "violet",
-        "purple",
-        "magenta",
-        "lavender"
-    };
-
-    private static readonly string[] _generalColors = new string[10]
-    {
-        "blue",
-        "blue",
-        "blue",
-        "blue",
-        "blue",
-        "purple",
-        "purple",
-        "purple",
-        "purple",
-        "purple"
-    };
-
-    private static readonly string[] _ordinals = new string[9]
-    {
-        "first",
-        "second",
-        "third",
-        "4th",
-        "5th",
-        "6th",
-        "7th",
-        "8th",
-        "9th"
-    };
-    #endregion
 }
