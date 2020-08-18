@@ -1301,27 +1301,14 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1280185794848416}
-  m_Text: 'Seed: FFFFFF
-
-    Selected: Wire 1
-
-
-    (10 Wires, Condition 5)
-
-    If the difference between
-
-    the first and the second is
-
-    something like this then
-
-    do the thing thanks.'
+  m_Text: 
   m_OffsetZ: 0
   m_CharacterSize: 0.2
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
-  m_FontSize: 200
+  m_FontSize: 170
   m_FontStyle: 1
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: bbc70d4485a1c33498120d33f3b9f6d9, type: 3}

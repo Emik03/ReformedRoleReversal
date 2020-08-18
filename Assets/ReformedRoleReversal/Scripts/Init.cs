@@ -15,10 +15,11 @@
     protected internal readonly ReformedRoleReversal RoleReversal;
     protected internal bool IsSolved = false, LightsOn = false;
     protected internal int ModuleId = 0;
+    protected internal static int ModuleIdCounter = 1;
+    protected internal string Seed = string.Empty;
 
-    private HandleManual _handleManual;
-    private Interact _interact;
-    private static int _moduleIdCounter = 1;
+    private readonly HandleManual _handleManual;
+    private readonly Interact _interact;
 
     /// <summary>
     /// Initalizes the module.
@@ -26,8 +27,6 @@
     protected internal void Activate()
     {
         _handleManual.FormatSeed();
-        LightsOn = true;
-        ModuleId = _moduleIdCounter++;
 
         RoleReversal.Screen.OnInteract += delegate ()
         {

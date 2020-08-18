@@ -138,7 +138,7 @@ static class Algorithms
     /// <returns>A modified string containing vertical bars.</returns>
     internal static string AddLineBreakPlaceholders(string text)
     {
-        ushort index = 28;
+        ushort index = 33;
         StringBuilder sb = new StringBuilder(text);
 
         while (index < text.Length)
@@ -146,7 +146,7 @@ static class Algorithms
             if (text[index] == ' ')
             {
                 sb[index] = '|';
-                index += 24;
+                index += 33;
             }
 
             else

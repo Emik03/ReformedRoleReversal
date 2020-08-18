@@ -1,24 +1,57 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Text;
 using UnityEngine;
 
 internal class Animate
 {
     internal Animate(ReformedRoleReversal roleReversal)
     {
-        RoleReversal = roleReversal;
+        _roleReversal = roleReversal;
     }
-
-    private readonly ReformedRoleReversal RoleReversal;
+    
+    private readonly ReformedRoleReversal _roleReversal;
+    private string _previousText = string.Empty;
+    private bool _halt;
 
     internal protected IEnumerator UpdateScreen(string text, int instructionX, int instructionY, int wireSelected)
     {
-        text = string.Format("[Selected Wire {0}]\n[{1} Wires, Condition {2}]:\n\n{3}", wireSelected, instructionX + 3, instructionY, Algorithms.AddLineBreakPlaceholders(text));
-        RoleReversal.Text.text = "";
+        _halt = true;
+
+        string currentText = string.Empty;
+        _roleReversal.Text.text = string.Empty;
+
+        text = string.Format("Wire: {0}, Seed: {1}\n[{2}{3}]\n\n{4}", 
+                             wireSelected, 
+                             _roleReversal._init.Seed, 
+                             instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires' ", 
+                             instructionX == 0 ? string.Empty : StaticArrays.Ordinals[instructionY] + " condition", 
+                             Algorithms.AddLineBreakPlaceholders(text));
+
+        yield return new WaitForSeconds(0.02f);
+        _halt = false;
 
         for (int i = 0; i < text.Length; i++)
         {
-            RoleReversal.Text.text += text[i] == '|' ? "\n" : text[i].ToString();
-            yield return new WaitForSeconds(0.01f);
+            currentText += text[i] == '|' ? "\n" : text[i].ToString();
+
+            _roleReversal.Text.text = _previousText.Length - currentText.Length >= 0
+                                    ? currentText + "\n" + _previousText.Substring(currentText.Length, _previousText.Length - currentText.Length)
+                                    : currentText;
+
+            if (i % 2 == 0 && !_halt)
+                yield return new WaitForSeconds(0.02f);
         }
+
+        for (int j = 0; _roleReversal.Text.text.Length > currentText.Length; j++)
+        {
+            _roleReversal.Text.text = _roleReversal.Text.text.Substring(0, _roleReversal.Text.text.Length - 2);
+
+            if (j % 2 == 0 && !_halt)
+                yield return new WaitForSeconds(0.02f);
+        }
+
+        _roleReversal.Text.text = currentText;
+        _previousText = currentText;
     }
 }

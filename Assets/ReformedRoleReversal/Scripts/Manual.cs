@@ -187,9 +187,7 @@ sealed class Manual
 
         Condition condition = new Condition
         {
-            Text = wires.Count() % 2 == 0
-                 ? string.Format("If all wires aren't unique excluding {0}, cut the last wire with either medians.", parameters[0])
-                 : string.Format("If all wires aren't unique excluding {0}, cut the last wire with the median.", parameters[0])
+            Text = string.Format("If all wires aren't unique excluding {0}, cut the last wire with the median(s).", parameters[0])
         };
 
         foreach (IGrouping<int, int> number in wires.GroupBy(x => x))

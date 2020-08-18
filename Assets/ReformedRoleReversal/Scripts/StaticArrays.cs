@@ -15,10 +15,10 @@ internal class StaticArrays
         new Condition { Text = "Welcome to Reformed Role Reversal! Press the down arrow button to continue." },
         new Condition { Text = "Convert the seed from Base-62 to Base-10. Add 0's to the left of the number until you have 10 digits." },
         new Condition { Text = "Take the seed modulo 7. The result is the amount of wires this module has." },
-        new Condition { Text = "Take the leftmost digits matching the number of wires, and convert the digits to colors with Table B. These are the wires in the module." },
-        new Condition { Text = "Refer to the condition of the amount of wires you have by pressing the bottom screen, moving onto the next condition if it's false." },
-        new Condition { Text = "To cut a wire, navigate with the left and right arrow buttons and cut the wire by holding the screen." },
-        new Condition { Text = "IMPORTANT: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
+        new Condition { Text = "Take the leftmost digits matching the number of wires, and convert the digits to colors to obtain the final wires." },
+        new Condition { Text = "Jump to the next set of conditions with the bottom screen, moving onto the next condition if it's false." },
+        new Condition { Text = "Select with the left and right arrow buttons and hold the screen to cut the wire." },
+        new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
     };
 
     internal static Condition[] Tutorial

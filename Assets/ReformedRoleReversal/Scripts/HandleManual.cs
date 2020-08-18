@@ -8,9 +8,7 @@ internal class HandleManual
     {
         Init = init;
     }
-
-
-
+    
     protected internal readonly int Seed = Rnd.Next(0, 1000000000);
 
     private readonly Init Init;
@@ -22,6 +20,9 @@ internal class HandleManual
     /// </summary>
     protected internal void FormatSeed()
     {
+        Init.LightsOn = true;
+        Init.ModuleId = Init.ModuleIdCounter++;
+
         _wires = new int[(Seed % 7) + 3];
 
         string strSeed = Seed.ToString();
@@ -43,8 +44,7 @@ internal class HandleManual
     private void GenerateManual()
     {
         Type classType = typeof(Manual);
-        //const string randomMethods = "ABCDEFGWXYZ";
-        const string randomMethods = "GG";
+        const string randomMethods = "ABCDEFGWXYZ";
         int rng, previous = 0;
 
         for (int i = 0; i < Init.Conditions.GetLength(1); i++)
@@ -74,5 +74,7 @@ internal class HandleManual
                 Init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { _wires, Init.RoleReversal.Info });
                 Debug.Log(Init.Conditions[i, j].Text + " Correct Answer: " + Init.Conditions[i, j].Wire + ", Go To Condition: " + Init.Conditions[i, j].Skip);
             }
+
+        Init.RoleReversal.UpdateScreen(Init.Conditions[0, 0].Text, 0, 0, 1);
     }
 }
