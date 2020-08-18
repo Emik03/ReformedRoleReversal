@@ -3,7 +3,7 @@
     internal Init(ReformedRoleReversal roleReversal)
     {
         RoleReversal = roleReversal;
-        _handleManual = new HandleManual(this);
+        HandleManual = new HandleManual(this);
         _interact = new Interact(this);
     }
 
@@ -13,12 +13,13 @@
     protected internal readonly Condition[,] Conditions = new Condition[8, 7];
 
     protected internal readonly ReformedRoleReversal RoleReversal;
+    protected internal readonly HandleManual HandleManual;
+
     protected internal bool IsSolved = false, LightsOn = false;
-    protected internal int ModuleId = 0;
+    protected internal int ModuleId = 0, CorrectAnswer;
     protected internal static int ModuleIdCounter = 1;
     protected internal string Seed = string.Empty;
 
-    private readonly HandleManual _handleManual;
     private readonly Interact _interact;
 
     /// <summary>
@@ -26,7 +27,7 @@
     /// </summary>
     protected internal void Activate()
     {
-        _handleManual.FormatSeed();
+        HandleManual.FormatSeed();
 
         RoleReversal.Screen.OnInteract += delegate ()
         {

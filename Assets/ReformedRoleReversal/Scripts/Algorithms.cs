@@ -132,6 +132,31 @@ static class Algorithms
     }
 
     /// <summary>
+    /// An optimized method using an array as buffer instead of 
+    /// string concatenation. This is faster for return values having 
+    /// a length > 1.
+    /// </summary>
+    public static string IntToString(int value, char[] baseChars)
+    {
+        // 32 is the worst cast buffer size for base 2 and int.MaxValue
+        int i = 32;
+        char[] buffer = new char[i];
+        int targetBase = baseChars.Length;
+
+        do
+        {
+            buffer[--i] = baseChars[value % targetBase];
+            value = value / targetBase;
+        }
+        while (value > 0);
+
+        char[] result = new char[32 - i];
+        Array.Copy(buffer, i, result, 0, 32 - i);
+
+        return new string(result);
+    }
+
+    /// <summary>
     /// Adds vertical bar characters which are placeholders for line breaks to the submitted string.
     /// </summary>
     /// <param name="text">The text to add line breaks with.</param>

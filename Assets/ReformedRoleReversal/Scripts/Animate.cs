@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Text;
+﻿using System.Collections;
 using UnityEngine;
 
 internal class Animate
@@ -14,19 +12,18 @@ internal class Animate
     private string _previousText = string.Empty;
     private bool _halt;
 
-    internal protected IEnumerator UpdateScreen(string text, int instructionX, int instructionY, int wireSelected)
+    internal protected IEnumerator UpdateScreen(int instructionX, int instructionY, int wireSelected)
     {
-        _halt = true;
-
-        string currentText = string.Empty;
+        string text = string.Empty, currentText = string.Empty;
         _roleReversal.Text.text = string.Empty;
+        _halt = true;
 
         text = string.Format("Wire: {0}, Seed: {1}\n[{2}{3}]\n\n{4}", 
                              wireSelected, 
-                             _roleReversal._init.Seed, 
+                             _roleReversal.Init.Seed, 
                              instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires' ", 
                              instructionX == 0 ? string.Empty : StaticArrays.Ordinals[instructionY] + " condition", 
-                             Algorithms.AddLineBreakPlaceholders(text));
+                             Algorithms.AddLineBreakPlaceholders(_roleReversal.Init.Conditions[instructionX, instructionY].Text));
 
         yield return new WaitForSeconds(0.02f);
         _halt = false;

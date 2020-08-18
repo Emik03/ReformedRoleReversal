@@ -6,7 +6,9 @@ public class ReformedRoleReversal : MonoBehaviour
     public ReformedRoleReversal()
     {
         _animate = new Animate(this);
-        _init = new Init(this);
+        Init = new Init(this);
+        _handleManual = new HandleManual(Init);
+        _tp = new TwitchPlaysHandler(Init);
     }
 
     public Component Background;
@@ -17,19 +19,25 @@ public class ReformedRoleReversal : MonoBehaviour
     public KMSelectable Screen;
     public TextMesh Text;
 
-    internal Init _init;
+    internal readonly Init Init;
 
-    private Animate _animate;
-    private TwitchPlaysHandler _tp;
+    private readonly Animate _animate;
+    private readonly HandleManual _handleManual;
+    private readonly TwitchPlaysHandler _tp;
 
     private void Start()
     {
-        Module.OnActivate += _init.Activate;
+        Module.OnActivate += Init.Activate;
     }
 
-    internal void UpdateScreen(string text, int instructionX, int instructionY, int wireSelected)
+    internal void UpdateScreen(int instructionX, int instructionY, int wireSelected)
     {
-        StartCoroutine(_animate.UpdateScreen(text, instructionX, instructionY, wireSelected));
+        StartCoroutine(_animate.UpdateScreen(instructionX, instructionY, wireSelected));
+    }
+
+    internal void GenerateCondition(int i, int j, int[] wires)
+    {
+        StartCoroutine(_handleManual.GenerateCondition(i, j, wires));
     }
 
 #pragma warning disable 414

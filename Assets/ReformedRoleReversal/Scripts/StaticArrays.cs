@@ -12,7 +12,7 @@ internal class StaticArrays
 
     private static readonly Condition[] _tutorial =
     {
-        new Condition { Text = "Welcome to Reformed Role Reversal! Press the down arrow button to continue." },
+        new Condition { Text = "Welcome to Reformed Role Reversal! Press the up arrow button to continue." },
         new Condition { Text = "Convert the seed from Base-62 to Base-10. Add 0's to the left of the number until you have 10 digits." },
         new Condition { Text = "Take the seed modulo 7. The result is the amount of wires this module has." },
         new Condition { Text = "Take the leftmost digits matching the number of wires, and convert the digits to colors to obtain the final wires." },

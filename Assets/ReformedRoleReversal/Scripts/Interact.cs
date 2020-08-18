@@ -30,17 +30,17 @@ internal class Interact
             // Subtract 1 from the current selected wire.
             case 0: _wireSelected = ((_wireSelected + 5) % 7) + 1; break;
 
-            // Read next instruction.
-            case 1: _instruction = ++_instruction % 56; break;
-
             // Read previous instruction.
-            case 2: _instruction = (_instruction + 55) % 56; break;
+            case 1: _instruction = (_instruction + 55) % 56; break;
+
+            // Read next instruction.
+            case 2: _instruction = ++_instruction % 56; break;
 
             // Add 1 to the current selected wire.
             case 3: _wireSelected = (_wireSelected % 7) + 1; break;
         }
         
-        _init.RoleReversal.UpdateScreen(_init.Conditions[_instruction / 7, _instruction % 7].Text, _instruction / 7, _instruction % 7, _wireSelected);
+        _init.RoleReversal.UpdateScreen(instructionX: _instruction / 7, instructionY: _instruction % 7, wireSelected: _wireSelected);
     }
 
     /// <summary>
@@ -77,14 +77,22 @@ internal class Interact
         // The wire gets cut here.
         if (_stopwatch.ElapsedMilliseconds > 500)
         {
-            _init.RoleReversal.Module.HandlePass();
+            if (_wireSelected == _init.CorrectAnswer)
+            {
+                _init.RoleReversal.Module.HandlePass();
+            }
+
+            else
+            {
+                _init.RoleReversal.Module.HandleStrike();
+            }
         }
 
         // Jump to next section.
         else
         {
             _instruction = ((_instruction / 7) + 1) * 7 % 56;
-            _init.RoleReversal.UpdateScreen(_init.Conditions[_instruction / 7, _instruction % 7].Text, _instruction / 7, _instruction % 7, _wireSelected);
+            _init.RoleReversal.UpdateScreen(instructionX: _instruction / 7, instructionY: _instruction % 7, wireSelected: _wireSelected);
         }
 
         _stopwatch.Reset();
