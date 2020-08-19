@@ -8,7 +8,7 @@
     /// <summary>
     /// If the condition is true, the condition to skip to gets stored here.
     /// </summary>
-    public int Skip { get; set; }
+    public int SkipTo { get; set; }
 
     /// <summary>
     /// The text from the condition that will be displayed on the module's screen.

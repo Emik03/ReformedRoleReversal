@@ -109,25 +109,25 @@ static class Algorithms
     }
 
     /// <summary>
-    /// Returns an array of random numbers with a few parameters.
+    /// Returns an array of random unique numbers with a few parameters.
     /// </summary>
-    /// <param name="length">The length of the array.</param>
+    /// <param name="arrayLength">The length of the array.</param>
     /// <param name="minValue">The included minimum value.</param>
     /// <param name="maxValue">The excluded maximum value.</param>
     /// <returns>A random integer array.</returns>
-    internal static int[] Randomize(int length, int minValue, int maxValue)
+    internal static int[] Randomize(int arrayLength, int minValue, int maxValue)
     {
-        int[] parameters = new int[length];
-        for (int i = 0; i < length; i += 0)
-        {
-            int random = Rnd.Next(minValue, maxValue);
+        List<int> range = Enumerable.Range(minValue, maxValue).ToList().Shuffle();
 
-            if (!parameters.Contains(random))
-            {
-                parameters[i] = random;
-                i++;
-            }
+        int[] parameters = new int[arrayLength];
+
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            int random = Rnd.Next(0, range.Count());
+            parameters[i] = range[random];
+            range.RemoveAt(random);
         }
+
         return parameters;
     }
 
@@ -136,7 +136,7 @@ static class Algorithms
     /// string concatenation. This is faster for return values having 
     /// a length > 1.
     /// </summary>
-    public static string IntToString(int value, char[] baseChars)
+    public static string Base10ToBaseN(int value, char[] baseChars)
     {
         // 32 is the worst cast buffer size for base 2 and int.MaxValue
         int i = 32;

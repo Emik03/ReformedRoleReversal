@@ -35,9 +35,9 @@ public class ReformedRoleReversal : MonoBehaviour
         StartCoroutine(_animate.UpdateScreen(instructionX, instructionY, wireSelected));
     }
 
-    internal void GenerateCondition(int i, int j, int[] wires)
+    internal void GenerateCondition(int i, int j, int[] wires, ref string strSeed)
     {
-        StartCoroutine(_handleManual.GenerateCondition(i, j, wires));
+        StartCoroutine(_handleManual.GenerateCondition(i, j, wires, strSeed));
     }
 
 #pragma warning disable 414

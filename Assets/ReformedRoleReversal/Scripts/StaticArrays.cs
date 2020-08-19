@@ -10,21 +10,37 @@ internal class StaticArrays
 
     private readonly KMBombInfo _info;
 
+    private const string _version = "v1";
+
     private static readonly Condition[] _tutorial =
     {
-        new Condition { Text = "Welcome to Reformed Role Reversal! Press the up arrow button to continue." },
+        new Condition { Text = "Welcome to Reformed Role Reversal! Press the up arrow button to advance." },
         new Condition { Text = "Convert the seed from Base-62 to Base-10. Add 0's to the left of the number until you have 10 digits." },
-        new Condition { Text = "Take the seed modulo 7. The result is the amount of wires this module has." },
+        new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
         new Condition { Text = "Take the leftmost digits matching the number of wires, and convert the digits to colors to obtain the final wires." },
-        new Condition { Text = "Jump to the next set of conditions with the bottom screen, moving onto the next condition if it's false." },
-        new Condition { Text = "Select with the left and right arrow buttons and hold the screen to cut the wire." },
+        new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press up if the condition is false." },
+        new Condition { Text = "Follow the first condition that applies, select with the left and right arrow buttons and hold the screen to cut the wire." },
         new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
+        new Condition { Text = "Good luck!~ (" + _version + ")" }
     };
 
     internal static Condition[] Tutorial
     {
         get { return _tutorial; }
         set { Tutorial = value; }
+    }
+
+    private static readonly char[] _base62 = new char[62]
+    {
+        '0','1','2','3','4','5','6','7','8','9',
+        'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+        'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
+    };
+
+    internal static char[] Base62
+    {
+        get { return _base62; }
+        set { Base62 = value; }
     }
 
     private static readonly string[] _strings = new string[17]

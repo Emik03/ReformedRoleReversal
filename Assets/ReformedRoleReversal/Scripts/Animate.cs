@@ -14,16 +14,16 @@ internal class Animate
 
     internal protected IEnumerator UpdateScreen(int instructionX, int instructionY, int wireSelected)
     {
-        string text = string.Empty, currentText = string.Empty;
+        string currentText = string.Empty;
         _roleReversal.Text.text = string.Empty;
         _halt = true;
 
-        text = string.Format("Wire: {0}, Seed: {1}\n[{2}{3}]\n\n{4}", 
-                             wireSelected, 
-                             _roleReversal.Init.Seed, 
-                             instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires' ", 
-                             instructionX == 0 ? string.Empty : StaticArrays.Ordinals[instructionY] + " condition", 
-                             Algorithms.AddLineBreakPlaceholders(_roleReversal.Init.Conditions[instructionX, instructionY].Text));
+        string text = string.Format("Wire: {0}, Seed: {1}\n[{2}{3}]\n\n{4}", 
+                                    wireSelected, 
+                                    _roleReversal.Init.Seed, 
+                                    instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires' ", 
+                                    instructionX == 0 ? string.Empty : StaticArrays.Ordinals[instructionY] + " condition", 
+                                    Algorithms.AddLineBreakPlaceholders(_roleReversal.Init.Conditions[instructionX, instructionY].Text));
 
         yield return new WaitForSeconds(0.02f);
         _halt = false;

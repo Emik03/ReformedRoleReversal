@@ -6,28 +6,10 @@ internal class TwitchPlaysHandler
 {
     internal TwitchPlaysHandler(Init init)
     {
-        Init = init;
+        _init = init;
     }
 
-    private Init Init;
-
-    /// <summary>
-    /// Determines whether the input from the TwitchPlays chat command is valid or not.
-    /// </summary>
-    /// <param name="par">The string from the user.</param>
-    protected internal bool IsValid(string par, bool submit)
-    {
-        byte b;
-        // Cut wire 1-7.
-        if (submit)
-            return byte.TryParse(par, out b) && b < 8 && b != 0;
-
-        // Wire 1-7 (1 is tutorial), condition 0-8 (0 is section header)
-        if (par.Length != 3)
-            return false;
-
-        return char.GetNumericValue(par.ToCharArray()[0]) < 8 && char.GetNumericValue(par.ToCharArray()[0]) != 0 && par.ToCharArray()[1] == '.' && char.GetNumericValue(par.ToCharArray()[2]) != 0 && char.GetNumericValue(par.ToCharArray()[2]) < 9;
-    }
+    private Init _init;
 
     protected internal IEnumerator ProcessCommand(string command)
     {
@@ -42,12 +24,18 @@ internal class TwitchPlaysHandler
                                                    : "sendtochaterror Too many wires requested! Only one can be cut at any time.";
 
             // If the command has an invalid parameter.
-            else if (!IsValid(parameters[1], true))
-                yield return "sendtochaterror Invalid number! Only wires 1-7 can be pushed.";
+            else if (parameters[1].Length == 1 && char.IsDigit(parameters[1][0]) && parameters[1][0] != '0')
+                yield return "sendtochaterror Invalid number! Only wires 1-9 can be pushed.";
 
             // If the command is valid, cut wire accordingly.
             else
             {
+                byte num = (byte)char.GetNumericValue(parameters[1][0]);
+                while (num != _init.WireSelected)
+                {
+                    _init.RoleReversal.Buttons[3].OnInteract();
+                    yield return new WaitForSeconds(0.2f);
+                }
             }
         }
 
@@ -76,6 +64,6 @@ internal class TwitchPlaysHandler
     protected internal IEnumerator ForceSolve()
     {
         yield return null;
-        Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", Init.ModuleId);
+        Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", _init.ModuleId);
     }
 }

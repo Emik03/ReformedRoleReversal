@@ -10,7 +10,7 @@ sealed class Manual
     public static Condition FirstA(int[] wires, KMBombInfo Info)
     {
         StaticArrays edgework = new StaticArrays(Info);
-        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
         bool inversion = Rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
@@ -24,7 +24,7 @@ sealed class Manual
         };
 
         if ((!inversion && parameters[0] <= edgework.GetNumbers(parameters[1])) || (inversion && parameters[0] >= edgework.GetNumbers(parameters[1])))
-            condition.Skip = parameters[2];
+            condition.SkipTo = parameters[2];
 
         return condition;
     }
@@ -32,7 +32,7 @@ sealed class Manual
     public static Condition FirstB(int[] wires, KMBombInfo Info)
     {
         StaticArrays edgework = new StaticArrays(Info);
-        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
         bool moreThan = Rnd.NextDouble() > 0.5;
 
         parameters[2] = (parameters[2] % 2) + 3;
@@ -45,14 +45,14 @@ sealed class Manual
         };
 
         if ((!moreThan && edgework.GetNumbers(parameters[0]) < edgework.GetNumbers(parameters[1])) || (moreThan && edgework.GetNumbers(parameters[0]) > edgework.GetNumbers(parameters[1])))
-            condition.Skip = parameters[2];
+            condition.SkipTo = parameters[2];
 
         return condition;
     }
 
     public static Condition A(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
+        int[] parameters = Algorithms.Randomize(arrayLength: 2, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
             Text = string.Format("If a {0} wire is right of a {1} wire, cut the first {0} wire.", StaticArrays.Colors[parameters[0]], StaticArrays.Colors[parameters[1]])
@@ -70,7 +70,7 @@ sealed class Manual
 
     public static Condition B(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 4, minValue: 0, maxValue: 10);
+        int[] parameters = Algorithms.Randomize(arrayLength: 4, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
             Text = string.Format("If a {0} wire is left of a {1}, {2}, or {3} wire, cut the first {1}, {2}, or {3} wire.", StaticArrays.Colors[parameters[0]], StaticArrays.Colors[parameters[1]], StaticArrays.Colors[parameters[2]], StaticArrays.Colors[parameters[3]])
@@ -90,7 +90,7 @@ sealed class Manual
 
     public static Condition C(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 3, minValue: 0, maxValue: wires.Length);
+        int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: wires.Length);
         Condition condition = new Condition
         {
             Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", StaticArrays.Ordinals[parameters[0]], StaticArrays.Ordinals[parameters[1]], StaticArrays.Ordinals[parameters[2]])
@@ -106,7 +106,7 @@ sealed class Manual
 
     public static Condition D(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: (wires.Length / 2) + 1, maxValue: wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: (wires.Length / 2) + 1, maxValue: wires.Length - 1);
         Condition condition = new Condition
         {
             Text = string.Format("If there are {0} wires with matching colors, cut the last wire that isn't the matching color.", parameters[0])
@@ -143,7 +143,7 @@ sealed class Manual
 
     public static Condition F(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: 1, maxValue: wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 1, maxValue: wires.Length - 1);
         int lowestWire = wires.Min();
         bool seenNotUnique = false;
 
@@ -176,7 +176,7 @@ sealed class Manual
 
     public static Condition G(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: 1, maxValue: (wires.Length / 2) + 1);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 1, maxValue: (wires.Length / 2) + 1);
         Array.Sort(wires);
 
         int exceptions = 0,
@@ -211,7 +211,7 @@ sealed class Manual
 
     public static Condition V(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
+        int[] parameters = Algorithms.Randomize(arrayLength: 2, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
             Text = string.Format("If there are less batteries than {0} wires, cut the last non-{1}ish wire.", StaticArrays.Colors[parameters[0]], StaticArrays.GeneralColors[parameters[0]])
@@ -233,7 +233,7 @@ sealed class Manual
 
     public static Condition W(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 2, minValue: 0, maxValue: 10);
+        int[] parameters = Algorithms.Randomize(arrayLength: 2, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
             Text = string.Format("If there are less batteries than {0} wires, cut the last non-{1}ish wire.", StaticArrays.Colors[parameters[0]], StaticArrays.GeneralColors[parameters[0]])
@@ -255,7 +255,7 @@ sealed class Manual
 
     public static Condition X(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: 10);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 0, maxValue: 10);
         Condition condition = new Condition
         {
             Text = string.Format("If there are less batteries than {0} wires, cut the first non-{0} wire.", StaticArrays.Colors[parameters[0]])
@@ -340,7 +340,7 @@ sealed class Manual
 
     public static Condition LastA(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 0, maxValue: wires.Length - 1);
         Condition condition = new Condition
         {
             Text = string.Format("Otherwise, cut the {0} wire.", StaticArrays.Ordinals[parameters[0]])
@@ -353,7 +353,7 @@ sealed class Manual
 
     public static Condition LastB(int[] wires, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Randomize(length: 1, minValue: 0, maxValue: wires.Length - 1);
+        int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 0, maxValue: wires.Length - 1);
         parameters[0] = wires[parameters[0]];
 
         Condition condition = new Condition

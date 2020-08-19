@@ -9,7 +9,7 @@ internal class Interact
 
     private readonly Init _init;
     private readonly Stopwatch _stopwatch = new Stopwatch();
-    private int _instruction, _wireSelected = 1;
+    private int _instruction;
 
     /// <summary>
     /// Cycles through the UI depending on the button pushed.
@@ -25,22 +25,24 @@ internal class Interact
         if (!_init.LightsOn || _init.IsSolved)
             return;
 
+        int length = _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
+
         switch (num)
         {
             // Subtract 1 from the current selected wire.
-            case 0: _wireSelected = ((_wireSelected + 5) % 7) + 1; break;
+            case 0: _init.WireSelected = ((_init.WireSelected + 7) % 9) + 1; break;
 
             // Read previous instruction.
-            case 1: _instruction = (_instruction + 55) % 56; break;
+            case 1: _instruction = (--_instruction + length) % length; break;
 
             // Read next instruction.
-            case 2: _instruction = ++_instruction % 56; break;
+            case 2: _instruction = ++_instruction % length; break;
 
             // Add 1 to the current selected wire.
-            case 3: _wireSelected = (_wireSelected % 7) + 1; break;
+            case 3: _init.WireSelected = (_init.WireSelected % 9) + 1; break;
         }
         
-        _init.RoleReversal.UpdateScreen(instructionX: _instruction / 7, instructionY: _instruction % 7, wireSelected: _wireSelected);
+        _init.RoleReversal.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
     }
 
     /// <summary>
@@ -58,7 +60,7 @@ internal class Interact
 
         _stopwatch.Start();
     }
-
+    
     /// <summary>
     /// If the screen was pressed, skip around the instructions, otherwise submit the answer.
     /// </summary>
@@ -77,13 +79,16 @@ internal class Interact
         // The wire gets cut here.
         if (_stopwatch.ElapsedMilliseconds > 500)
         {
-            if (_wireSelected == _init.CorrectAnswer)
+            if (_init.WireSelected == _init.CorrectAnswer || _init.CorrectAnswer == 0)
             {
+                UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: The correct wire was cut. Module solved!", _init.ModuleId);
+                _init.IsSolved = true;
                 _init.RoleReversal.Module.HandlePass();
             }
 
             else
             {
+                UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", _init.ModuleId, _init.WireSelected);
                 _init.RoleReversal.Module.HandleStrike();
             }
         }
@@ -91,8 +96,8 @@ internal class Interact
         // Jump to next section.
         else
         {
-            _instruction = ((_instruction / 7) + 1) * 7 % 56;
-            _init.RoleReversal.UpdateScreen(instructionX: _instruction / 7, instructionY: _instruction % 7, wireSelected: _wireSelected);
+            _instruction = ((_instruction / _init.Conditions.GetLength(1)) + 1) * _init.Conditions.GetLength(1) % _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
+            _init.RoleReversal.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
         }
 
         _stopwatch.Reset();
