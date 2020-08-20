@@ -2,7 +2,7 @@
 
 public class ReformedRoleReversal : MonoBehaviour
 {
-    public Component Background;
+    public HandleCoroutines Coroutines;
     public KMAudio Audio;
     public KMBombModule Module;
     public KMBombInfo Info;
@@ -14,7 +14,7 @@ public class ReformedRoleReversal : MonoBehaviour
 
     private void Awake()
     {
-        Init = new Init(GetComponent<Coroutines>(), this);
+        Init = new Init(Coroutines, this);
         Module.OnActivate += Init.Activate;
     }
 }

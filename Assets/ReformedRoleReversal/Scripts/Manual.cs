@@ -131,14 +131,16 @@ sealed class Manual
 
     public static Condition E(int[] wires, KMBombInfo Info)
     {
-        int highestValue = wires.Max();
         Condition condition = new Condition
         {
             Text = string.Format("If all wires are unique, cut the wire with the highest value.")
         };
 
         if (wires.Distinct().Count() == wires.Count())
+        {
+            int highestValue = wires.Max();
             condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref highestValue, wires: wires);
+        }
 
         return condition;
     }
@@ -146,7 +148,6 @@ sealed class Manual
     public static Condition F(int[] wires, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Randomize(arrayLength: 1, minValue: 1, maxValue: wires.Length - 1);
-        int lowestWire = wires.Min();
         bool seenNotUnique = false;
 
         Condition condition = new Condition
@@ -169,8 +170,11 @@ sealed class Manual
         }
 
         if (seenNotUnique)
+        {
+            int lowestWire = wires.Min();
             condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref lowestWire, wires: wires);
-        
+        }
+
         return condition;
     }
 

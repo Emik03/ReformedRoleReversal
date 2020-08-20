@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class TwitchPlaysHandler : MonoBehaviour
 {
+    public ReformedRoleReversal RoleReversal;
+
     private Init _init;
-    private ReformedRoleReversal _roleReversal;
 
 #pragma warning disable 414
-    private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' | valid numbers are from 1-7) !{0} manual <#>.<#> (Left digit refers to amount of wires, right digit refers to instruction count. If you don't know how this module works, do manual 1:3, manual 1:4, manual 1:5...)";
+    private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' with range: 1-9) and !{0} manual <#> <#> (Left digit with range 3-9 or 'help', right digit refers to page inside the section with range 1-8. If you don't know how this module works, do manual help 2, manual help 3, manual help 4...)";
 #pragma warning restore 414
 
     private void Start()
     {
-        _roleReversal = GetComponent<ReformedRoleReversal>();
-        _init = _roleReversal.Init;
+        _init = RoleReversal.Init;
     }
 
     private IEnumerator ProcessTwitchCommand(string command)
@@ -26,41 +26,70 @@ public class TwitchPlaysHandler : MonoBehaviour
         {
             // If the command has incorrect amount of parameters.
             if (parameters.Length != 2)
-                yield return parameters.Length < 2 ? "sendtochaterror Please specify the wire you want to cut! (Valid: 1-10)"
-                                                   : "sendtochaterror Too many wires requested! Only one can be cut at any time.";
+                yield return parameters.Length < 2 ? "sendtochaterror Please specify the wire to cut!"
+                                                   : "sendtochaterror Only 1 can be cut at a time!";
 
             // If the command has an invalid parameter.
-            else if (parameters[1].Length == 1 && char.IsDigit(parameters[1][0]) && parameters[1][0] != '0')
-                yield return "sendtochaterror Invalid number! Only wires 1-9 can be pushed.";
+            else if (parameters[1].Length != 1 || !char.IsDigit(parameters[1][0]) || parameters[1][0] == '0')
+                yield return "sendtochaterror Invalid number! Only wires 1-9 can be cut.";
 
             // If the command is valid, cut wire accordingly.
             else
             {
+                yield return null; 
+                   
                 byte num = (byte)char.GetNumericValue(parameters[1][0]);
                 while (num != _init.WireSelected)
                 {
-                    _roleReversal.Buttons[3].OnInteract();
+                    RoleReversal.Buttons[3].OnInteract();
                     yield return new WaitForSeconds(0.2f);
                 }
+
+                RoleReversal.Screen.OnInteract();
+
+                yield return new WaitUntil(() => _init.Interact.Stopwatch.ElapsedMilliseconds > 500);
+
+                RoleReversal.Screen.OnInteractEnded();
             }
         }
 
         // If the initial command is formatted correctly.
         if (Regex.IsMatch(parameters[0], @"^\s*manual\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
-            yield return "detonate";
             // If the command has incorrect amount of parameters.
-            if (parameters.Length != 2)
-                yield return parameters.Length < 2 ? "sendtochaterror Please specify the wire you want to cut! (Valid: 1-10)"
-                                                   : "sendtochaterror Too many wires requested! Only one can be cut at any time.";
+            if (parameters.Length != 3)
+                yield return parameters.Length < 3 ? "sendtochaterror Not enough parameters provided!"
+                                                   : "sendtochaterror Too many parameters specified!";
 
             // If the command has an invalid parameter.
-            //else if (!IsValid(parameters[1], false))
-                //yield return "sendtochaterror Invalid instruction! Expected: <#>.<#>, 2-7.1-8";
+            else if (parameters[1] != "help" && ( parameters[1].Length != 1 || !char.IsDigit(parameters[1][0]) || !(char.GetNumericValue(parameters[1][0]) >= 3 && char.GetNumericValue(parameters[1][0]) <= 8)))
+                yield return "sendtochaterror Invalid first instruction!";
+
+            // If the command has an invalid parameter.
+            else if (parameters[2].Length != 1 || !char.IsDigit(parameters[2][0]) || !(char.GetNumericValue(parameters[2][0]) >= 1 && char.GetNumericValue(parameters[2][0]) <= 8))
+                yield return "sendtochaterror Invalid second instruction!";
 
             // If the command is valid, go to the respective part of the manual accordingly.
             else
             {
+                yield return null;
+
+                int length = _init.Conditions.GetLength(1), 
+                    c1 = parameters[1] == "help" ? 0 : (int)char.GetNumericValue(parameters[1][0]) - 2, 
+                    c2 = (int)char.GetNumericValue(parameters[2][0]) - 1;
+
+                while (c1 != _init.Interact.Instruction / length)
+                {
+                    RoleReversal.Screen.OnInteract();
+                    RoleReversal.Screen.OnInteractEnded();
+                    yield return new WaitForSeconds(0.2f);
+                }
+
+                while (c2 != _init.Interact.Instruction % length)
+                {
+                    RoleReversal.Buttons[c2 < _init.Interact.Instruction % length ? 1 : 2].OnInteract();
+                    yield return new WaitForSeconds(0.2f);
+                }
             }
         }
     }

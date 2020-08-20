@@ -1,13 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics;
 
 internal class Init
 {
-    internal Init(Coroutines coroutines, ReformedRoleReversal roleReversal)
+    internal Init(HandleCoroutines coroutines, ReformedRoleReversal roleReversal)
     {
+        RoleReversal = roleReversal;
+
         Coroutines = coroutines;
         HandleManual = new HandleManual(coroutines, this);
-        _interact = new Interact(this);
-        RoleReversal = roleReversal;
+        Interact = new Interact(this);
     }
 
     /// <summary>
@@ -15,17 +16,16 @@ internal class Init
     /// </summary>
     protected internal readonly Condition[,] Conditions = new Condition[8, 8];
 
-    protected internal readonly Coroutines Coroutines;
-    protected internal readonly ReformedRoleReversal RoleReversal;
+    protected internal readonly HandleCoroutines Coroutines;
     protected internal readonly HandleManual HandleManual;
+    protected internal readonly Interact Interact;
+    protected internal readonly ReformedRoleReversal RoleReversal;
 
     protected internal bool IsSolved = false, LightsOn = false;
     protected internal int ModuleId = 0, WireSelected = 1;
     protected internal int? CorrectAnswer;
     protected internal static int ModuleIdCounter = 1;
     protected internal string Seed = string.Empty;
-
-    private readonly Interact _interact;
 
     /// <summary>
     /// Initalizes the module.
@@ -36,13 +36,13 @@ internal class Init
 
         RoleReversal.Screen.OnInteract += delegate ()
         {
-            _interact.PressScreen();
+            Interact.PressScreen();
             return false;
         };
 
         RoleReversal.Screen.OnInteractEnded += delegate ()
         {
-            _interact.ReleaseScreen();
+            Interact.ReleaseScreen();
         };
 
         for (int i = 0; i < RoleReversal.Buttons.Length; i++)
@@ -50,7 +50,7 @@ internal class Init
             int j = i;
             RoleReversal.Buttons[i].OnInteract += delegate ()
             {
-                _interact.PressButton(j);
+                Interact.PressButton(j);
                 return false;
             };
         }

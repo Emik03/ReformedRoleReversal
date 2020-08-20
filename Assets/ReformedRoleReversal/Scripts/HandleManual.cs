@@ -5,16 +5,16 @@ using System.Collections;
 
 internal class HandleManual
 {
-    internal HandleManual(Coroutines coroutines, Init init)
+    internal HandleManual(HandleCoroutines coroutines, Init init)
     {
         _coroutines = coroutines;
         _init = init;
         _roleReversal = init.RoleReversal;
     }
-    
+
     protected internal readonly int Seed = Rnd.Next(0, 1000000000);
 
-    private readonly Coroutines _coroutines;
+    private readonly HandleCoroutines _coroutines;
     private readonly Init _init;
     private readonly ReformedRoleReversal _roleReversal;
 
@@ -49,9 +49,11 @@ internal class HandleManual
             log[i] += i == wires.Length - 1 ? "and " + StaticArrays.Colors[wires[i]] : StaticArrays.Colors[wires[i]];
 
         Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are {1}.", _init.ModuleId, log.Join(", "));
-        
-        for (int i = 0; i < _init.Conditions.GetLength(0); i++)
-            for (int j = 0; j < _init.Conditions.GetLength(1); j++)
+
+        int i2 = _init.Conditions.GetLength(0), j2 = _init.Conditions.GetLength(1);
+
+        for (int i = 0; i < i2; i++)
+            for (int j = 0; j < j2; j++)
                 _coroutines.GenerateCondition(i, j, wires, ref strSeed);
     }
 
@@ -94,7 +96,7 @@ internal class HandleManual
                 break;
         }
         
-        _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, _init.RoleReversal.Info });
+        _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, _roleReversal.Info });
 
         yield return new WaitWhile(() => _init.Conditions[i, j] == null);
         _generateCondition++;
@@ -107,9 +109,9 @@ internal class HandleManual
     {
         _coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: 1);
 
-        int wires = (int.Parse(strSeed) % 7) + 1;
+        int wires = (int.Parse(strSeed) % 7) + 1, i2 = _init.Conditions.GetLength(1);
 
-        for (int i = 0; i < _init.Conditions.GetLength(1); i++)
+        for (int i = 0; i < i2; i++)
         {
             if (_init.Conditions[wires, i].SkipTo != null)
             {
@@ -120,7 +122,6 @@ internal class HandleManual
             else if (_init.Conditions[wires, i].Wire != null)
             {
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, StaticArrays.Ordinals[(int)_init.Conditions[wires, i].Wire - 1]);
-                Debug.Log(_init.Conditions[wires, i].Wire);
                 return (int)_init.Conditions[wires, i].Wire;
             }
 

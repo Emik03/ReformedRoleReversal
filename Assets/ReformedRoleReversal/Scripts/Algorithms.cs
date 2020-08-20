@@ -70,7 +70,7 @@ static class Algorithms
                 break;
 
             default:
-                throw new NotImplementedException();
+                throw new NotImplementedException("Could not find suitable algorithm for Algorithms.Find(), did you misspell the string?");
         }
 
         return null;
@@ -121,7 +121,7 @@ static class Algorithms
 
         int[] parameters = new int[arrayLength];
 
-        for (int i = 0; i < parameters.Length; i++)
+        for (int i = 0; i < parameters.Length && range.Count != 0; i++)
         {
             int random = Rnd.Next(0, range.Count());
             parameters[i] = range[random];

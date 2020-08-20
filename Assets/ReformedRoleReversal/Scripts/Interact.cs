@@ -9,11 +9,12 @@ internal class Interact
         _roleReversal = init.RoleReversal;
     }
 
-    private readonly Coroutines _coroutines;
+    private readonly HandleCoroutines _coroutines;
     private readonly Init _init;
     private readonly ReformedRoleReversal _roleReversal;
-    private readonly Stopwatch _stopwatch = new Stopwatch();
-    private int _instruction;
+
+    protected internal readonly Stopwatch Stopwatch = new Stopwatch();
+    protected internal int Instruction;
 
     /// <summary>
     /// Cycles through the UI depending on the button pushed.
@@ -22,8 +23,8 @@ internal class Interact
     protected internal void PressButton(int num)
     {
         // Plays button sound effect.
-        _init.RoleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _init.RoleReversal.Buttons[num].transform);
-        _init.RoleReversal.Buttons[num].AddInteractionPunch();
+        _roleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _roleReversal.Buttons[num].transform);
+        _roleReversal.Buttons[num].AddInteractionPunch();
 
         // If lights are off or the module is solved, the buttons should do nothing.
         if (!_init.LightsOn || _init.IsSolved)
@@ -37,16 +38,16 @@ internal class Interact
             case 0: _init.WireSelected = ((_init.WireSelected + 7) % 9) + 1; break;
 
             // Read previous instruction.
-            case 1: _instruction = (--_instruction + length) % length; break;
+            case 1: Instruction = (--Instruction + length) % length; break;
 
             // Read next instruction.
-            case 2: _instruction = ++_instruction % length; break;
+            case 2: Instruction = ++Instruction % length; break;
 
             // Add 1 to the current selected wire.
             case 3: _init.WireSelected = (_init.WireSelected % 9) + 1; break;
         }
 
-        _coroutines.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
+        _coroutines.UpdateScreen(instructionX: Instruction / _init.Conditions.GetLength(1), instructionY: Instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
     }
 
     /// <summary>
@@ -55,15 +56,15 @@ internal class Interact
     protected internal void PressScreen()
     {
         // Plays button sound effect.
-        _init.RoleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, _init.RoleReversal.Screen.transform);
-        _init.RoleReversal.Screen.AddInteractionPunch(3);
+        _roleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, _roleReversal.Screen.transform);
+        _roleReversal.Screen.AddInteractionPunch(3);
 
         // If lights are off or the module is solved, the buttons should do nothing.
         if (!_init.LightsOn || _init.IsSolved)
             return;
 
-        _stopwatch.Reset();
-        _stopwatch.Start();
+        Stopwatch.Reset();
+        Stopwatch.Start();
     }
     
     /// <summary>
@@ -72,37 +73,38 @@ internal class Interact
     protected internal void ReleaseScreen()
     {
         // Plays button sound effect.
-        _init.RoleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, _init.RoleReversal.Screen.transform);
-        _init.RoleReversal.Screen.AddInteractionPunch(3);
+        _roleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, _roleReversal.Screen.transform);
+        _roleReversal.Screen.AddInteractionPunch(3);
 
         // If lights are off or the module is solved, the buttons should do nothing.
         if (!_init.LightsOn || _init.IsSolved)
             return;
 
-        _stopwatch.Stop();
+        Stopwatch.Stop();
 
         // The wire gets cut here.
-        if (_stopwatch.ElapsedMilliseconds > 500)
+        if (Stopwatch.ElapsedMilliseconds > 500)
         {
             if (_init.WireSelected == _init.CorrectAnswer || _init.CorrectAnswer == 0)
             {
                 UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: The correct wire was cut. Module solved!", _init.ModuleId);
                 _init.IsSolved = true;
-                _init.RoleReversal.Module.HandlePass();
+                _roleReversal.Module.HandlePass();
             }
 
             else
             {
                 UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", _init.ModuleId, _init.WireSelected);
-                _init.RoleReversal.Module.HandleStrike();
+                _roleReversal.Module.HandleStrike();
             }
         }
 
         // Jump to next section.
         else
         {
-            _instruction = ((_instruction / _init.Conditions.GetLength(1)) + 1) * _init.Conditions.GetLength(1) % _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
-            _coroutines.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
+            int lengthShort = _init.Conditions.GetLength(1), length = _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
+            Instruction = ((Instruction / lengthShort) + 1) * lengthShort % length;
+            _coroutines.UpdateScreen(instructionX: Instruction / lengthShort, instructionY: Instruction % lengthShort, wireSelected: _init.WireSelected);
         }
     }
 }
