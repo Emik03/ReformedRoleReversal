@@ -1,22 +1,27 @@
-﻿internal class Init
+﻿using UnityEngine;
+
+internal class Init
 {
-    internal Init(ReformedRoleReversal roleReversal)
+    internal Init(Coroutines coroutines, ReformedRoleReversal roleReversal)
     {
-        RoleReversal = roleReversal;
-        HandleManual = new HandleManual(this);
+        Coroutines = coroutines;
+        HandleManual = new HandleManual(coroutines, this);
         _interact = new Interact(this);
+        RoleReversal = roleReversal;
     }
 
     /// <summary>
-    /// First dimension represents the tutorial and 3 through 9 wires, while second dimension correspond through conditions 1 through 7.
+    /// First dimension represents the tutorial and 3 through 9 wires, while second dimension correspond through conditions 1 through 8.
     /// </summary>
     protected internal readonly Condition[,] Conditions = new Condition[8, 8];
 
+    protected internal readonly Coroutines Coroutines;
     protected internal readonly ReformedRoleReversal RoleReversal;
     protected internal readonly HandleManual HandleManual;
 
     protected internal bool IsSolved = false, LightsOn = false;
-    protected internal int ModuleId = 0, CorrectAnswer, WireSelected;
+    protected internal int ModuleId = 0, WireSelected = 1;
+    protected internal int? CorrectAnswer;
     protected internal static int ModuleIdCounter = 1;
     protected internal string Seed = string.Empty;
 

@@ -4,10 +4,14 @@ internal class Interact
 {
     internal Interact(Init init)
     {
+        _coroutines = init.Coroutines;
         _init = init;
+        _roleReversal = init.RoleReversal;
     }
 
+    private readonly Coroutines _coroutines;
     private readonly Init _init;
+    private readonly ReformedRoleReversal _roleReversal;
     private readonly Stopwatch _stopwatch = new Stopwatch();
     private int _instruction;
 
@@ -41,8 +45,8 @@ internal class Interact
             // Add 1 to the current selected wire.
             case 3: _init.WireSelected = (_init.WireSelected % 9) + 1; break;
         }
-        
-        _init.RoleReversal.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
+
+        _coroutines.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
     }
 
     /// <summary>
@@ -58,6 +62,7 @@ internal class Interact
         if (!_init.LightsOn || _init.IsSolved)
             return;
 
+        _stopwatch.Reset();
         _stopwatch.Start();
     }
     
@@ -97,9 +102,7 @@ internal class Interact
         else
         {
             _instruction = ((_instruction / _init.Conditions.GetLength(1)) + 1) * _init.Conditions.GetLength(1) % _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
-            _init.RoleReversal.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
+            _coroutines.UpdateScreen(instructionX: _instruction / _init.Conditions.GetLength(1), instructionY: _instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
         }
-
-        _stopwatch.Reset();
     }
 }

@@ -17,76 +17,76 @@ static class Algorithms
     /// <param name="key">The key that is used as comparison for methods with the word 'Key'.</param>
     /// <param name="wires">The array to search with.</param>
     /// <returns>The index of the wire to cut.</returns>
-    internal static int Find(string method, ref int key, int[] wires)
+    internal static int? Find(string method, ref int key, int[] wires)
     {
         switch (method)
         {
             case "firstInstanceOfKey":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] == key)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "firstInstanceOfNotKey":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] != key)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "lastInstanceOfKey":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] == key)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "lastInstanceOfNotKey":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] != key)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "firstInstanceOfBlue":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] < 5)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "firstInstanceOfPurple":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] >= 5)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "lastInstanceOfBlue":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] < 5)
-                        return i + 1;
+                        return ++i;
                 break;
 
             case "lastInstanceOfPurple":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] >= 5)
-                        return i + 1;
+                        return ++i;
                 break;
 
             default:
                 throw new NotImplementedException();
         }
 
-        return 0;
+        return null;
     }
 
     /// <summary>
-    /// Returns the earliest index of an array that isn't 0.
+    /// Returns the earliest index of an array that isn't null.
     /// </summary>
     /// <param name="array">The array used to locate the smallest number.</param>
-    /// <returns>The smallest number not equal to 0.</returns>
-    internal static int EarliestIndex(int[] array)
+    /// <returns>The smallest number that isn't null.</returns>
+    internal static int? EarliestIndex(int?[] array)
     {
-        int min = 10;
+        int? min = 10;
 
         for (int i = 0; i < array.Length; i++)
-            if (min > array[i] && array[i] != 0)
+            if (min > array[i] && array[i] != null)
                 min = array[i];
 
         return min;
@@ -117,7 +117,7 @@ static class Algorithms
     /// <returns>A random integer array.</returns>
     internal static int[] Randomize(int arrayLength, int minValue, int maxValue)
     {
-        List<int> range = Enumerable.Range(minValue, maxValue).ToList().Shuffle();
+        List<int> range = Enumerable.Range(minValue, maxValue - 1).ToList().Shuffle();
 
         int[] parameters = new int[arrayLength];
 

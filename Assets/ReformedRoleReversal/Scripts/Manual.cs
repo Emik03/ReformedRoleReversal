@@ -79,9 +79,9 @@ sealed class Manual
         for (int i = 1; i < wires.Length; i++)
             if (wires[i - 1] == parameters[0] && (wires[i] == parameters[1] || wires[i] == parameters[2] || wires[i] == parameters[3]))
             {
-                condition.Wire = Algorithms.EarliestIndex(new int[] { Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[1], wires: wires),
-                                                                      Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[2], wires: wires),
-                                                                      Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[3], wires: wires) });
+                condition.Wire = Algorithms.EarliestIndex(new int?[] { Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[1], wires: wires),
+                                                                       Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[2], wires: wires),
+                                                                       Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[3], wires: wires) });
                 break;
             }
 
@@ -91,15 +91,17 @@ sealed class Manual
     public static Condition C(int[] wires, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: wires.Length);
+
         Condition condition = new Condition
         {
             Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", StaticArrays.Ordinals[parameters[0]], StaticArrays.Ordinals[parameters[1]], StaticArrays.Ordinals[parameters[2]])
         };
-
-        int matchingWire = wires[parameters[0]] == wires[parameters[1]] ? wires[parameters[0]] : wires[parameters[2]];
-
+        
         if (wires[parameters[0]] == wires[parameters[1]] || wires[parameters[1]] == wires[parameters[2]] || wires[parameters[2]] == wires[parameters[0]])
+        {
+            int matchingWire = wires[parameters[0]] == wires[parameters[1]] ? wires[parameters[0]] : wires[parameters[2]];
             condition.Wire = Algorithms.Find(method: "firstInstanceOfNotKey", key: ref matchingWire, wires: wires);
+        }
 
         return condition;
     }
@@ -163,14 +165,12 @@ sealed class Manual
                 continue;
             }
 
-            goto conditionFalse;
+            return condition;
         }
 
         if (seenNotUnique)
             condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref lowestWire, wires: wires);
-
-    conditionFalse:
-
+        
         return condition;
     }
 
@@ -198,15 +198,13 @@ sealed class Manual
             exceptions++;
 
             if (exceptions > parameters[0])
-                goto conditionFalse;
+                return condition;
         }
 
-        condition.Wire = Math.Max(Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
-                                  Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
+        condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
+                                  (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
 
-    conditionFalse:
-
-        return condition;
+        return new Condition { Wire = condition.Wire == 0 ? null : condition.Wire, SkipTo = condition.SkipTo, Text = condition.Text };
     }
 
     public static Condition V(int[] wires, KMBombInfo Info)
@@ -298,7 +296,7 @@ sealed class Manual
                     for (int k = 0; k < potentialWires.Count; k++)
                     {
                         int check = potentialWires[k];
-                        potentialWires[k] = Algorithms.Find(method: "lastInstanceOfKey", key: ref check, wires: wires);
+                        potentialWires[k] = (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref check, wires: wires);
                         condition.Wire = Algorithms.EarliestIndex(potentialWires);
                     }
                 }
@@ -330,7 +328,7 @@ sealed class Manual
                 for (int j = 0; j < potentialWires.Count; j++)
                 {
                     int check = potentialWires[j];
-                    potentialWires[j] = Algorithms.Find(method: "firstInstanceOfKey", key: ref check, wires: wires);
+                    potentialWires[j] = (int)Algorithms.Find(method: "firstInstanceOfKey", key: ref check, wires: wires);
                     condition.Wire = Algorithms.EarliestIndex(potentialWires);
                 }
             }
