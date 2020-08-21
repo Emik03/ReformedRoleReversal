@@ -71,6 +71,7 @@ internal class HandleManual
             yield break;
         }
 
+        const string randomFirstAndLastMethods = "ABC";
         const string randomMethods = "ABCDEFGWXYZ";
         //const string randomMethods = "CC";
         int rng, previous = 0;
@@ -81,10 +82,10 @@ internal class HandleManual
         switch (j)
         {
             // First case. (Guaranteed edgework)
-            case 0: methodInfo = Rnd.NextDouble() > 0.5 ? classType.GetMethod("FirstA") : classType.GetMethod("FirstB"); break;
+            case 0: methodInfo = classType.GetMethod("First" + randomFirstAndLastMethods[Rnd.Next(0, randomFirstAndLastMethods.Length)].ToString()); break;
 
             // Last case. (Guaranteed no edgework)
-            case 7: methodInfo = Rnd.NextDouble() > 0.5 ? classType.GetMethod("LastA") : classType.GetMethod("LastB"); break;
+            case 7: methodInfo = classType.GetMethod("Last" + randomFirstAndLastMethods[Rnd.Next(0, randomFirstAndLastMethods.Length)].ToString()); break;
 
             // Every other case. (Mixed)
             default:

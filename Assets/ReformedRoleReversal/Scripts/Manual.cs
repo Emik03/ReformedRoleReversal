@@ -9,8 +9,10 @@ sealed class Manual
     
     public static Condition FirstA(int[] wires, KMBombInfo Info)
     {
-        StaticArrays edgework = new StaticArrays(Info);
+        StaticArrays staticArrays = new StaticArrays(Info);
+
         int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        int edgework = staticArrays.GetNumbers(parameters[1]);
         bool inversion = Rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
@@ -23,7 +25,7 @@ sealed class Manual
                  : string.Format("If there's at least {0} {1}, skip to condition {2}.", parameters[0], StaticArrays.Strings[parameters[1]], parameters[2])
         };
 
-        if ((!inversion && parameters[0] <= edgework.GetNumbers(parameters[1])) || (inversion && parameters[0] >= edgework.GetNumbers(parameters[1])))
+        if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
             condition.SkipTo = parameters[2];
 
         return condition;
@@ -31,8 +33,10 @@ sealed class Manual
 
     public static Condition FirstB(int[] wires, KMBombInfo Info)
     {
-        StaticArrays edgework = new StaticArrays(Info);
+        StaticArrays staticArrays = new StaticArrays(Info);
+
         int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
         bool moreThan = Rnd.NextDouble() > 0.5;
 
         parameters[2] = (parameters[2] % 2) + 3;
@@ -44,7 +48,29 @@ sealed class Manual
                  : string.Format("If there's less {0} than {1}, skip to condition {2}.", StaticArrays.Strings[parameters[0]], StaticArrays.Strings[parameters[1]], parameters[2])
         };
 
-        if ((!moreThan && edgework.GetNumbers(parameters[0]) < edgework.GetNumbers(parameters[1])) || (moreThan && edgework.GetNumbers(parameters[0]) > edgework.GetNumbers(parameters[1])))
+        if ((!moreThan && edgework1 < edgework2) || (moreThan && edgework1 > edgework2))
+            condition.SkipTo = parameters[2];
+
+        return condition;
+    }
+
+    public static Condition FirstC(int[] wires, KMBombInfo Info)
+    {
+        StaticArrays staticArrays = new StaticArrays(Info);
+
+        int[] parameters = Algorithms.Randomize(arrayLength: 3, minValue: 0, maxValue: StaticArrays.Strings.Length);
+        int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
+        bool orAnd = Rnd.NextDouble() > 0.5, inversion = Rnd.NextDouble() > 0.5;
+
+        parameters[2] = (parameters[2] % 2) + 3;
+
+        Condition condition = new Condition
+        {
+            Text = string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", StaticArrays.Strings[parameters[0]], orAnd ? "or" : "and", StaticArrays.Strings[parameters[1]], inversion ? "don't" : "do", parameters[2])
+        };
+
+        if (inversion && ((orAnd && (edgework1 == 0 || edgework2 == 0)) || (!orAnd && edgework1 == 0 && edgework2 == 0))
+        || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
             condition.SkipTo = parameters[2];
 
         return condition;
@@ -364,6 +390,23 @@ sealed class Manual
         };
 
         condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref parameters[0], wires: wires);
+
+        return condition;
+    }
+
+    public static Condition LastC(int[] wires, KMBombInfo Info)
+    {
+        bool highestLowest = Rnd.NextDouble() > 0.5;
+
+        Condition condition = new Condition
+        {
+            Text = highestLowest
+                 ? string.Format("Otherwise, cut the last lowest-valued wire.")
+                 : string.Format("Otherwise, cut the last highest-valued wire.")
+        };
+
+        int highestValue = highestLowest ? wires.Min() : wires.Max();
+        condition.Wire = Algorithms.Find(method: "lastInstanceOfKey", key: ref highestValue, wires: wires);
 
         return condition;
     }
