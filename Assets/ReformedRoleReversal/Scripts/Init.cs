@@ -21,10 +21,11 @@ internal class Init
     protected internal readonly Interact Interact;
     protected internal readonly ReformedRoleReversal RoleReversal;
 
-    protected internal bool IsSolved = false, LightsOn = false;
+    protected internal static bool LightsOn = false;
+    protected internal bool IsSolved = false;
+    protected internal static int ModuleIdCounter = 1;
     protected internal int ModuleId = 0, WireSelected = 1;
     protected internal int? CorrectAnswer;
-    protected internal static int ModuleIdCounter = 1;
     protected internal string Seed = string.Empty;
 
     /// <summary>
@@ -32,6 +33,8 @@ internal class Init
     /// </summary>
     protected internal void Activate()
     {
+        ModuleId = ModuleIdCounter++;
+
         HandleManual.Generate();
 
         RoleReversal.Screen.OnInteract += delegate ()
@@ -50,7 +53,7 @@ internal class Init
             int j = i;
             RoleReversal.Buttons[i].OnInteract += delegate ()
             {
-                Interact.PressButton(j);
+                Interact.PressButton(ref j);
                 return false;
             };
         }

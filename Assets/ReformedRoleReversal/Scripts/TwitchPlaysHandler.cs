@@ -41,8 +41,8 @@ public class TwitchPlaysHandler : MonoBehaviour
                 byte num = (byte)char.GetNumericValue(parameters[1][0]);
                 while (num != _init.WireSelected)
                 {
-                    RoleReversal.Buttons[3].OnInteract();
-                    yield return new WaitForSeconds(0.2f);
+                    RoleReversal.Buttons[_init.Interact.ButtonOrder.IndexOf(3)].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
                 }
 
                 RoleReversal.Screen.OnInteract();
@@ -82,20 +82,20 @@ public class TwitchPlaysHandler : MonoBehaviour
                 {
                     RoleReversal.Screen.OnInteract();
                     RoleReversal.Screen.OnInteractEnded();
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
                 }
 
                 while (c2 != _init.Interact.Instruction % length)
                 {
-                    RoleReversal.Buttons[c2 < _init.Interact.Instruction % length ? 1 : 2].OnInteract();
-                    yield return new WaitForSeconds(0.2f);
+                    RoleReversal.Buttons[c2 < _init.Interact.Instruction % length ? _init.Interact.ButtonOrder.IndexOf(1) : _init.Interact.ButtonOrder.IndexOf(2)].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
         }
     }
 
     /// <summary>
-    /// Force the module to be solved in TwitchPlays
+    /// Force the module to be solved in TwitchPlays.
     /// </summary>
     private IEnumerator TwitchHandleForcedSolve()
     {

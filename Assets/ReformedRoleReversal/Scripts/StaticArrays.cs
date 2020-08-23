@@ -1,4 +1,5 @@
 ﻿using KModkit;
+using System.Collections.Generic;
 using System.Linq;
 
 internal class StaticArrays
@@ -12,29 +13,53 @@ internal class StaticArrays
 
     private const string _version = "v1";
 
-    private static readonly Condition[] _tutorial =
+    private static readonly Indicator[] _indicators = new Indicator[11]
     {
-        new Condition { Text = "Welcome to Reformed Role Reversal! Press the up arrow button to advance." },
-        new Condition { Text = "Convert the seed from Base-62 to Base-10. Add 0's to the left of the number until you have 10 digits." },
-        new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
-        new Condition { Text = "Take the leftmost digits matching the number of wires, and convert the digits to colors to obtain the final wires." },
-        new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press up if the condition is false." },
-        new Condition { Text = "Follow the first condition that applies, select with the left and right arrow buttons and hold the screen to cut the wire." },
-        new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
-        new Condition { Text = "Good luck!~ (" + _version + ")" }
+        Indicator.BOB,
+        Indicator.CAR,
+        Indicator.CLR,
+        Indicator.FRK,
+        Indicator.FRQ,
+        Indicator.IND,
+        Indicator.MSA,
+        Indicator.NSA,
+        Indicator.SIG,
+        Indicator.SND,
+        Indicator.TRN
     };
 
-    internal static Condition[] Tutorial
+    internal static Indicator[] Indicators
     {
-        get { return _tutorial; }
-        set { Tutorial = value; }
+        get { return _indicators; }
+        set { Indicators = value; }
+    }
+
+    private static readonly string[] _indicatorNames = new string[11]
+    {
+        "a BOB",
+        "a CAR",
+        "a CLR",
+        "an FRK",
+        "an FRQ",
+        "an IND",
+        "an MSA",
+        "an NSA",
+        "an SIG",
+        "an SND",
+        "a TRN",
+    };
+
+    internal static string[] IndicatorNames
+    {
+        get { return _indicatorNames; }
+        set { IndicatorNames = value; }
     }
 
     private static readonly char[] _base62 = new char[62]
     {
         '0','1','2','3','4','5','6','7','8','9',
         'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-        'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
+        'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' 
     };
 
     internal static char[] Base62
@@ -64,10 +89,10 @@ internal class StaticArrays
         "modules with their name containing \"Role Reversal\""
     };
 
-    internal static string[] Strings
+    internal static string[] Edgework
     {
         get { return _strings; }
-        set { Strings = value; }
+        set { Edgework = value; }
     }
 
     private static readonly string[] _colors = new string[10]
@@ -90,7 +115,7 @@ internal class StaticArrays
         set { Colors = value; }
     }
 
-    private static readonly string[] _generalColors = new string[10]
+    private static readonly string[] _groupedColors = new string[10]
     {
         "blue",
         "blue",
@@ -104,10 +129,10 @@ internal class StaticArrays
         "purple"
     };
 
-    internal static string[] GeneralColors
+    internal static string[] GroupedColors
     {
-        get { return _generalColors; }
-        set { GeneralColors = value; }
+        get { return _groupedColors; }
+        set { GroupedColors = value; }
     }
 
     private static readonly string[] _ordinals = new string[9]
@@ -149,13 +174,38 @@ internal class StaticArrays
     }
 
     /// <summary>
+    /// Generates the tutorial based on a few parameters that dictate the rules.
+    /// </summary>
+    /// <param name="buttonOrder">The indexes used for Interact in reading order.</param>
+    /// <param name="baseN">The initial base shown on the module.</param>
+    /// <param name="left">Append 0's on the left if true, otherwise right.</param>
+    /// <param name="leftmost">Take leftmost digits if true, otherwise right.</param>
+    /// <returns>The formatted condition array for the tutorial.</returns>
+    internal Condition[] GetTutorial(List<int> buttonOrder, int baseN, ref bool left, ref bool leftmost, ref int offset)
+    {
+        string[] buttonText = { "left", "down", "up", "right" };
+
+        return new Condition[]
+        {
+            new Condition { Text = "Welcome to Reformed Role Reversal! Press the " + buttonText[buttonOrder.IndexOf(2)] + " arrow button to advance." },
+            new Condition { Text = "Convert the seed from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of the number until you have 10 digits." },
+            new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
+            new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With table " + offset + ", convert digits to colors to get the final wires." },
+            new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
+            new Condition { Text = "Follow the first condition that applies, select with the " + buttonText[buttonOrder.IndexOf(0)] + " and " + buttonText[buttonOrder.IndexOf(3)] + " arrow buttons and hold the screen to cut the wire." },
+            new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
+            new Condition { Text = "Good luck!~ (" + _version + ")" }
+        };
+    }
+
+    /// <summary>
     /// Gets the edgework from the same index as the _strings variable.
     /// </summary>
     /// <param name="i">The index for the _numbers array.</param>
     /// <returns>A number representing the edgework.</returns>
     internal int GetNumbers(int i)
     {
-        int[] _numbers = new int[17]
+        return new int[17]
         {
             _info.GetBatteryCount(),
             _info.GetBatteryCount(Battery.AA) + _info.GetBatteryCount(Battery.AAx3) + _info.GetBatteryCount(Battery.AAx4),
@@ -174,8 +224,6 @@ internal class StaticArrays
             _info.GetModuleNames().Count(),
             _info.GetModuleNames().Count() - _info.GetSolvableModuleNames().Count(),
             _info.GetModuleNames().Count(s => s == "Role Reversal" || s == "Reformed Role Reversal")
-        };
-
-        return _numbers[i];
+        }[i];
     }
 }

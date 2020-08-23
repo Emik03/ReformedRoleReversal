@@ -32,39 +32,38 @@ public class HandleCoroutines : MonoBehaviour
         string currentText = string.Empty;
         _halt = true;
         
-        string text = string.Format("Wire: {0}, Seed: {1}\n[{2}{3}]\n\n{4}",
-                                    wireSelected,
-                                    _init.Seed,
-                                    instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires' ",
+        string text = string.Format("[{0}{1}]\n\n{2}",
+                                    instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
                                     instructionX == 0 ? string.Empty : StaticArrays.Ordinals[instructionY] + " condition",
-                                    Algorithms.AddLineBreakPlaceholders(_init.Conditions[instructionX, instructionY].Text));
+                                    Algorithms.LineBreaks(_init.Conditions[instructionX, instructionY].Text));
 
         yield return new WaitForSeconds(0.04f);
 
         _halt = false;
-        RoleReversal.Text.text = string.Empty;
+        
+        RoleReversal.Texts[2].text = string.Empty;
 
         for (int i = 0; i < text.Length; i++)
         {
             currentText += text[i] == '|' ? "\n" : text[i].ToString();
 
-            RoleReversal.Text.text = _previousText.Length - currentText.Length >= 0
+            RoleReversal.Texts[2].text = _previousText.Length - currentText.Length >= 0
                                     ? currentText + "\n" + _previousText.Substring(currentText.Length, _previousText.Length - currentText.Length)
                                     : currentText;
 
-            if (i % 3 == 0 && !_halt)
+            if (i % 2 == 0 && !_halt)
                 yield return new WaitForSeconds(0.02f);
         }
 
-        for (int j = 0; RoleReversal.Text.text.Length > currentText.Length; j++)
+        for (int j = 0; RoleReversal.Texts[2].text.Length > currentText.Length; j++)
         {
-            RoleReversal.Text.text = RoleReversal.Text.text.Substring(0, RoleReversal.Text.text.Length - 2);
+            RoleReversal.Texts[2].text = RoleReversal.Texts[2].text.Substring(0, RoleReversal.Texts[2].text.Length - 2);
 
-            if (j % 3 == 0 && !_halt)
+            if (j % 2 == 0 && !_halt)
                 yield return new WaitForSeconds(0.02f);
         }
 
-        RoleReversal.Text.text = currentText;
+        RoleReversal.Texts[2].text = currentText;
         _previousText = currentText;
     }
 }

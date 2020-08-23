@@ -45,6 +45,18 @@ static class Algorithms
                         return ++i;
                 break;
 
+            case "firstInstanceOfOppositeKey":
+                for (int i = 0; i < wires.Length; i++)
+                    if (wires[i] == (key + 5) % 10)
+                        return ++i;
+                break;
+
+            case "lastInstanceOfOppositeKey":
+                for (int i = wires.Length - 1; i >= 0; i--)
+                    if (wires[i] == (key + 5) % 10)
+                        return ++i;
+                break;
+
             case "firstInstanceOfBlue":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] < 5)
@@ -69,8 +81,44 @@ static class Algorithms
                         return ++i;
                 break;
 
+            case "highestEven":
+                int? highestEven = null;
+                for (int i = 0; i < wires.Length; i++)
+                    if (wires[i] % 2 == 1)
+                        highestEven = i;
+                if (highestEven != null)
+                    return ++highestEven;
+                break;
+
+            case "lowestEven":
+                int? lowestEven = null;
+                for (int i = wires.Length - 1; i >= 0; i--)
+                    if (wires[i] % 2 == 1)
+                        lowestEven = i;
+                if (lowestEven != null)
+                    return ++lowestEven;
+                break;
+
+            case "highestOdd":
+                int? highestOdd = null;
+                for (int i = 0; i < wires.Length; i++)
+                    if (wires[i] % 2 == 1)
+                        highestOdd = i;
+                if (highestOdd != null)
+                    return ++highestOdd;
+                break;
+
+            case "lowestOdd":
+                int? lowestOdd = null;
+                for (int i = wires.Length - 1; i >= 0; i--)
+                    if (wires[i] % 2 == 1)
+                        lowestOdd = i;
+                if (lowestOdd != null)
+                    return ++lowestOdd;
+                break;
+
             default:
-                throw new NotImplementedException("Could not find suitable algorithm for Algorithms.Find(), did you misspell the string?");
+                throw new NotImplementedException("Could not find '" + method + "' for Algorithms.Find(), did you misspell the string?");
         }
 
         return null;
@@ -81,7 +129,7 @@ static class Algorithms
     /// </summary>
     /// <param name="array">The array used to locate the smallest number.</param>
     /// <returns>The smallest number that isn't null.</returns>
-    internal static int? EarliestIndex(int?[] array)
+    internal static int? First(int?[] array)
     {
         int? min = 10;
 
@@ -93,11 +141,11 @@ static class Algorithms
     }
 
     /// <summary>
-    /// Returns the earliest index of an array that isn't 0.
+    /// Returns the earliest index of a list that isn't 0.
     /// </summary>
     /// <param name="array">The array used to locate the smallest number.</param>
     /// <returns>The smallest number not equal to 0.</returns>
-    internal static int EarliestIndex(List<int> array)
+    internal static int First(List<int> array)
     {
         int min = 10;
 
@@ -108,27 +156,39 @@ static class Algorithms
         return min;
     }
 
+    internal static int[] GetColors(bool grouped, int[] wires)
+    {
+        int[] colors = grouped ? new int[2] { 0, 0 } : new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        if (grouped)
+            for (int i = 0; i < wires.Length; i++)
+                colors[wires[i] / 5]++;
+
+        else
+            for (int i = 0; i < wires.Length; i++)
+                colors[wires[i]]++;
+
+        return colors;
+    }
+
     /// <summary>
     /// Returns an array of random unique numbers with a few parameters.
     /// </summary>
-    /// <param name="arrayLength">The length of the array.</param>
-    /// <param name="minValue">The included minimum value.</param>
-    /// <param name="maxValue">The excluded maximum value.</param>
+    /// <param name="length">The length of the array.</param>
+    /// <param name="min">The included minimum value.</param>
+    /// <param name="max">The excluded maximum value.</param>
     /// <returns>A random integer array.</returns>
-    internal static int[] Randomize(int arrayLength, int minValue, int maxValue)
+    internal static int[] Random(int length, int min, int max)
     {
-        List<int> range = Enumerable.Range(minValue, maxValue - 1).ToList().Shuffle();
+        int[] range = Enumerable.Range(min, --max).ToArray().Shuffle(), array = new int[length];
 
-        int[] parameters = new int[arrayLength];
+        if (range.Length < length)
+            throw new ArgumentOutOfRangeException("range: " + range.Join(", "), "The length of the returned array (" + length + ") is larger than the range specified (" + range.Length + ")!");
 
-        for (int i = 0; i < parameters.Length && range.Count != 0; i++)
-        {
-            int random = Rnd.Next(0, range.Count());
-            parameters[i] = range[random];
-            range.RemoveAt(random);
-        }
+        for (int i = 0; i < array.Length; i++)
+            array[i] = range[i];
 
-        return parameters;
+        return array;
     }
 
     /// <summary>
@@ -136,7 +196,7 @@ static class Algorithms
     /// string concatenation. This is faster for return values having 
     /// a length > 1.
     /// </summary>
-    public static string Base10ToBaseN(int value, char[] baseChars)
+    public static string ConvertFromBase10(int value, char[] baseChars)
     {
         // 32 is the worst cast buffer size for base 2 and int.MaxValue
         int i = 32;
@@ -161,9 +221,10 @@ static class Algorithms
     /// </summary>
     /// <param name="text">The text to add line breaks with.</param>
     /// <returns>A modified string containing vertical bars.</returns>
-    internal static string AddLineBreakPlaceholders(string text)
+    internal static string LineBreaks(string text)
     {
-        ushort index = 33;
+        const byte jump = 29;
+        ushort index = jump;
         StringBuilder sb = new StringBuilder(text);
 
         while (index < text.Length)
@@ -171,7 +232,7 @@ static class Algorithms
             if (text[index] == ' ')
             {
                 sb[index] = '|';
-                index += 33;
+                index += jump;
             }
 
             else

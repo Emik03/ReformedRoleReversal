@@ -18,6 +18,7 @@ internal class HandleManual
     private readonly Init _init;
     private readonly ReformedRoleReversal _roleReversal;
 
+    private Condition[] _tutorial;
     private static readonly System.Random Rnd = new System.Random();
     private int _generateCondition = 0;
 
@@ -26,22 +27,31 @@ internal class HandleManual
     /// </summary>
     protected internal void Generate()
     {
-        _init.LightsOn = true;
-        _init.ModuleId = Init.ModuleIdCounter++;
-
         int[] wires = new int[(Seed % 7) + 3];
 
         string strSeed = Seed.ToString();
+        bool left = Rnd.NextDouble() > 0.5, leftmost = Rnd.NextDouble() > 0.5;
+        leftmost = false;
 
         while (strSeed.Length < 9)
-            strSeed = '0' + strSeed;
+            strSeed = left ? '0' + strSeed : strSeed + '0';
+
+        int offset = Rnd.Next(0, 10);
 
         for (int i = 0; i < wires.Length; i++)
-            wires[i] = (int)char.GetNumericValue(strSeed[i]);
+            wires[i] = (int)(char.GetNumericValue(strSeed[leftmost ? i : i + (9 - wires.Length)]) + offset) % 10;
 
-        _init.Seed = Algorithms.Base10ToBaseN(int.Parse(strSeed), StaticArrays.Base62);
+        char[] baseN = new char[Rnd.Next(20, 63)];
 
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Seed: {1} - Base 10: {2} - # of wires: {3}.", _init.ModuleId, _init.Seed, strSeed, wires.Length);
+        for (int i = 0; i < baseN.Length; i++)
+            baseN[i] = StaticArrays.Base62[i];
+
+        _init.Seed = Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
+        _init.RoleReversal.Texts[0].text = "Seed: " + _init.Seed;
+        _init.RoleReversal.Texts[1].text = "Wire: " + _init.WireSelected;
+
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Seed in Base {1}: {2} - Seed in Base 10: {3} - # of wires: {4}.", _init.ModuleId, baseN.Length, _init.Seed, strSeed, wires.Length);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using table {3}.", _init.ModuleId, left, leftmost, offset);
 
         string[] log = new string[wires.Length];
 
@@ -51,6 +61,8 @@ internal class HandleManual
         Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are {1}.", _init.ModuleId, log.Join(", "));
 
         int i2 = _init.Conditions.GetLength(0), j2 = _init.Conditions.GetLength(1);
+
+        _tutorial = new StaticArrays(_init.RoleReversal.Info).GetTutorial(_init.Interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref offset);
 
         for (int i = 0; i < i2; i++)
             for (int j = 0; j < j2; j++)
@@ -63,7 +75,7 @@ internal class HandleManual
 
         if (i == 0)
         {
-            _init.Conditions[i, j] = StaticArrays.Tutorial[j];
+            _init.Conditions[i, j] = _tutorial[j];
 
             yield return new WaitWhile(() => _init.Conditions[i, j] == null);
             _generateCondition++;
@@ -72,9 +84,9 @@ internal class HandleManual
         }
 
         const string randomFirstAndLastMethods = "ABC";
-        const string randomMethods = "ABCDEFGWXYZ";
-        //const string randomMethods = "CC";
-        int rng, previous = 0;
+        const string randomMethods = "ABCDEFGHIJKLMNOSTUVWXYZ";
+        // P Q R
+        //const string randomMethods = "J";
 
         Type classType = typeof(Manual);
         MethodInfo methodInfo;
@@ -88,13 +100,7 @@ internal class HandleManual
             case 7: methodInfo = classType.GetMethod("Last" + randomFirstAndLastMethods[Rnd.Next(0, randomFirstAndLastMethods.Length)].ToString()); break;
 
             // Every other case. (Mixed)
-            default:
-                do rng = Rnd.Next(0, randomMethods.Length);
-                while (rng == previous);
-
-                previous = rng;
-                methodInfo = classType.GetMethod(randomMethods[rng].ToString());
-                break;
+            default: methodInfo = classType.GetMethod(randomMethods[Rnd.Next(0, randomMethods.Length)].ToString()); break;
         }
         
         _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, _roleReversal.Info });
@@ -117,12 +123,14 @@ internal class HandleManual
             if (_init.Conditions[wires, i].SkipTo != null)
             {
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, _init.Conditions[wires, i].SkipTo);
+                Init.LightsOn = true;
                 i = (int)_init.Conditions[wires, i].SkipTo - 1;
             }
 
             else if (_init.Conditions[wires, i].Wire != null)
             {
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, StaticArrays.Ordinals[(int)_init.Conditions[wires, i].Wire - 1]);
+                Init.LightsOn = true;
                 return (int)_init.Conditions[wires, i].Wire;
             }
 
@@ -130,6 +138,7 @@ internal class HandleManual
         }
         
         Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> Unreachable code detected, please cut any wire to solve the module.", _init.ModuleId);
+        Init.LightsOn = true;
         return null;
     }
 }
