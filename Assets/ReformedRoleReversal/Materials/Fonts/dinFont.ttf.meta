@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 705747a0788f8134ab3a864f4eba6680
+guid: 1478bc57e411ec846a81b9ce5758241a
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,11 +8,10 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Consolas
+  fontName: D-DIN
   fontNames:
-  - Consolas
-  fallbackFontReferences:
-  - {fileID: 12800000, guid: 6e5e517a2e8046a449d42952c36d1201, type: 3}
+  - D-DIN
+  fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

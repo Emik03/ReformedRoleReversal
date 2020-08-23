@@ -8,8 +8,6 @@ using System.Text;
 /// </summary>
 static class Algorithms
 {
-    private static readonly Random Rnd = new Random();
-
     /// <summary>
     /// Finds and returns the index of the wires that match the method used.
     /// </summary>
@@ -81,44 +79,31 @@ static class Algorithms
                         return ++i;
                 break;
 
-            case "highestEven":
-                int? highestEven = null;
+            case "lowestEven":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] % 2 == 1)
-                        highestEven = i;
-                if (highestEven != null)
-                    return ++highestEven;
+                        return ++i;
                 break;
 
-            case "lowestEven":
-                int? lowestEven = null;
+            case "highestEven":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] % 2 == 1)
-                        lowestEven = i;
-                if (lowestEven != null)
-                    return ++lowestEven;
-                break;
-
-            case "highestOdd":
-                int? highestOdd = null;
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] % 2 == 1)
-                        highestOdd = i;
-                if (highestOdd != null)
-                    return ++highestOdd;
+                        return ++i;
                 break;
 
             case "lowestOdd":
-                int? lowestOdd = null;
-                for (int i = wires.Length - 1; i >= 0; i--)
+                for (int i = 0; i < wires.Length; i++)
                     if (wires[i] % 2 == 1)
-                        lowestOdd = i;
-                if (lowestOdd != null)
-                    return ++lowestOdd;
+                        return ++i;
                 break;
 
-            default:
-                throw new NotImplementedException("Could not find '" + method + "' for Algorithms.Find(), did you misspell the string?");
+            case "highestOdd":
+                for (int i = wires.Length - 1; i >= 0; i--)
+                    if (wires[i] % 2 == 1)
+                        return ++i;
+                break;
+
+            default: throw new NotImplementedException("Could not find '" + method + "' for Algorithms.Find(), did you misspell the string?");
         }
 
         return null;
@@ -192,9 +177,8 @@ static class Algorithms
     }
 
     /// <summary>
-    /// An optimized method using an array as buffer instead of 
-    /// string concatenation. This is faster for return values having 
-    /// a length > 1.
+    /// An optimized method using an array as buffer instead of string concatenation. 
+    /// This is faster for return values having a length > 1.
     /// </summary>
     public static string ConvertFromBase10(int value, char[] baseChars)
     {
@@ -223,7 +207,7 @@ static class Algorithms
     /// <returns>A modified string containing vertical bars.</returns>
     internal static string LineBreaks(string text)
     {
-        const byte jump = 29;
+        const byte jump = 33;
         ushort index = jump;
         StringBuilder sb = new StringBuilder(text);
 

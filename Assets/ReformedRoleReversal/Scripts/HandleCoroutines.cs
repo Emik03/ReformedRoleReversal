@@ -24,7 +24,7 @@ public class HandleCoroutines : MonoBehaviour
 
     internal void GenerateCondition(int i, int j, int[] wires, ref string strSeed)
     {
-        StartCoroutine(_handleManual.GenerateCondition(i, j, wires, strSeed));
+        StartCoroutine(_handleManual.GenerateCondition(i, j, wires, strSeed, i + 2 == wires.Length));
     }
 
     internal protected IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected)

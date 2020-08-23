@@ -69,7 +69,7 @@ internal class HandleManual
                 _coroutines.GenerateCondition(i, j, wires, ref strSeed);
     }
 
-    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string strSeed)
+    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string strSeed, bool isCorrectIndex)
     {
         yield return null;
 
@@ -83,10 +83,23 @@ internal class HandleManual
             yield break;
         }
 
-        const string randomFirstAndLastMethods = "ABC";
+        // Generates fake wires for sections with incorrect amount of wires to obfuscate real ones based on the conditions recieved.
+        if (!isCorrectIndex)
+        {
+            while (i + 2 != wires.Length)
+            {
+                if (i + 2 > wires.Length)
+                    wires = new int[wires.Length + 1];
+
+                else
+                    wires = new int[wires.Length - 1];
+            }
+
+            for (int k = 0; k < wires.Length; k++)
+                wires[k] = Rnd.Next(0, 10);
+        }
+
         const string randomMethods = "ABCDEFGHIJKLMNOSTUVWXYZ";
-        // P Q R
-        //const string randomMethods = "J";
 
         Type classType = typeof(Manual);
         MethodInfo methodInfo;
@@ -94,10 +107,10 @@ internal class HandleManual
         switch (j)
         {
             // First case. (Guaranteed edgework)
-            case 0: methodInfo = classType.GetMethod("First" + randomFirstAndLastMethods[Rnd.Next(0, randomFirstAndLastMethods.Length)].ToString()); break;
+            case 0: methodInfo = classType.GetMethod("First" + randomMethods[Rnd.Next(0, 3)].ToString()); break;
 
             // Last case. (Guaranteed no edgework)
-            case 7: methodInfo = classType.GetMethod("Last" + randomFirstAndLastMethods[Rnd.Next(0, randomFirstAndLastMethods.Length)].ToString()); break;
+            case 7: methodInfo = classType.GetMethod("Last" + randomMethods[Rnd.Next(0, 3)].ToString()); break;
 
             // Every other case. (Mixed)
             default: methodInfo = classType.GetMethod(randomMethods[Rnd.Next(0, randomMethods.Length)].ToString()); break;
@@ -123,7 +136,6 @@ internal class HandleManual
             if (_init.Conditions[wires, i].SkipTo != null)
             {
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, _init.Conditions[wires, i].SkipTo);
-                Init.LightsOn = true;
                 i = (int)_init.Conditions[wires, i].SkipTo - 1;
             }
 

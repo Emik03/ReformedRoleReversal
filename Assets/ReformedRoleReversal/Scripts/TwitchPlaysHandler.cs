@@ -101,5 +101,17 @@ public class TwitchPlaysHandler : MonoBehaviour
     {
         yield return null;
         Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", _init.ModuleId);
+        
+        while (_init.CorrectAnswer != _init.WireSelected)
+        {
+            RoleReversal.Buttons[_init.Interact.ButtonOrder.IndexOf(3)].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        RoleReversal.Screen.OnInteract();
+
+        yield return new WaitUntil(() => _init.Interact.Stopwatch.ElapsedMilliseconds > 500);
+
+        RoleReversal.Screen.OnInteractEnded();
     }
 }
