@@ -36,10 +36,10 @@ internal class HandleManual
         while (strSeed.Length < 9)
             strSeed = left ? '0' + strSeed : strSeed + '0';
 
-        int offset = Rnd.Next(0, 10);
+        int lookup = Rnd.Next(0, 10);
 
         for (int i = 0; i < wires.Length; i++)
-            wires[i] = (int)(char.GetNumericValue(strSeed[leftmost ? i : i + (9 - wires.Length)]) + offset) % 10;
+            wires[i] = (int)(char.GetNumericValue(strSeed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
 
         char[] baseN = new char[Rnd.Next(20, 63)];
 
@@ -51,7 +51,7 @@ internal class HandleManual
         _init.RoleReversal.Texts[1].text = "Wire: " + _init.WireSelected;
 
         Debug.LogFormat("[Reformed Role Reversal #{0}]: Seed in Base {1}: {2} - Seed in Base 10: {3} - # of wires: {4}.", _init.ModuleId, baseN.Length, _init.Seed, strSeed, wires.Length);
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using table {3}.", _init.ModuleId, left, leftmost, offset);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using lookup {3}.", _init.ModuleId, left, leftmost, lookup);
 
         string[] log = new string[wires.Length];
 
@@ -62,14 +62,14 @@ internal class HandleManual
 
         int i2 = _init.Conditions.GetLength(0), j2 = _init.Conditions.GetLength(1);
 
-        _tutorial = new StaticArrays(_init.RoleReversal.Info).GetTutorial(_init.Interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref offset);
+        _tutorial = new StaticArrays(_init.RoleReversal.Info).GetTutorial(_init.Interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
 
         for (int i = 0; i < i2; i++)
             for (int j = 0; j < j2; j++)
-                _coroutines.GenerateCondition(i, j, wires, ref strSeed);
+                _coroutines.GenerateCondition(i, j, wires, ref strSeed, ref lookup);
     }
 
-    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string strSeed, bool isCorrectIndex)
+    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string strSeed, int lookup, bool isCorrectIndex)
     {
         yield return null;
 
@@ -116,7 +116,7 @@ internal class HandleManual
             default: methodInfo = classType.GetMethod(randomMethods[Rnd.Next(0, randomMethods.Length)].ToString()); break;
         }
         
-        _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, _roleReversal.Info });
+        _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, lookup, _roleReversal.Info });
 
         yield return new WaitWhile(() => _init.Conditions[i, j] == null);
         _generateCondition++;

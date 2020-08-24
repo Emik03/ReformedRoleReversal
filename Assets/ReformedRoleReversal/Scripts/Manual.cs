@@ -8,7 +8,7 @@ static class Manual
     private static readonly Random Rnd = new Random();
 
     #region First Conditions
-    public static Condition FirstA(int[] wires, KMBombInfo Info)
+    public static Condition FirstA(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: StaticArrays.Edgework.Length);
         int edgework = new StaticArrays(Info).GetNumbers(parameters[1]);
@@ -28,7 +28,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition FirstB(int[] wires, KMBombInfo Info)
+    public static Condition FirstB(int[] wires, int lookup, KMBombInfo Info)
     {
         StaticArrays staticArrays = new StaticArrays(Info);
 
@@ -49,7 +49,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition FirstC(int[] wires, KMBombInfo Info)
+    public static Condition FirstC(int[] wires, int lookup, KMBombInfo Info)
     {
         StaticArrays staticArrays = new StaticArrays(Info);
 
@@ -73,7 +73,7 @@ static class Manual
     #endregion
 
     #region Noninitial Conditions
-    public static Condition A(int[] wires, KMBombInfo Info)
+    public static Condition A(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         Condition condition = new Condition
@@ -91,7 +91,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition B(int[] wires, KMBombInfo Info)
+    public static Condition B(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 4, min: 0, max: StaticArrays.Colors.Length);
         Condition condition = new Condition
@@ -111,7 +111,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition C(int[] wires, KMBombInfo Info)
+    public static Condition C(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: wires.Length + 1);
 
@@ -129,7 +129,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition D(int[] wires, KMBombInfo Info)
+    public static Condition D(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next((int)Math.Ceiling((float)wires.Length / 2), wires.Length);
         Condition condition = new Condition
@@ -149,30 +149,32 @@ static class Manual
         return condition;
     }
 
-    public static Condition E(int[] wires, KMBombInfo Info)
+    public static Condition E(int[] wires, int lookup, KMBombInfo Info)
     {
+        bool highest = Rnd.NextDouble() > 0.5;
         Condition condition = new Condition
         {
-            Text = string.Format("If all wires are unique, cut the wire with the highest value.")
+            Text = string.Format("If all wires are unique, cut the wire with the {0} value.", highest ? "highest" : "lowest")
         };
 
         if (wires.Distinct().Count() == wires.Count())
         {
-            int highestValue = wires.Max();
-            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref highestValue, wires: wires);
+            Algorithms.RevertLookup(wires, ref lookup);
+            int key = highest ? wires.Max() : wires.Min();
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
         }
 
         return condition;
     }
 
-    public static Condition F(int[] wires, KMBombInfo Info)
+    public static Condition F(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(1, wires.Length - 1);
-        bool seenNotUnique = false;
+        bool seenNotUnique = false, lowest = Rnd.NextDouble() > 0.5;
 
         Condition condition = new Condition
         {
-            Text = string.Format("If all wires are unique except for 1 {0} with matching colors, cut the first wire with the lowest value.", StaticArrays.Tuplets[parameter])
+            Text = string.Format("If all wires are unique except for 1 {0} with matching colors, cut the first wire with the {1} value.", StaticArrays.Tuplets[parameter], lowest ? "lowest" : "highest")
         };
 
         foreach (IGrouping<int, int> number in wires.GroupBy(x => x))
@@ -191,14 +193,15 @@ static class Manual
 
         if (seenNotUnique)
         {
-            int lowestWire = wires.Min();
-            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref lowestWire, wires: wires);
+            Algorithms.RevertLookup(wires, ref lookup);
+            int key = lowest ? wires.Min() : wires.Max();
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
         }
 
         return condition;
     }
 
-    public static Condition G(int[] wires, KMBombInfo Info)
+    public static Condition G(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(1, (wires.Length / 2) + 1);
         Array.Sort(wires);
@@ -231,7 +234,7 @@ static class Manual
         return new Condition { Wire = condition.Wire == 0 ? null : condition.Wire, SkipTo = condition.SkipTo, Text = condition.Text };
     }
 
-    public static Condition H(int[] wires, KMBombInfo Info)
+    public static Condition H(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         bool inversion = Rnd.NextDouble() > 0.5;
@@ -248,7 +251,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition I(int[] wires, KMBombInfo Info)
+    public static Condition I(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: StaticArrays.GroupedColors.Length);
         parameters[0] = Rnd.Next((int)Math.Ceiling((float)wires.Length / 2), wires.Length);
@@ -270,7 +273,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition J(int[] wires, KMBombInfo Info)
+    public static Condition J(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, StaticArrays.Colors.Length);
         Condition condition = new Condition
@@ -284,7 +287,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition K(int[] wires, KMBombInfo Info)
+    public static Condition K(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, StaticArrays.Colors.Length);
         bool ascending = Rnd.NextDouble() > 0.5, highest = Rnd.NextDouble() > 0.5, odd = Rnd.NextDouble() > 0.5;
@@ -292,6 +295,8 @@ static class Manual
         {
             Text = string.Format("If all values are in {0} order, cut the wire with the {1} {2} value.", ascending ? "ascending" : "decending", highest ? "highest" : "lowest", odd ? "odd" : "even")
         };
+
+        Algorithms.RevertLookup(wires, ref lookup);
 
         for (int i = 1; i < wires.Length; i++)
         {
@@ -309,7 +314,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition L(int[] wires, KMBombInfo Info)
+    public static Condition L(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         Condition condition = new Condition
@@ -327,7 +332,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition M(int[] wires, KMBombInfo Info)
+    public static Condition M(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         bool highestIf = Rnd.NextDouble() > 0.5, highestThen = Rnd.NextDouble() > 0.5;
@@ -336,13 +341,15 @@ static class Manual
             Text = string.Format("If the {0} wire has the {1} value, cut the first {2}-valued wire.", StaticArrays.Ordinals[parameter], highestIf ? "highest" : "lowest", highestThen ? "highest" : "lowest")
         };
 
+        Algorithms.RevertLookup(wires, ref lookup);
+
         if ((highestIf && wires.Max() == wires[parameter]) || (!highestIf && wires.Min() == wires[parameter]))
             condition.Wire = highestThen ? wires.ToList().IndexOf(wires.Max()) : wires.ToList().IndexOf(wires.Min());
 
         return condition;
     }
 
-    public static Condition N(int[] wires, KMBombInfo Info)
+    public static Condition N(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         bool first = Rnd.NextDouble() > 0.5;
@@ -358,7 +365,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition O(int[] wires, KMBombInfo Info)
+    public static Condition O(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         parameters[0] = Rnd.Next(0, wires.Length);
@@ -376,7 +383,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition P(int[] wires, KMBombInfo Info)
+    public static Condition P(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, StaticArrays.Colors.Length);
         int divisible = Rnd.Next(2, 7);
@@ -384,6 +391,8 @@ static class Manual
         {
             Text = string.Format("If the sum of all wire's values are divisible by {0}, cut the last {1}ish wire.", divisible, StaticArrays.GroupedColors[parameter])
         };
+
+        Algorithms.RevertLookup(wires, ref lookup);
 
         string method = parameter < 5 ? "lastInstanceOfPurple" : "lastInstanceOfBlue";
 
@@ -393,7 +402,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition Q(int[] wires, KMBombInfo Info)
+    public static Condition Q(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         bool higher = Rnd.NextDouble() > 0.5;
@@ -401,6 +410,8 @@ static class Manual
         {
             Text = string.Format("If the {0} wire has a {1} value than the {2} wire, cut the first wire that has a value difference of 5 from any of the other wires.", StaticArrays.Ordinals[parameters[0]], higher ? "higher" : "lower", StaticArrays.Ordinals[parameters[1]])
         };
+
+        Algorithms.RevertLookup(wires, ref lookup);
 
         if ((higher && wires[parameters[0]] > wires[parameters[1]]) || (!higher && wires[parameters[0]] < wires[parameters[1]]))
         {
@@ -418,7 +429,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition R(int[] wires, KMBombInfo Info)
+    public static Condition R(int[] wires, int lookup, KMBombInfo Info)
     {
         bool more = Rnd.NextDouble() > 0.5;
         Condition condition = new Condition
@@ -444,7 +455,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition S(int[] wires, KMBombInfo Info)
+    public static Condition S(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         Condition condition = new Condition
@@ -462,7 +473,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition T(int[] wires, KMBombInfo Info)
+    public static Condition T(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         Condition condition = new Condition
@@ -476,7 +487,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition U(int[] wires, KMBombInfo Info)
+    public static Condition U(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         Condition condition = new Condition
@@ -496,7 +507,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition V(int[] wires, KMBombInfo Info)
+    public static Condition V(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.IndicatorNames.Length);
         Condition condition = new Condition
@@ -510,7 +521,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition W(int[] wires, KMBombInfo Info)
+    public static Condition W(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: StaticArrays.Colors.Length);
         parameters[0] = Rnd.Next(0, StaticArrays.Edgework.Length);
@@ -533,7 +544,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition X(int[] wires, KMBombInfo Info)
+    public static Condition X(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         Condition condition = new Condition
@@ -553,7 +564,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition Y(int[] wires, KMBombInfo Info)
+    public static Condition Y(int[] wires, int lookup, KMBombInfo Info)
     {
         Condition condition = new Condition
         {
@@ -583,7 +594,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition Z(int[] wires, KMBombInfo Info)
+    public static Condition Z(int[] wires, int lookup, KMBombInfo Info)
     {
         Condition condition = new Condition
         {
@@ -614,7 +625,7 @@ static class Manual
     #endregion
 
     #region Last Conditions
-    public static Condition LastA(int[] wires, KMBombInfo Info)
+    public static Condition LastA(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = Rnd.Next(0, wires.Length);
         Condition condition = new Condition
@@ -627,7 +638,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition LastB(int[] wires, KMBombInfo Info)
+    public static Condition LastB(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = wires[Rnd.Next(0, wires.Length)];
         bool first = Rnd.NextDouble() > 0.5;
@@ -644,7 +655,7 @@ static class Manual
         return condition;
     }
 
-    public static Condition LastC(int[] wires, KMBombInfo Info)
+    public static Condition LastC(int[] wires, int lookup, KMBombInfo Info)
     {
         bool highest = Rnd.NextDouble() > 0.5, firstLast = Rnd.NextDouble() > 0.5;
 
@@ -652,6 +663,8 @@ static class Manual
         {
             Text = string.Format("Cut the {0} {1}-valued wire.", highest ? "highest" : "lowest", firstLast ? "first" : "last")
         };
+
+        Algorithms.RevertLookup(wires, ref lookup);
 
         int key = highest ? wires.Max() : wires.Min();
 

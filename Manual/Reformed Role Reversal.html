@@ -29,6 +29,7 @@
     div>input {
         transform: scale(2);
         text-align: center;
+        background-color: #000;
     }
 
     .red {
@@ -126,7 +127,7 @@
                         </table>
                         <table>
                             <tr>
-                                <th colspan="2">Table <input style="width: 16px" type="text" id="Table" oninput="updateColors()"></th>
+                                <th colspan="2">Lookup #<input style="width: 16px" type="text" id="Lookup" oninput="updateColors()"></th>
                             </tr>
                             <tr>
                                 <th>Value</th>
@@ -360,7 +361,7 @@
 <script>
     const availableChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    const elementTable = document.getElementById('Table');
+    const elementLookup = document.getElementById('Lookup');
     const elementBase = document.getElementById('BaseN');
     const elementSeed = document.getElementById('Seed');
     const elementBase10 = document.getElementById("Base10");
@@ -370,18 +371,18 @@
 
     for (let i = 0; i < 10; i++) {
         elementColors.push(document.getElementById("colors-" + i));
-        elementColors[i].innerHTML = "?";
+        elementColors.lastIndexOf.innerHTML = "?";
     }
-
+   
     function updateColors() {
-        const table = parseInt(elementTable.value) < 10
-                    ? parseInt(elementTable.value) : null;
+        const table = elementLookup.value.length == 1 && parseInt(elementLookup.value) < 10
+                    ? parseInt(elementLookup.value) : null;
 
-        elementTable.classList.add(table == null ? 'red' : 'green');
-        elementTable.classList.remove(table == null ? 'green' : 'red');
+        elementLookup.classList.add(table == null ? 'red' : 'green');
+        elementLookup.classList.remove(table == null ? 'green' : 'red');
 
-        for (let i = 0; i < 10; i++)
-            elementColors[i].innerHTML = table == null ? "?" : (i + table) % 10;
+        for (let i = 0; i < elementColors.length; i++)
+            elementColors[i].innerHTML = table == null ? "?" : (i + table) % elementColors.length;
     }
 
     function updateNumbers() {
@@ -391,12 +392,12 @@
         elementBase.classList.add(base == null ? 'red' : 'green');
         elementBase.classList.remove(base == null ? 'green' : 'red');
 
-        if (base == null)
-            return;
-
         const validChars = availableChars.substring(0, base);
 
         let flag = true;
+
+        if (seed.length > 7)
+            flag = false;
 
         seed.split('').forEach(char => {
             if (!validChars.includes(char)) {
@@ -408,12 +409,16 @@
         elementSeed.classList.add(flag ? 'green' : 'red');
         elementSeed.classList.remove(flag ? 'red' : 'green');
 
-        if (!flag)
+        
+        if (seed == null || base == null)
             return;
 
-        const convertedSeed = convertBase(seed, base, 10);
-        elementBase10.value = convertedSeed
-        elementMod7.value = convertedSeed % 7;
+        if (flag)
+        {
+            const convertedSeed = convertBase(seed, base, 10);
+            elementBase10.value = convertedSeed
+            elementMod7.value = convertedSeed % 7;
+        }
     }
 
     function between(x, min, max) {

@@ -141,6 +141,18 @@ static class Algorithms
         return min;
     }
 
+    internal static void RevertLookup(int[] wires, ref int lookup)
+    {
+        for (int i = 0; i < wires.Length; i++)
+            wires[i] = (wires[i] - lookup + 10) % 10;
+    }
+
+    /// <summary>
+    /// Returns the amount of colors for each group.
+    /// </summary>
+    /// <param name="grouped">Whether or not to return blueish against purpleish, or every color individually.</param>
+    /// <param name="wires">The array to search with.</param>
+    /// <returns>The list of colors, with size 2 or 10 depending on the 'grouped' boolean.</returns>
     internal static int[] GetColors(bool grouped, int[] wires)
     {
         int[] colors = grouped ? new int[2] { 0, 0 } : new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

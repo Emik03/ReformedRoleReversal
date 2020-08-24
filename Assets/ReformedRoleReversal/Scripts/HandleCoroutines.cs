@@ -22,9 +22,9 @@ public class HandleCoroutines : MonoBehaviour
         StartCoroutine(RenderScreen(instructionX, instructionY, wireSelected));
     }
 
-    internal void GenerateCondition(int i, int j, int[] wires, ref string strSeed)
+    internal void GenerateCondition(int i, int j, int[] wires, ref string strSeed, ref int lookup)
     {
-        StartCoroutine(_handleManual.GenerateCondition(i, j, wires, strSeed, i + 2 == wires.Length));
+        StartCoroutine(_handleManual.GenerateCondition(i, j, wires, strSeed, lookup, i + 2 == wires.Length));
     }
 
     internal protected IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected)
