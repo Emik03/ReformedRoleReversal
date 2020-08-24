@@ -188,7 +188,7 @@ internal class StaticArrays
         return new Condition[]
         {
             new Condition { Text = "Welcome to Reformed Role Reversal! Press the " + buttonText[buttonOrder.IndexOf(2)] + " arrow button to advance." },
-            new Condition { Text = "Convert the seed from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of the number until you have 10 digits." },
+            new Condition { Text = "Convert the seed from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of the number until you have 9 digits." },
             new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
             new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With table " + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },

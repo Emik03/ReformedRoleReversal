@@ -31,7 +31,6 @@ internal class HandleManual
 
         string strSeed = Seed.ToString();
         bool left = Rnd.NextDouble() > 0.5, leftmost = Rnd.NextDouble() > 0.5;
-        leftmost = false;
 
         while (strSeed.Length < 9)
             strSeed = left ? '0' + strSeed : strSeed + '0';
@@ -99,7 +98,7 @@ internal class HandleManual
                 wires[k] = Rnd.Next(0, 10);
         }
 
-        const string randomMethods = "ABCDEFGHIJKLMNOSTUVWXYZ";
+        const string randomMethods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         Type classType = typeof(Manual);
         MethodInfo methodInfo;
@@ -122,7 +121,10 @@ internal class HandleManual
         _generateCondition++;
 
         if (_generateCondition == _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1))
+        {
             _init.CorrectAnswer = GetAnswer(ref strSeed);
+            Init.LightsOn = true;
+        }
     }
 
     private int? GetAnswer(ref string strSeed)
@@ -135,14 +137,19 @@ internal class HandleManual
         {
             if (_init.Conditions[wires, i].SkipTo != null)
             {
+                if (_init.Conditions[wires, i].SkipTo < 1 || _init.Conditions[wires, i].SkipTo > i2)
+                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + _init.ModuleId + "]: Condition [" + wires + ", " + i + "] returned " + _init.Conditions[wires, i].SkipTo + " for parameter \"SkipTo\"! This should not happen under normal circumstances, as the specified condition doesn't exist.");
+
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, _init.Conditions[wires, i].SkipTo);
                 i = (int)_init.Conditions[wires, i].SkipTo - 1;
             }
 
             else if (_init.Conditions[wires, i].Wire != null)
             {
+                if (_init.Conditions[wires, i].Wire < 1 || _init.Conditions[wires, i].Wire > 9)
+                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + _init.ModuleId + "]: Condition [" + (wires + 2) + ", " + (i + 1) + "] returned " + _init.Conditions[wires, i].Wire + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");
+
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, StaticArrays.Ordinals[(int)_init.Conditions[wires, i].Wire - 1]);
-                Init.LightsOn = true;
                 return (int)_init.Conditions[wires, i].Wire;
             }
 
@@ -150,7 +157,6 @@ internal class HandleManual
         }
         
         Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> Unreachable code detected, please cut any wire to solve the module.", _init.ModuleId);
-        Init.LightsOn = true;
         return null;
     }
 }

@@ -231,7 +231,7 @@ static class Manual
         condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
                                   (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
 
-        return new Condition { Wire = condition.Wire == 0 ? null : condition.Wire, SkipTo = condition.SkipTo, Text = condition.Text };
+        return new Condition { Wire = condition.Wire == 0 ? null : condition.Wire, SkipTo = null, Text = condition.Text};
     }
 
     public static Condition H(int[] wires, int lookup, KMBombInfo Info)
@@ -278,7 +278,7 @@ static class Manual
         int parameter = Rnd.Next(0, StaticArrays.Colors.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If there is only 1 {0} wire, cut that wire.", StaticArrays.GroupedColors[parameter])
+            Text = string.Format("If there is only 1 {0} wire, cut that wire.", StaticArrays.Colors[parameter])
         };
 
         if (Algorithms.GetColors(grouped: false, wires: wires)[parameter] == 1)
@@ -344,7 +344,7 @@ static class Manual
         Algorithms.RevertLookup(wires, ref lookup);
 
         if ((highestIf && wires.Max() == wires[parameter]) || (!highestIf && wires.Min() == wires[parameter]))
-            condition.Wire = highestThen ? wires.ToList().IndexOf(wires.Max()) : wires.ToList().IndexOf(wires.Min());
+            condition.Wire = highestThen ? wires.ToList().IndexOf(wires.Max()) + 1 : wires.ToList().IndexOf(wires.Min()) + 1;
 
         return condition;
     }
@@ -404,7 +404,7 @@ static class Manual
 
     public static Condition Q(int[] wires, int lookup, KMBombInfo Info)
     {
-        int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
+        int[] parameters = Algorithms.Random(length: 2, min: 0, max: wires.Length);
         bool higher = Rnd.NextDouble() > 0.5;
         Condition condition = new Condition
         {
@@ -415,14 +415,14 @@ static class Manual
 
         if ((higher && wires[parameters[0]] > wires[parameters[1]]) || (!higher && wires[parameters[0]] < wires[parameters[1]]))
         {
-            List<int> opposites = new List<int>(0);
+            int?[] opposites = new int?[wires.Length];
 
             for (int i = 0; i < wires.Length; i++)
-                opposites.Add((int)Algorithms.Find(method: "firstInstanceOfOppositeKey", key: ref wires[i], wires: wires));
+                opposites[i] = Algorithms.Find(method: "firstInstanceOfOppositeKey", key: ref wires[i], wires: wires);
 
             condition.Wire = Algorithms.First(opposites);
 
-            if (condition.Wire == 0)
+            if (condition.Wire == 0 || condition.Wire == 10)
                 condition.Wire = null;
         }
         
@@ -441,10 +441,10 @@ static class Manual
 
         if ((more && colors[0] > colors[1]) || (!more && colors[0] < colors[1]))
         {
-            List<int> opposites = new List<int>(0);
+            int?[] opposites = new int?[wires.Length];
 
             for (int i = 0; i < wires.Length; i++)
-                opposites.Add((int)Algorithms.Find(method: "lastInstanceOfOppositeKey", key: ref wires[i], wires: wires));
+                opposites[i] = Algorithms.Find(method: "lastInstanceOfOppositeKey", key: ref wires[i], wires: wires);
 
             condition.Wire = opposites.Max();
 

@@ -118,10 +118,10 @@
                         <table>
                             <tr>
                                 <td style="text-align:center;">
-                                    Seed <span colspan="2"><input style="width: 112px" type="text" id="Seed" oninput="updateNumbers()"></span>
-                                    using base <span colspan="2"><input style="width: 32px" type="text" id="BaseN" oninput="updateNumbers()"></span>
-                                    is in base-10 <span colspan="2"><input style="width: 160px" type="text" id="Base10" readonly></span>
-                                    and in modulo 7 <span colspan="2"><input style="width: 16px" type="text" id="Mod7" readonly>.</span>
+                                    Seed <span colspan="2"><input style="width: 106px" type="text" id="Seed" oninput="updateNumbers()"></span>
+                                    using base <span colspan="2"><input style="width: 18px" type="text" id="BaseN" oninput="updateNumbers()"></span>
+                                    is in base-10 <span colspan="2"><input style="width: 89px" type="text" id="Base10" oninput="updateBase10Length()"></span>
+                                    and in modulo 7 [<span colspan="2" id="Mod7">?</span>].
                                 </td>
                             </tr>
                         </table>
@@ -361,17 +361,17 @@
 <script>
     const availableChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
+    const elementBase10 = document.getElementById('Base10');
+    const elementBaseN = document.getElementById('BaseN');
     const elementLookup = document.getElementById('Lookup');
-    const elementBase = document.getElementById('BaseN');
+    const elementMod7 = document.getElementById('Mod7');
     const elementSeed = document.getElementById('Seed');
-    const elementBase10 = document.getElementById("Base10");
-    const elementMod7 = document.getElementById("Mod7");
 
     const elementColors = [];
 
     for (let i = 0; i < 10; i++) {
-        elementColors.push(document.getElementById("colors-" + i));
-        elementColors.lastIndexOf.innerHTML = "?";
+        elementColors.push(document.getElementById('colors-' + i));
+        elementColors.lastIndexOf.innerHTML = '?';
     }
    
     function updateColors() {
@@ -382,18 +382,17 @@
         elementLookup.classList.remove(table == null ? 'green' : 'red');
 
         for (let i = 0; i < elementColors.length; i++)
-            elementColors[i].innerHTML = table == null ? "?" : (i + table) % elementColors.length;
+            elementColors[i].innerHTML = table == null ? '?' : (i + table) % elementColors.length;
     }
 
     function updateNumbers() {
         const seed = elementSeed.value;
-        const base = between(parseInt(elementBase.value), 1, 62) ? parseInt(elementBase.value) : null;
+        const base = between(parseInt(elementBaseN.value), 1, 62) ? parseInt(elementBaseN.value) : null;
 
-        elementBase.classList.add(base == null ? 'red' : 'green');
-        elementBase.classList.remove(base == null ? 'green' : 'red');
+        elementBaseN.classList.add(base == null ? 'red' : 'green');
+        elementBaseN.classList.remove(base == null ? 'green' : 'red');
 
         const validChars = availableChars.substring(0, base);
-
         let flag = true;
 
         if (seed.length > 7)
@@ -409,26 +408,28 @@
         elementSeed.classList.add(flag ? 'green' : 'red');
         elementSeed.classList.remove(flag ? 'red' : 'green');
 
-        
-        if (seed == null || base == null)
+        if (seed == null || base == null || !flag)
             return;
 
-        if (flag)
-        {
-            const convertedSeed = convertBase(seed, base, 10);
-            elementBase10.value = convertedSeed
-            elementMod7.value = convertedSeed % 7;
-        }
+        const convertedSeed = convertBase(seed, base);
+        elementMod7.innerHTML = convertedSeed % 7;
+        elementBase10.value = convertedSeed;
+
+        updateBase10Length();
+    }
+
+    function updateBase10Length() {
+        elementBase10.classList.add(elementBase10.value.length == 9 ? 'green' : 'red');
+        elementBase10.classList.remove(elementBase10.value.length == 9 ? 'red' : 'green');
     }
 
     function between(x, min, max) {
         return x >= min && x <= max;
     }
 
-    function convertBase(value, from_base, to_base) {
+    function convertBase(value, from_base) {
         const range = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'.split('');
         const from_range = range.slice(0, from_base);
-        const to_range = '0123456789';
 
         let dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
             return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
@@ -436,8 +437,8 @@
 
         let new_value = '';
         while (dec_value > 0) {
-            new_value = to_range[dec_value % to_base] + new_value;
-            dec_value = (dec_value - (dec_value % to_base)) / to_base;
+            new_value = '0123456789'[dec_value % 10] + new_value;
+            dec_value = (dec_value - (dec_value % 10)) / 10;
         }
         return new_value || '0';
     }
