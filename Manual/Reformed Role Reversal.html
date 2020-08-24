@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Reformed Role Reversal — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <script src="js/ktane-utils.js"></script>
+</head>
+<style>
+    #showPDF {
+      display:none;
+    }
+
+    @media print {
+        #showPDF {
+            display: inline;
+        }
+
+        #hidePDF {
+            display: none;
+        }
+    }
+
+    div>input {
+        transform: scale(2);
+        text-align: center;
+    }
+
+    .red {
+        background-color: #faa;
+        border-color: #a00;
+        color: #a00;
+    }
+
+    .green {
+        background-color: #afa;
+        border-color: #0a0;
+        color: #0a0;
+    }
+
+    .navy {
+        background-color: #99c;
+        color: #004;
+    }
+
+    .lapis {
+        background-color: #abe;
+        color: #134;
+    }
+
+    .blue {
+        background-color: #99f;
+        color: #008;
+    }
+
+    .sky {
+        background-color: #cde;
+        color: #467;
+    }
+
+    .teal {
+        background-color: #9cc;
+        color: #044;
+    }
+
+    .plum {
+        background-color: #cac;
+        color: #424;
+    }
+
+    .violet {
+        background-color: #cae;
+        color: #417;
+    }
+
+    .purple {
+        background-color: #c9c;
+        color: #404;
+    }
+
+    .magenta {
+        background-color: #f9f;
+        color: #707;
+    }
+
+    .lavender {
+        background-color: #dbe;
+        color: #436;
+    }
+</style>
+
+<body>
+    <div id="ManualContent">
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Reformed Role Reversal</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/ReformedRoleReversal.svg" class="diagram">
+                    <h2>On the Subject of Reformed Role Reversal</h2>
+                    <p class="flavour-text">Manual?</p>
+
+                    <p class="appendix-reference">
+                        See Appendix A for indicator identification reference.<br>
+                        See Appendix B for battery identification reference.<br>
+                        See Appendix C for port identification reference.
+                    </p>
+
+                    <div id="hidePDF">
+                        <table>
+                            <tr>
+                                <td style="text-align:center;">
+                                    Seed <span colspan="2"><input style="width: 112px" type="text" id="Seed" oninput="updateNumbers()"></span>
+                                    using base <span colspan="2"><input style="width: 32px" type="text" id="BaseN" oninput="updateNumbers()"></span>
+                                    is in base-10 <span colspan="2"><input style="width: 160px" type="text" id="Base10" readonly></span>
+                                    and in modulo 7 <span colspan="2"><input style="width: 16px" type="text" id="Mod7" readonly>.</span>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <th colspan="2">Table <input style="width: 16px" type="text" id="Table" oninput="updateColors()"></th>
+                            </tr>
+                            <tr>
+                                <th>Value</th>
+                                <th>Color</th>
+                                <th>Approximately</th>
+                            </tr>
+                            <tr>
+                                <td id='colors-0'></td>
+                                <td class="navy">Navy</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-1'></td>
+                                <td class="lapis">Lapis</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-2'></td>
+                                <td class="blue">Blue</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-3'></td>
+                                <td class="sky">Sky</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-4'></td>
+                                <td class="teal">Teal</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-5'></td>
+                                <td class="plum">Plum</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-6'></td>
+                                <td class="violet">Violet</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-7'></td>
+                                <td class="purple">Purple</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-8'></td>
+                                <td class="magenta">Magenta</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td id='colors-9'></td>
+                                <td class="lavender">Lavender</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="showPDF">
+                        <table>
+                            <tr>
+                                <th colspan="10">Table</th>
+                            </tr>
+                            <tr>
+                                <th>0</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                            </tr>
+
+                            <tr>
+                                <th colspan="10">Value</th>
+                                <th>Color</th>
+                                <th>Approximately</th>
+                            </tr>
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td class="navy">Navy</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td class="lapis">Lapis</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td class="blue">Blue</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td class="sky">Sky</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td class="teal">Teal</td>
+                                <td class="blue">Blueish</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td class="plum">Plum</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td class="violet">Violet</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td class="purple">Purple</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td class="magenta">Magenta</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td class="lavender">Lavender</td>
+                                <td class="purple">Purpleish</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 1</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const availableChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+    const elementTable = document.getElementById('Table');
+    const elementBase = document.getElementById('BaseN');
+    const elementSeed = document.getElementById('Seed');
+    const elementBase10 = document.getElementById("Base10");
+    const elementMod7 = document.getElementById("Mod7");
+
+    const elementColors = [];
+
+    for (let i = 0; i < 10; i++) {
+        elementColors.push(document.getElementById("colors-" + i));
+        elementColors[i].innerHTML = "?";
+    }
+
+    function updateColors() {
+        const table = parseInt(elementTable.value) < 10
+                    ? parseInt(elementTable.value) : null;
+
+        elementTable.classList.add(table == null ? 'red' : 'green');
+        elementTable.classList.remove(table == null ? 'green' : 'red');
+
+        for (let i = 0; i < 10; i++)
+            elementColors[i].innerHTML = table == null ? "?" : (i + table) % 10;
+    }
+
+    function updateNumbers() {
+        const seed = elementSeed.value;
+        const base = between(parseInt(elementBase.value), 1, 62) ? parseInt(elementBase.value) : null;
+
+        elementBase.classList.add(base == null ? 'red' : 'green');
+        elementBase.classList.remove(base == null ? 'green' : 'red');
+
+        if (base == null)
+            return;
+
+        const validChars = availableChars.substring(0, base);
+
+        let flag = true;
+
+        seed.split('').forEach(char => {
+            if (!validChars.includes(char)) {
+                flag = false;
+                return;
+            }
+        });
+
+        elementSeed.classList.add(flag ? 'green' : 'red');
+        elementSeed.classList.remove(flag ? 'red' : 'green');
+
+        if (!flag)
+            return;
+
+        const convertedSeed = convertBase(seed, base, 10);
+        elementBase10.value = convertedSeed
+        elementMod7.value = convertedSeed % 7;
+    }
+
+    function between(x, min, max) {
+        return x >= min && x <= max;
+    }
+
+    function convertBase(value, from_base, to_base) {
+        const range = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'.split('');
+        const from_range = range.slice(0, from_base);
+        const to_range = '0123456789';
+
+        let dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
+            return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
+        }, 0);
+
+        let new_value = '';
+        while (dec_value > 0) {
+            new_value = to_range[dec_value % to_base] + new_value;
+            dec_value = (dec_value - (dec_value % to_base)) / to_base;
+        }
+        return new_value || '0';
+    }
+</script>
+</html>

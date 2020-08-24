@@ -237,7 +237,7 @@ static class Manual
         bool inversion = Rnd.NextDouble() > 0.5;
         Condition condition = new Condition
         {
-            Text = string.Format("If there {0} any {1} wires, cut the first {2}-ish wire.", inversion ? "aren't" : "are", StaticArrays.Colors[parameters[0]], StaticArrays.GroupedColors[parameters[1]])
+            Text = string.Format("If there {0} any {1} wires, cut the first {2}ish wire.", inversion ? "aren't" : "are", StaticArrays.Colors[parameters[0]], StaticArrays.GroupedColors[parameters[1]])
         };
 
         string method = parameters[1] < 5 ? "firstInstanceOfPurple" : "firstInstanceOfBlue";
@@ -254,7 +254,7 @@ static class Manual
         parameters[0] = Rnd.Next((int)Math.Ceiling((float)wires.Length / 2), wires.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If there are {0} or more {1}-ish wires, cut the wire after the first {2}-ish wire.", parameters[0], StaticArrays.GroupedColors[parameters[1]], StaticArrays.GroupedColors[parameters[2]])
+            Text = string.Format("If there are {0} or more {1}ish wires, cut the wire after the first {2}ish wire.", parameters[0], StaticArrays.GroupedColors[parameters[1]], StaticArrays.GroupedColors[parameters[2]])
         };
 
         string method = parameters[2] < 5 ? "firstInstanceOfBlue" : "firstInstanceOfPurple";
@@ -314,7 +314,7 @@ static class Manual
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: StaticArrays.Colors.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0}-ish wire neighbours 2 {1}-ish wires, cut that middle wire.", StaticArrays.GroupedColors[parameters[0]], StaticArrays.GroupedColors[parameters[1]])
+            Text = string.Format("If a {0}ish wire neighbours 2 {1}ish wires, cut that middle wire.", StaticArrays.GroupedColors[parameters[0]], StaticArrays.GroupedColors[parameters[1]])
         };
 
         for (int i = 1; i < wires.Length - 1; i++)
@@ -382,7 +382,7 @@ static class Manual
         int divisible = Rnd.Next(2, 7);
         Condition condition = new Condition
         {
-            Text = string.Format("If the sum of all wire's values are divisible by {0}, cut the last {1}-ish wire.", divisible, StaticArrays.GroupedColors[parameter])
+            Text = string.Format("If the sum of all wire's values are divisible by {0}, cut the last {1}ish wire.", divisible, StaticArrays.GroupedColors[parameter])
         };
 
         string method = parameter < 5 ? "lastInstanceOfPurple" : "lastInstanceOfBlue";
@@ -423,7 +423,7 @@ static class Manual
         bool more = Rnd.NextDouble() > 0.5;
         Condition condition = new Condition
         {
-            Text = string.Format("If there are {0} blue-ish wires than purple-ish wires, cut the last wire that has a value difference of 5 from any of the other wires.", more ? "more" : "less")
+            Text = string.Format("If there are {0} blueish wires than purpleish wires, cut the last wire that has a value difference of 5 from any of the other wires.", more ? "more" : "less")
         };
 
         int[] colors = Algorithms.GetColors(grouped: true, wires: wires);
@@ -516,7 +516,7 @@ static class Manual
         parameters[0] = Rnd.Next(0, StaticArrays.Edgework.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If there are less {0} than {1} wires, cut the last non-{2}-ish wire.", StaticArrays.Edgework[parameters[0]], StaticArrays.Colors[parameters[1]], StaticArrays.GroupedColors[parameters[1]])
+            Text = string.Format("If there are less {0} than {1} wires, cut the last non-{2}ish wire.", StaticArrays.Edgework[parameters[0]], StaticArrays.Colors[parameters[1]], StaticArrays.GroupedColors[parameters[1]])
         };
 
         int matches = 0;
