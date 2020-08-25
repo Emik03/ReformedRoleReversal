@@ -219,7 +219,7 @@ static class Algorithms
     /// <returns>A modified string containing vertical bars.</returns>
     internal static string LineBreaks(string text)
     {
-        const byte jump = 33;
+        const byte jump = 27;
         ushort index = jump;
         StringBuilder sb = new StringBuilder(text);
 
@@ -227,7 +227,7 @@ static class Algorithms
         {
             if (text[index] == ' ')
             {
-                sb[index] = '|';
+                sb[index] = '\n';
                 index += jump;
             }
 

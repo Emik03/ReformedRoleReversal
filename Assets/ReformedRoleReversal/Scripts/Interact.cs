@@ -13,8 +13,8 @@ internal class Interact
     private readonly HandleCoroutines _coroutines;
     private readonly Init _init;
     private readonly ReformedRoleReversal _roleReversal;
-
-    protected internal readonly Stopwatch Stopwatch = new Stopwatch();
+    private bool _isSelectingWire = false;
+    
     protected internal int Instruction;
     protected internal List<int> ButtonOrder = new List<int>(4){ 0, 1, 2, 3 }.Shuffle();
 
@@ -38,30 +38,26 @@ internal class Interact
         {
             // Subtract 1 from the current selected wire.
             case 0:
-                _init.WireSelected = ((_init.WireSelected + 7) % 9) + 1;
-                _init.RoleReversal.Texts[1].text = "Wire: " + _init.WireSelected.ToString();
+                if (_isSelectingWire)
+                    _init.WireSelected = ((_init.WireSelected + 7) % 9) + 1;
+                _isSelectingWire = true;
                 break;
 
             // Read previous instruction.
-            case 1:
-                Instruction = (--Instruction + length) % length;
-                _coroutines.UpdateScreen(instructionX: Instruction / _init.Conditions.GetLength(1), instructionY: Instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
-                break;
+            case 1: Instruction = (--Instruction + length) % length; break;
 
             // Read next instruction.
-            case 2:
-                Instruction = ++Instruction % length;
-                _coroutines.UpdateScreen(instructionX: Instruction / _init.Conditions.GetLength(1), instructionY: Instruction % _init.Conditions.GetLength(1), wireSelected: _init.WireSelected);
-                break;
+            case 2: Instruction = ++Instruction % length; break;
 
             // Add 1 to the current selected wire.
             case 3:
-                _init.WireSelected = (_init.WireSelected % 9) + 1;
-                _init.RoleReversal.Texts[1].text = "Wire: " + _init.WireSelected.ToString();
+                if (_isSelectingWire)
+                    _init.WireSelected = (_init.WireSelected % 9) + 1;
+                _isSelectingWire = true;
                 break;
         }
 
-        
+        _coroutines.UpdateScreen(instructionX: Instruction / _init.Conditions.GetLength(1), instructionY: Instruction % _init.Conditions.GetLength(1), wireSelected: ref _init.WireSelected, isSelectingWire: ref _isSelectingWire);
     }
 
     /// <summary>
@@ -77,27 +73,8 @@ internal class Interact
         if (!Init.LightsOn || _init.IsSolved)
             return;
 
-        Stopwatch.Reset();
-        Stopwatch.Start();
-    }
-    
-    /// <summary>
-    /// If the screen was pressed, skip around the instructions, otherwise submit the answer.
-    /// </summary>
-    protected internal void ReleaseScreen()
-    {
-        // Plays button sound effect.
-        _roleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, _roleReversal.Screen.transform);
-        _roleReversal.Screen.AddInteractionPunch(3);
-
-        // If lights are off or the module is solved, the buttons should do nothing.
-        if (!Init.LightsOn || _init.IsSolved)
-            return;
-
-        Stopwatch.Stop();
-
         // The wire gets cut here.
-        if (Stopwatch.ElapsedMilliseconds > 500)
+        if (_isSelectingWire)
         {
             if (_init.CorrectAnswer == null || _init.CorrectAnswer == _init.WireSelected)
             {
@@ -109,6 +86,9 @@ internal class Interact
             else
             {
                 UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", _init.ModuleId, _init.WireSelected);
+                _isSelectingWire = false;
+                Instruction = 0;
+                _coroutines.UpdateScreen(instructionX: Instruction / _init.Conditions.GetLength(1), instructionY: Instruction % _init.Conditions.GetLength(1), wireSelected: ref _init.WireSelected, isSelectingWire: ref _isSelectingWire);
                 _roleReversal.Module.HandleStrike();
             }
         }
@@ -118,7 +98,7 @@ internal class Interact
         {
             int lengthShort = _init.Conditions.GetLength(1), length = _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1);
             Instruction = ((Instruction / lengthShort) + 1) * lengthShort % length;
-            _coroutines.UpdateScreen(instructionX: Instruction / lengthShort, instructionY: Instruction % lengthShort, wireSelected: _init.WireSelected);
+            _coroutines.UpdateScreen(instructionX: Instruction / lengthShort, instructionY: Instruction % lengthShort, wireSelected: ref _init.WireSelected, isSelectingWire: ref _isSelectingWire);
         }
     }
 }

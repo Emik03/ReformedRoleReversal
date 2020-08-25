@@ -45,7 +45,8 @@ internal class Init
 
         RoleReversal.Screen.OnInteractEnded += delegate ()
         {
-            Interact.ReleaseScreen();
+            RoleReversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, RoleReversal.Screen.transform);
+            RoleReversal.Screen.AddInteractionPunch(3);
         };
 
         for (int i = 0; i < RoleReversal.Buttons.Length; i++)

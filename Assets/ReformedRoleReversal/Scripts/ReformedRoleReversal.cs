@@ -8,7 +8,8 @@ public class ReformedRoleReversal : MonoBehaviour
     public KMBombInfo Info;
     public KMSelectable[] Buttons;
     public KMSelectable Screen;
-    public TextMesh[] Texts;
+    public TextMesh ScreenText;
+    public TextMesh SeedText;
 
     internal Init Init;
 

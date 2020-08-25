@@ -46,8 +46,7 @@ internal class HandleManual
             baseN[i] = StaticArrays.Base62[i];
 
         _init.Seed = Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
-        _init.RoleReversal.Texts[0].text = "Seed: " + _init.Seed;
-        _init.RoleReversal.Texts[1].text = "Wire: " + _init.WireSelected;
+        _init.RoleReversal.SeedText.text = "Seed: " + _init.Seed;
 
         Debug.LogFormat("[Reformed Role Reversal #{0}]: Seed in Base {1}: {2} - Seed in Base 10: {3} - # of wires: {4}.", _init.ModuleId, baseN.Length, _init.Seed, strSeed, wires.Length);
         Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using lookup {3}.", _init.ModuleId, left, leftmost, lookup);
@@ -129,7 +128,9 @@ internal class HandleManual
 
     private int? GetAnswer(ref string strSeed)
     {
-        _coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: 1);
+        int wireSelected = 1;
+        bool isSelectingWire = false;
+        _coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
 
         int wires = (int.Parse(strSeed) % 7) + 1, i2 = _init.Conditions.GetLength(1);
 

@@ -36,8 +36,10 @@ public class TwitchPlaysHandler : MonoBehaviour
             // If the command is valid, cut wire accordingly.
             else
             {
-                yield return null; 
-                   
+                yield return null;
+
+                RoleReversal.Buttons[_init.Interact.ButtonOrder.IndexOf(3)].OnInteract();
+
                 byte num = (byte)char.GetNumericValue(parameters[1][0]);
                 while (num != _init.WireSelected)
                 {
@@ -46,9 +48,6 @@ public class TwitchPlaysHandler : MonoBehaviour
                 }
 
                 RoleReversal.Screen.OnInteract();
-
-                yield return new WaitUntil(() => _init.Interact.Stopwatch.ElapsedMilliseconds > 500);
-
                 RoleReversal.Screen.OnInteractEnded();
             }
         }
@@ -101,7 +100,9 @@ public class TwitchPlaysHandler : MonoBehaviour
     {
         yield return null;
         Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", _init.ModuleId);
-        
+
+        RoleReversal.Buttons[_init.Interact.ButtonOrder.IndexOf(3)].OnInteract();
+
         while (_init.CorrectAnswer != _init.WireSelected)
         {
             RoleReversal.Buttons[_init.Interact.ButtonOrder.IndexOf(3)].OnInteract();
@@ -109,9 +110,6 @@ public class TwitchPlaysHandler : MonoBehaviour
         }
 
         RoleReversal.Screen.OnInteract();
-
-        yield return new WaitUntil(() => _init.Interact.Stopwatch.ElapsedMilliseconds > 500);
-
         RoleReversal.Screen.OnInteractEnded();
     }
 }

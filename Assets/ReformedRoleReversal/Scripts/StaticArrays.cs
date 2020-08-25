@@ -192,7 +192,7 @@ internal class StaticArrays
             new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
             new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With table " + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
-            new Condition { Text = "Follow the first condition that applies, select with the " + buttonText[buttonOrder.IndexOf(0)] + " and " + buttonText[buttonOrder.IndexOf(3)] + " arrow buttons and hold the screen to cut the wire." },
+            new Condition { Text = "Once the first condition that applies has been discovered, enter submission mode by pressing either the " + buttonText[buttonOrder.IndexOf(0)] + " or " + buttonText[buttonOrder.IndexOf(3)] + " arrow button." },
             new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
             new Condition { Text = "Good luck!~ (" + _version + ")" }
         };
