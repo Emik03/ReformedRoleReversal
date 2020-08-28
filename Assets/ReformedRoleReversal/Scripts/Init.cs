@@ -8,8 +8,8 @@ internal class Init
         Reversal = reversal;
         Coroutines = coroutines;
 
-        Manual = new HandleManual(coroutines, this);
         Interact = new Interact(this);
+        Manual = new HandleManual(coroutines, this);
     }
 
     /// <summary>

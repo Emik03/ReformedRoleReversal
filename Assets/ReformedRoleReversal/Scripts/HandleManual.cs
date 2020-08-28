@@ -2,6 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 using System.Collections;
+using Rnd = System.Random;
 
 /// <summary>
 /// Generates the module and caches the answer.
@@ -10,22 +11,22 @@ internal class HandleManual
 {
     internal HandleManual(HandleCoroutines coroutines, Init init)
     {
-        _coroutines = coroutines;
-        _init = init;
-        _reversal = _init.Reversal;
+        this.coroutines = coroutines;
+        this.init = init;
+        reversal = init.Reversal;
+        interact = init.Interact;
     }
 
-    protected internal int? CorrectAnswer;
-    protected internal readonly int Seed = Rnd.Next(0, 1000000000);
+    protected internal readonly int Seed = rnd.Next(0, 1000000000);
 
-    private readonly HandleCoroutines _coroutines;
-    private readonly Init _init;
-    private readonly Interact _interact;
-    private readonly ReformedRoleReversal _reversal;
+    private readonly HandleCoroutines coroutines;
+    private readonly Init init;
+    private readonly Interact interact;
+    private readonly ReformedRoleReversal reversal;
 
-    private Condition[] _tutorial;
-    private static readonly System.Random Rnd = new System.Random();
-    private int _generateCondition = 0;
+    private Condition[] tutorial;
+    private static readonly Rnd rnd = new Rnd();
+    private int generated = 0;
 
     /// <summary>
     /// Converts the random number generated into wires, and a seed for the module to display.
@@ -37,26 +38,26 @@ internal class HandleManual
         string strSeed = Seed.ToString();
 
         // Generate random parameters as rules.
-        bool left = Rnd.NextDouble() > 0.5, leftmost = Rnd.NextDouble() > 0.5;
+        bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         // 10% of the time, the string is less than 9 characters long. Append accordingly.
         while (strSeed.Length < 9)
             strSeed = left ? '0' + strSeed : strSeed + '0';
 
         // Random lookup table, which is simply the default with all values added to this variable.
-        int lookup = Rnd.Next(0, 10);
+        int lookup = rnd.Next(0, 10);
 
         for (int i = 0; i < wires.Length; i++)
             wires[i] = (int)(char.GetNumericValue(strSeed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
 
         // Get random base. Base 20 is minimum because it never displays more than 7 characters.
-        char[] baseN = Algorithms.SubArray(Arrays.Base62, Rnd.Next(20, 63));
+        char[] baseN = Algorithms.SubArray(Arrays.Base62, rnd.Next(20, 63));
 
         // Converts the seed from base 10 to the random base chosen.
-        _reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
+        reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
     
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Seed in Base {1}: {2} - Seed in Base 10: {3} - # of wires: {4}.", _init.ModuleId, baseN.Length, _reversal.SeedText.text.Substring(6, _reversal.SeedText.text.Length - 6), strSeed, wires.Length);
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using lookup {3}.", _init.ModuleId, left, leftmost, lookup);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Running on {1} > Seed in Base {2}: {3} - Seed in Base 10: {4} - # of wires: {5}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), strSeed, wires.Length);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using lookup {3}.", init.ModuleId, left, leftmost, lookup);
 
         // Log the list of all wires, converting each index to the respective string.
         string[] log = new string[wires.Length];
@@ -64,17 +65,17 @@ internal class HandleManual
         for (int i = 0; i < wires.Length; i++)
             log[i] += i == wires.Length - 1 ? "and " + Arrays.Colors[wires[i]] : Arrays.Colors[wires[i]];
 
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are {1}.", _init.ModuleId, log.Join(", "));
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are {1}.", init.ModuleId, log.Join(", "));
 
-        int i2 = _init.Conditions.GetLength(0), j2 = _init.Conditions.GetLength(1);
+        int i2 = init.Conditions.GetLength(0), j2 = init.Conditions.GetLength(1);
 
         // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
-        _tutorial = new Arrays(_reversal.Info).GetTutorial(_init.Interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
+        tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
 
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
             for (int j = 0; j < j2; j++)
-                _coroutines.GenerateCondition(i, j, wires, ref strSeed, ref lookup);
+                coroutines.GenerateCondition(i, j, wires, ref strSeed, ref lookup);
     }
 
     /// <summary>
@@ -94,11 +95,11 @@ internal class HandleManual
         // If the current condition is in the tutorial section, assign it to the tutorial already generated before.
         if (i == 0)
         {
-            _init.Conditions[i, j] = _tutorial[j];
+            init.Conditions[i, j] = tutorial[j];
 
-            // Theoretically _generateCondition++ could run before the previous instruction has finished running.
-            yield return new WaitWhile(() => _init.Conditions[i, j] == null);
-            _generateCondition++;
+            // Theoretically generateCondition++ could run before the previous instruction has finished running.
+            yield return new WaitWhile(() => init.Conditions[i, j] == null);
+            generated++;
 
             yield break;
         }
@@ -116,7 +117,7 @@ internal class HandleManual
             }
 
             for (int k = 0; k < wires.Length; k++)
-                wires[k] = Rnd.Next(0, 10);
+                wires[k] = rnd.Next(0, 10);
         }
 
         // Contains all methods in the Manual class.
@@ -127,62 +128,69 @@ internal class HandleManual
         switch (j)
         {
             // First case. (Guaranteed edgework)
-            case 0: methodInfo = classType.GetMethod("First" + randomMethods[Rnd.Next(0, 3)].ToString()); break;
+            case 0: methodInfo = classType.GetMethod("First" + randomMethods[rnd.Next(0, 3)].ToString()); break;
 
             // Last case. (Guaranteed no edgework)
-            case 7: methodInfo = classType.GetMethod("Last" + randomMethods[Rnd.Next(0, 3)].ToString()); break;
+            case 7: methodInfo = classType.GetMethod("Last" + randomMethods[rnd.Next(0, 3)].ToString()); break;
 
             // Every other case. (Mixed)
-            default: methodInfo = classType.GetMethod(randomMethods[Rnd.Next(0, randomMethods.Length)].ToString()); break;
+            default: methodInfo = classType.GetMethod(randomMethods[rnd.Next(0, randomMethods.Length)].ToString()); break;
         }
         
         // Invoke the random method obtained and assign it into the current variable.
-        _init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, lookup, _reversal.Info });
+        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, new object[] { wires, lookup, reversal.Info });
 
         // Wait until the method has finished running.
-        yield return new WaitWhile(() => _init.Conditions[i, j] == null);
-        _generateCondition++;
+        yield return new WaitWhile(() => init.Conditions[i, j] == null);
+        generated++;
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
-        if (_generateCondition == _init.Conditions.GetLength(0) * _init.Conditions.GetLength(1))
+        if (generated == init.Conditions.GetLength(0) * init.Conditions.GetLength(1))
         {
-            CorrectAnswer = GetAnswer(ref strSeed);
+            interact.CorrectAnswer = GetAnswer(ref strSeed);
             Init.LightsOn = true;
         }
     }
 
+    /// <summary>
+    /// Scans through the condition's Wire and SkipTo properties to determine the answer of the module.
+    /// </summary>
+    /// <param name="strSeed">The seed in base 10.</param>
+    /// <returns>Returns the answer, if the answer is null then any wire can be cut.</returns>
     private int? GetAnswer(ref string strSeed)
     {
-        int wireSelected = 1;
+        int wireSelected = 1, wireCount = (int.Parse(strSeed) % 7) + 1, iMax = init.Conditions.GetLength(1);
         bool isSelectingWire = false;
-        _coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
 
-        int wires = (int.Parse(strSeed) % 7) + 1, i2 = _init.Conditions.GetLength(1);
+        coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
 
-        for (int i = 0; i < i2; i++)
+        for (int i = 0; i < iMax; i++)
         {
-            if (_init.Conditions[wires, i].SkipTo != null)
+            // If true, set the current index to the SkipTo property.
+            if (init.Conditions[wireCount, i].SkipTo != null)
             {
-                if (_init.Conditions[wires, i].SkipTo < 1 || _init.Conditions[wires, i].SkipTo > i2)
-                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + _init.ModuleId + "]: Condition [" + wires + ", " + i + "] returned " + _init.Conditions[wires, i].SkipTo + " for parameter \"SkipTo\"! This should not happen under normal circumstances, as the specified condition doesn't exist.");
+                if (init.Conditions[wireCount, i].SkipTo < 1 || init.Conditions[wireCount, i].SkipTo > iMax)
+                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].SkipTo + " for parameter \"SkipTo\"! This should not happen under normal circumstances, as the specified condition doesn't exist.");
 
-                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, _init.Conditions[wires, i].SkipTo);
-                i = (int)_init.Conditions[wires, i].SkipTo - 1;
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, init.Conditions[wireCount, i].SkipTo);
+                i = (int)init.Conditions[wireCount, i].SkipTo - 1;
             }
 
-            else if (_init.Conditions[wires, i].Wire != null)
+            // If true, the answer has been reached, and the wire to cut is in the Wire property.
+            else if (init.Conditions[wireCount, i].Wire != null)
             {
-                if (_init.Conditions[wires, i].Wire < 1 || _init.Conditions[wires, i].Wire > 9)
-                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + _init.ModuleId + "]: Condition [" + (wires + 2) + ", " + (i + 1) + "] returned " + _init.Conditions[wires, i].Wire + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");
+                if (init.Conditions[wireCount, i].Wire < 1 || init.Conditions[wireCount, i].Wire > 9)
+                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + (wireCount + 2) + ", " + (i + 1) + "] returned " + init.Conditions[wireCount, i].Wire + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");
 
-                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text, Arrays.Ordinals[(int)_init.Conditions[wires, i].Wire - 1]);
-                return (int)_init.Conditions[wires, i].Wire;
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Arrays.Ordinals[(int)init.Conditions[wireCount, i].Wire - 1]);
+                return (int)init.Conditions[wireCount, i].Wire;
             }
 
-            Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is false.", _init.ModuleId, wires + 2, i + 1, _init.Conditions[wires, i].Text);
+            Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is false.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text);
         }
         
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> Unreachable code detected, please cut any wire to solve the module.", _init.ModuleId);
+        // Failsafe: If the answer isn't found, any wire can be cut.
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> Unreachable code detected, please cut any wire to solve the module.", init.ModuleId);
         return null;
     }
 }

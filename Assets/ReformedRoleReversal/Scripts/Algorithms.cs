@@ -160,10 +160,54 @@ static class Algorithms
         return min == 10 ? 0 : min;
     }
 
-    internal static void RevertLookup(int[] wires, ref int lookup)
+    /// <summary>
+    /// Adds vertical bar characters which are placeholders for line breaks to the submitted string.
+    /// </summary>
+    /// <param name="text">The text to add line breaks with.</param>
+    /// <returns>A modified string containing vertical bars.</returns>
+    internal static string LineBreaks(string text)
     {
-        for (int i = 0; i < wires.Length; i++)
-            wires[i] = (wires[i] - lookup + 10) % 10;
+        // 27 is the most amount of characters that can be fit inside the screen.
+        const byte jump = 27;
+        ushort index = jump;
+        StringBuilder sb = new StringBuilder(text);
+
+        while (index < text.Length)
+        {
+            if (text[index] == ' ')
+            {
+                sb[index] = '\n';
+                index += jump;
+            }
+
+            else
+                index--;
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// An optimized method using an array as buffer instead of string concatenation. 
+    /// This is faster for return values having a length > 1.
+    /// </summary>
+    public static string ConvertFromBase10(int value, char[] baseChars)
+    {
+        // 32 is the worst cast buffer size for base 2 and int.MaxValue.
+        int i = 32;
+        char[] buffer = new char[i];
+
+        do
+        {
+            buffer[--i] = baseChars[value % baseChars.Length];
+            value = value / baseChars.Length;
+        }
+        while (value > 0);
+
+        char[] result = new char[32 - i];
+        Array.Copy(buffer, i, result, 0, 32 - i);
+
+        return new string(result);
     }
 
     /// <summary>
@@ -199,17 +243,14 @@ static class Algorithms
     internal static int[] Random(int length, int min, int max)
     {
         // Create a range from min to max, and initalize an array with the specified size.
-        int[] range = Enumerable.Range(min, --max).ToArray().Shuffle(), array = new int[length];
+        int[] range = Enumerable.Range(min, --max).ToArray().Shuffle();
 
         // Failsafe: Should never happen, and will return unnatural values otherwise.
         if (range.Length < length)
             throw new ArgumentOutOfRangeException("range: " + range.Join(", "), "The length of the returned array (" + length + ") is larger than the range specified (" + range.Length + ")!");
 
-        // Add instances linearly since the range has been shuffled anyway.
-        for (int i = 0; i < array.Length; i++)
-            array[i] = range[i];
-
-        return array;
+        // Instance can be pulled linearly since the range has been shuffled anyway.
+        return SubArray(range, length);
     }
 
     /// <summary>
@@ -228,52 +269,13 @@ static class Algorithms
     }
 
     /// <summary>
-    /// An optimized method using an array as buffer instead of string concatenation. 
-    /// This is faster for return values having a length > 1.
+    /// Undoes the lookup offset by subtracting each index in the wires with the lookup.
     /// </summary>
-    public static string ConvertFromBase10(int value, char[] baseChars)
+    /// <param name="wires">The array to apply to.</param>
+    /// <param name="lookup">The lookup offset to apply with.</param>
+    internal static void RevertLookup(int[] wires, ref int lookup)
     {
-        // 32 is the worst cast buffer size for base 2 and int.MaxValue.
-        int i = 32;
-        char[] buffer = new char[i];
-
-        do
-        {
-            buffer[--i] = baseChars[value % baseChars.Length];
-            value = value / baseChars.Length;
-        }
-        while (value > 0);
-
-        char[] result = new char[32 - i];
-        Array.Copy(buffer, i, result, 0, 32 - i);
-
-        return new string(result);
-    }
-
-    /// <summary>
-    /// Adds vertical bar characters which are placeholders for line breaks to the submitted string.
-    /// </summary>
-    /// <param name="text">The text to add line breaks with.</param>
-    /// <returns>A modified string containing vertical bars.</returns>
-    internal static string LineBreaks(string text)
-    {
-        // 27 is the most amount of characters that can be fit inside the screen.
-        const byte jump = 27;
-        ushort index = jump;
-        StringBuilder sb = new StringBuilder(text);
-
-        while (index < text.Length)
-        {
-            if (text[index] == ' ')
-            {
-                sb[index] = '\n';
-                index += jump;
-            }
-
-            else
-                index--;
-        }
-
-        return sb.ToString();
+        for (int i = 0; i < wires.Length; i++)
+            wires[i] = (wires[i] - lookup + 10) % 10;
     }
 }

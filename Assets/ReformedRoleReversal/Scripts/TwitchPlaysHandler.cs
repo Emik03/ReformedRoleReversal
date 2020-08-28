@@ -6,9 +6,8 @@ public class TwitchPlaysHandler : MonoBehaviour
 {
     public ReformedRoleReversal Reversal;
 
-    private Init _init;
-    private Interact _interact;
-    private HandleManual _manual;
+    private Init init;
+    private Interact interact;
 
 #pragma warning disable 414
     private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' with range: 1-9) and !{0} manual <#> <#> (Left digit with range 3-9 or 'help', right digit refers to page inside the section with range 1-8. If you don't know how this module works, do manual help 2, manual help 3, manual help 4...)";
@@ -16,11 +15,15 @@ public class TwitchPlaysHandler : MonoBehaviour
 
     private void Start()
     {
-        _init = Reversal.Init;
-        _interact = _init.Interact;
-        _manual = _init.Manual;
+        init = Reversal.Init;
+        interact = init.Interact;
     }
 
+    /// <summary>
+    /// Scans the command and does actions in the module accordingly. 
+    /// </summary>
+    /// <param name="command">The command sent by the user.</param>
+    /// <returns>TwitchPlays errors.</returns>
     private IEnumerator ProcessTwitchCommand(string command)
     {
         string[] parameters = command.Split(' ');
@@ -42,12 +45,12 @@ public class TwitchPlaysHandler : MonoBehaviour
             {
                 yield return null;
 
-                Reversal.Buttons[_interact.ButtonOrder.IndexOf(3)].OnInteract();
+                Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
 
                 byte num = (byte)char.GetNumericValue(parameters[1][0]);
-                while (num != _interact.WireSelected)
+                while (num != interact.WireSelected)
                 {
-                    Reversal.Buttons[_interact.ButtonOrder.IndexOf(3)].OnInteract();
+                    Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                 }
 
@@ -77,20 +80,20 @@ public class TwitchPlaysHandler : MonoBehaviour
             {
                 yield return null;
 
-                int length = _init.Conditions.GetLength(1), 
+                int length = init.Conditions.GetLength(1), 
                     c1 = parameters[1] == "help" ? 0 : (int)char.GetNumericValue(parameters[1][0]) - 2, 
                     c2 = (int)char.GetNumericValue(parameters[2][0]) - 1;
 
-                while (c1 != _interact.Instruction / length)
+                while (c1 != interact.Instruction / length)
                 {
                     Reversal.Screen.OnInteract();
                     Reversal.Screen.OnInteractEnded();
                     yield return new WaitForSeconds(0.1f);
                 }
 
-                while (c2 != _interact.Instruction % length)
+                while (c2 != interact.Instruction % length)
                 {
-                    Reversal.Buttons[c2 < _interact.Instruction % length ? _interact.ButtonOrder.IndexOf(1) : _interact.ButtonOrder.IndexOf(2)].OnInteract();
+                    Reversal.Buttons[c2 < interact.Instruction % length ? interact.ButtonOrder.IndexOf(1) : interact.ButtonOrder.IndexOf(2)].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                 }
             }
@@ -100,16 +103,17 @@ public class TwitchPlaysHandler : MonoBehaviour
     /// <summary>
     /// Force the module to be solved in TwitchPlays.
     /// </summary>
+    /// <returns>Nothing.</returns>
     private IEnumerator TwitchHandleForcedSolve()
     {
         yield return null;
-        Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", _init.ModuleId);
+        Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", init.ModuleId);
 
-        Reversal.Buttons[_interact.ButtonOrder.IndexOf(3)].OnInteract();
+        Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
 
-        while (_manual.CorrectAnswer != _interact.WireSelected)
+        while (interact.CorrectAnswer != interact.WireSelected)
         {
-            Reversal.Buttons[_interact.ButtonOrder.IndexOf(3)].OnInteract();
+            Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
             yield return new WaitForSeconds(0.1f);
         }
 

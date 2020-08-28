@@ -301,7 +301,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1001 &1127396267
+--- !u!1001 &1443981252
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2

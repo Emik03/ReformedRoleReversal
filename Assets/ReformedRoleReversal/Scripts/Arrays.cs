@@ -9,13 +9,23 @@ internal class Arrays
 {
     internal Arrays(KMBombInfo Info)
     {
-        _info = Info;
+        info = Info;
     }
 
-    private readonly KMBombInfo _info;
-    private const string _version = "v1";
+    private readonly KMBombInfo info;
 
-    private static readonly Indicator[] _indicators = new Indicator[11]
+    private const string version = "v1";
+    
+    /// <summary>
+    /// The version of the module.
+    /// </summary>
+    internal static string Version
+    {
+        get { return version; }
+        set { Version = value; }
+    }
+
+    private static readonly Indicator[] indicators = new Indicator[11]
     {
         Indicator.BOB,
         Indicator.CAR,
@@ -35,11 +45,11 @@ internal class Arrays
     /// </summary>
     internal static Indicator[] Indicators
     {
-        get { return _indicators; }
+        get { return indicators; }
         set { Indicators = value; }
     }
 
-    private static readonly string[] _indicatorNames = new string[11]
+    private static readonly string[] indicatorNames = new string[11]
     {
         "a BOB",
         "a CAR",
@@ -59,11 +69,11 @@ internal class Arrays
     /// </summary>
     internal static string[] IndicatorNames
     {
-        get { return _indicatorNames; }
+        get { return indicatorNames; }
         set { IndicatorNames = value; }
     }
 
-    private static readonly char[] _base62 = new char[62]
+    private static readonly char[] base62 = new char[62]
     {
         '0','1','2','3','4','5','6','7','8','9',
         'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -75,11 +85,11 @@ internal class Arrays
     /// </summary>
     internal static char[] Base62
     {
-        get { return _base62; }
+        get { return base62; }
         set { Base62 = value; }
     }
 
-    private static readonly string[] _strings = new string[17]
+    private static readonly string[] strings = new string[17]
     {
         "batteries",
         "AA batteries",
@@ -105,11 +115,11 @@ internal class Arrays
     /// </summary>
     internal static string[] Edgework
     {
-        get { return _strings; }
+        get { return strings; }
         set { Edgework = value; }
     }
 
-    private static readonly string[] _colors = new string[10]
+    private static readonly string[] colors = new string[10]
     {
         "navy",
         "lapis",
@@ -128,11 +138,11 @@ internal class Arrays
     /// </summary>
     internal static string[] Colors
     {
-        get { return _colors; }
+        get { return colors; }
         set { Colors = value; }
     }
 
-    private static readonly string[] _groupedColors = new string[10]
+    private static readonly string[] groupedColors = new string[10]
     {
         "blue",
         "blue",
@@ -151,11 +161,11 @@ internal class Arrays
     /// </summary>
     internal static string[] GroupedColors
     {
-        get { return _groupedColors; }
+        get { return groupedColors; }
         set { GroupedColors = value; }
     }
 
-    private static readonly string[] _ordinals = new string[9]
+    private static readonly string[] ordinals = new string[9]
     {
         "first",
         "second",
@@ -173,11 +183,11 @@ internal class Arrays
     /// </summary>
     internal static string[] Ordinals
     {
-        get { return _ordinals; }
+        get { return ordinals; }
         set { Ordinals = value; }
     }
 
-    private static readonly string[] _tuplets = new string[9]
+    private static readonly string[] tuplets = new string[9]
     {
         "monuple",
         "couple",
@@ -195,7 +205,7 @@ internal class Arrays
     /// </summary>
     internal static string[] Tuplets
     {
-        get { return _tuplets; }
+        get { return tuplets; }
         set { Tuplets = value; }
     }
 
@@ -214,42 +224,42 @@ internal class Arrays
         return new Condition[]
         {
             new Condition { Text = "Welcome to Reformed Role Reversal! Press the " + buttonText[buttonOrder.IndexOf(2)] + " arrow button to advance." },
-            new Condition { Text = "Convert the seed from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of the number until you have 9 digits." },
+            new Condition { Text = "Look around the screen and locate the seed. Convert it from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of this number until you have 9 digits." },
             new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
-            new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With table " + offset + ", convert digits to colors to get the final wires." },
+            new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With lookup #" + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
             new Condition { Text = "Once the first condition that applies has been discovered, enter submission mode by pressing either the " + buttonText[buttonOrder.IndexOf(0)] + " or " + buttonText[buttonOrder.IndexOf(3)] + " arrow button." },
             new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
-            new Condition { Text = "Good luck!~ (" + _version + ")" }
+            new Condition { Text = "Good luck!~ (" + version + ")" }
         };
     }
 
     /// <summary>
-    /// Gets the edgework from the same index as the _strings variable.
+    /// Gets the edgework from the same index as the strings variable.
     /// </summary>
-    /// <param name="i">The index for the _numbers array.</param>
+    /// <param name="i">The index for the numbers array.</param>
     /// <returns>A number representing the edgework.</returns>
     internal int GetNumbers(int i)
     {
         return new int[17]
         {
-            _info.GetBatteryCount(),
-            _info.GetBatteryCount(Battery.AA) + _info.GetBatteryCount(Battery.AAx3) + _info.GetBatteryCount(Battery.AAx4),
-            _info.GetBatteryCount(Battery.D),
-            _info.GetBatteryHolderCount(),
-            _info.GetIndicators().Count(),
-            _info.GetOnIndicators().Count(),
-            _info.GetOffIndicators().Count(),
-            _info.GetPortPlateCount(),
-            _info.GetPorts().Distinct().Count(),
-            _info.GetPorts().Count() - _info.GetPorts().Distinct().Count(),
-            _info.GetPortCount(),
-            _info.GetSerialNumberNumbers().Count(),
-            _info.GetSerialNumberLetters().Count(),
-            _info.GetSolvableModuleNames().Count(),
-            _info.GetModuleNames().Count(),
-            _info.GetModuleNames().Count() - _info.GetSolvableModuleNames().Count(),
-            _info.GetModuleNames().Count(s => s == "Role Reversal" || s == "Reformed Role Reversal")
+            info.GetBatteryCount(),
+            info.GetBatteryCount(Battery.AA) + info.GetBatteryCount(Battery.AAx3) + info.GetBatteryCount(Battery.AAx4),
+            info.GetBatteryCount(Battery.D),
+            info.GetBatteryHolderCount(),
+            info.GetIndicators().Count(),
+            info.GetOnIndicators().Count(),
+            info.GetOffIndicators().Count(),
+            info.GetPortPlateCount(),
+            info.GetPorts().Distinct().Count(),
+            info.GetPorts().Count() - info.GetPorts().Distinct().Count(),
+            info.GetPortCount(),
+            info.GetSerialNumberNumbers().Count(),
+            info.GetSerialNumberLetters().Count(),
+            info.GetSolvableModuleNames().Count(),
+            info.GetModuleNames().Count(),
+            info.GetModuleNames().Count() - info.GetSolvableModuleNames().Count(),
+            info.GetModuleNames().Count(s => s == "Role Reversal" || s == "Reformed Role Reversal")
         }[i];
     }
 }

@@ -190,7 +190,7 @@
                     <div id="showPDF">
                         <table>
                             <tr>
-                                <th colspan="10">Table</th>
+                                <th colspan="10">Lookup #</th>
                             </tr>
                             <tr>
                                 <th>0</th>
@@ -375,40 +375,43 @@
     }
    
     function updateColors() {
-        const table = elementLookup.value.length == 1 && parseInt(elementLookup.value) < 10
-                    ? parseInt(elementLookup.value) : null;
+        const value = Number(elementLookup.value);
+        const isValid = between(value, 0, 9);
 
-        elementLookup.classList.add(table == null ? 'red' : 'green');
-        elementLookup.classList.remove(table == null ? 'green' : 'red');
+        elementLookup.className = isValid ? 'green' : 'red';
 
-        for (let i = 0; i < elementColors.length; i++)
-            elementColors[i].innerHTML = table == null ? '?' : (i + table) % elementColors.length;
+        for (const [index, element] of elementColors.entries()) {
+            element.innerHTML = isValid ? (index + value) % elementColors.length : '?';
+        }
     }
 
     function updateNumbers() {
-        const seed = elementSeed.value;
-        const base = between(parseInt(elementBaseN.value), 1, 62) ? parseInt(elementBaseN.value) : null;
+        const value = Number(elementBaseN.value);
+        const isValid = between(value, 1, 62);
 
-        elementBaseN.classList.add(base == null ? 'red' : 'green');
-        elementBaseN.classList.remove(base == null ? 'green' : 'red');
+        elementBaseN.className = isValid ? 'green' : 'red';
 
-        const validChars = availableChars.substring(0, base);
+        const validChars = availableChars.substring(0, value);
         let flag = true;
 
-        if (seed.length > 7)
+        const seed = elementSeed.value;
+
+        if (seed.length > 7 || seed === null)
             flag = false;
 
-        seed.split('').forEach(char => {
-            if (!validChars.includes(char)) {
-                flag = false;
-                return;
-            }
-        });
+        else
+        {
+            seed.split('').forEach(char => {
+                if (!validChars.includes(char)) {
+                    flag = false;
+                    return;
+                }
+            });
+        }
 
-        elementSeed.classList.add(flag ? 'green' : 'red');
-        elementSeed.classList.remove(flag ? 'red' : 'green');
+        elementSeed.className = flag ? 'green' : 'red';
 
-        if (seed == null || base == null || !flag)
+        if (isValid || !flag)
             return;
 
         const convertedSeed = convertBase(seed, base);
@@ -419,8 +422,7 @@
     }
 
     function updateBase10Length() {
-        elementBase10.classList.add(elementBase10.value.length == 9 ? 'green' : 'red');
-        elementBase10.classList.remove(elementBase10.value.length == 9 ? 'red' : 'green');
+        elementBase10.className = elementBase10.value.length === 9 ? 'green' : 'red';
     }
 
     function between(x, min, max) {
