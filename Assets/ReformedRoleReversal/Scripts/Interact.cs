@@ -44,10 +44,18 @@ internal class Interact
                 break;
 
             // Read previous instruction.
-            case 1: Instruction = (--Instruction + length) % length; break;
+            case 1:
+                if (_isSelectingWire)
+                    return;
+                Instruction = (--Instruction + length) % length;
+                break;
 
             // Read next instruction.
-            case 2: Instruction = ++Instruction % length; break;
+            case 2:
+                if (_isSelectingWire)
+                    return;
+                Instruction = ++Instruction % length;
+                break;
 
             // Add 1 to the current selected wire.
             case 3:
