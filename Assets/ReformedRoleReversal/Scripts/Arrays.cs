@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
-internal class StaticArrays
+/// <summary>
+/// Contains mostly static information and indexable edgework.
+/// </summary>
+internal class Arrays
 {
-    internal StaticArrays(KMBombInfo Info)
+    internal Arrays(KMBombInfo Info)
     {
         _info = Info;
     }
 
     private readonly KMBombInfo _info;
-
     private const string _version = "v1";
 
     private static readonly Indicator[] _indicators = new Indicator[11]
@@ -28,6 +30,9 @@ internal class StaticArrays
         Indicator.TRN
     };
 
+    /// <summary>
+    /// Indexable array of indicator edgework in alphabetical order.
+    /// </summary>
     internal static Indicator[] Indicators
     {
         get { return _indicators; }
@@ -49,6 +54,9 @@ internal class StaticArrays
         "a TRN",
     };
 
+    /// <summary>
+    /// Indexable array of indicator string names in alphabetical order.
+    /// </summary>
     internal static string[] IndicatorNames
     {
         get { return _indicatorNames; }
@@ -62,6 +70,9 @@ internal class StaticArrays
         'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' 
     };
 
+    /// <summary>
+    /// 62 length array consisting of 0-9, A-Z, a-z
+    /// </summary>
     internal static char[] Base62
     {
         get { return _base62; }
@@ -89,6 +100,9 @@ internal class StaticArrays
         "modules with their name containing \"Role Reversal\""
     };
 
+    /// <summary>
+    /// Indexable array of edgework string names.
+    /// </summary>
     internal static string[] Edgework
     {
         get { return _strings; }
@@ -109,6 +123,9 @@ internal class StaticArrays
         "lavender"
     };
 
+    /// <summary>
+    /// Indexable array of all colors used.
+    /// </summary>
     internal static string[] Colors
     {
         get { return _colors; }
@@ -129,6 +146,9 @@ internal class StaticArrays
         "purple"
     };
 
+    /// <summary>
+    /// Indexable array of all colors in an estimated format.
+    /// </summary>
     internal static string[] GroupedColors
     {
         get { return _groupedColors; }
@@ -148,6 +168,9 @@ internal class StaticArrays
         "9th"
     };
 
+    /// <summary>
+    /// Convert index to equivalent ordinal.
+    /// </summary>
     internal static string[] Ordinals
     {
         get { return _ordinals; }
@@ -167,6 +190,9 @@ internal class StaticArrays
         "nonuple"
     };
 
+    /// <summary>
+    /// Convert index to equivalent tuplet.
+    /// </summary>
     internal static string[] Tuplets
     {
         get { return _tuplets; }

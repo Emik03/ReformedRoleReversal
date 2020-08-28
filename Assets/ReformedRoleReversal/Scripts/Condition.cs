@@ -1,4 +1,7 @@
-﻿sealed class Condition
+﻿/// <summary>
+/// Stores a condition for display in the module, and for keeping track whether the condition is true, and what to do if it is.
+/// </summary>
+sealed class Condition
 {
     /// <summary>
     /// If the condition is true, the wire to cut gets stored here.

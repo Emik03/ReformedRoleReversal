@@ -19,90 +19,105 @@ static class Algorithms
     {
         switch (method)
         {
+            // Returns the position of the first index of the array that is equal to the key provided.
             case "firstInstanceOfKey":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] == key)
                         return ++i;
                 break;
 
+            // Returns the position of the first index of the array that is NOT equal to the key provided.
             case "firstInstanceOfNotKey":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] != key)
                         return ++i;
                 break;
 
+            // Returns the position of the last index of the array that is equal to the key provided.
             case "lastInstanceOfKey":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] == key)
                         return ++i;
                 break;
 
+            // Returns the position of the last index of the array that is NOT equal to the key provided.
             case "lastInstanceOfNotKey":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] != key)
                         return ++i;
                 break;
 
+            // Returns the position of the first index of the array that is equal to the opposite value of the key.
             case "firstInstanceOfOppositeKey":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] == (key + 5) % 10)
                         return ++i;
                 break;
 
+            // Returns the position of the last index of the array that is equal to the opposite value of the key.
             case "lastInstanceOfOppositeKey":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] == (key + 5) % 10)
                         return ++i;
                 break;
 
+            // Returns the position of the first index of the array that is equal to the range that is blue in Arrays.GroupedColors.
             case "firstInstanceOfBlue":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] < 5)
                         return ++i;
                 break;
 
+            // Returns the position of the first index of the array that is equal to the range that is purple in Arrays.GroupedColors.
             case "firstInstanceOfPurple":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] >= 5)
                         return ++i;
                 break;
 
+            // Returns the position of the last index of the array that is equal to the range that is blue in Arrays.GroupedColors.
             case "lastInstanceOfBlue":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] < 5)
                         return ++i;
                 break;
 
+            // Returns the position of the last index of the array that is equal to the range that is purple in Arrays.GroupedColors.
             case "lastInstanceOfPurple":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] >= 5)
                         return ++i;
                 break;
 
-            case "lowestEven":
+            // Returns the position of the first index of the array that is an even number.
+            case "firstEven":
+                for (int i = 0; i < wires.Length; i++)
+                    if (wires[i] % 2 == 0)
+                        return ++i;
+                break;
+
+            // Returns the position of the last index of the array that is an even number.
+            case "lastEven":
+                for (int i = wires.Length - 1; i >= 0; i--)
+                    if (wires[i] % 2 == 0)
+                        return ++i;
+                break;
+
+            // Returns the position of the first index of the array that is an odd number.
+            case "firstOdd":
                 for (int i = 0; i < wires.Length; i++)
                     if (wires[i] % 2 == 1)
                         return ++i;
                 break;
 
-            case "highestEven":
+            // Returns the position of the last index of the array that is an odd number.
+            case "lastOdd":
                 for (int i = wires.Length - 1; i >= 0; i--)
                     if (wires[i] % 2 == 1)
                         return ++i;
                 break;
 
-            case "lowestOdd":
-                for (int i = 0; i < wires.Length; i++)
-                    if (wires[i] % 2 == 1)
-                        return ++i;
-                break;
-
-            case "highestOdd":
-                for (int i = wires.Length - 1; i >= 0; i--)
-                    if (wires[i] % 2 == 1)
-                        return ++i;
-                break;
-
+            // Failsafe: If the programmer misspells the algorithm, or hadn't implemented it.
             default: throw new NotImplementedException("Could not find '" + method + "' for Algorithms.Find(), did you misspell the string?");
         }
 
@@ -116,13 +131,15 @@ static class Algorithms
     /// <returns>The smallest number that isn't null.</returns>
     internal static int? First(int?[] array)
     {
+        // Any wire that is found will be lower than 10.
         int? min = 10;
 
         for (int i = 0; i < array.Length; i++)
             if (min > array[i] && array[i] != null)
                 min = array[i];
 
-        return min;
+        // If no wire is found, return null.
+        return min == 10 ? null : min;
     }
 
     /// <summary>
@@ -132,13 +149,15 @@ static class Algorithms
     /// <returns>The smallest number not equal to 0.</returns>
     internal static int First(List<int> array)
     {
+        // Any wire that is found will be lower than 10.
         int min = 10;
 
         for (int i = 0; i < array.Count; i++)
             if (min > array[i] && array[i] != 0)
                 min = array[i];
 
-        return min;
+        // If no wire is found, return 0.
+        return min == 10 ? 0 : min;
     }
 
     internal static void RevertLookup(int[] wires, ref int lookup)
@@ -157,10 +176,12 @@ static class Algorithms
     {
         int[] colors = grouped ? new int[2] { 0, 0 } : new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+        // Arrays.GroupedColors
         if (grouped)
             for (int i = 0; i < wires.Length; i++)
                 colors[wires[i] / 5]++;
 
+        // Arrays.Colors
         else
             for (int i = 0; i < wires.Length; i++)
                 colors[wires[i]]++;
@@ -177,15 +198,33 @@ static class Algorithms
     /// <returns>A random integer array.</returns>
     internal static int[] Random(int length, int min, int max)
     {
+        // Create a range from min to max, and initalize an array with the specified size.
         int[] range = Enumerable.Range(min, --max).ToArray().Shuffle(), array = new int[length];
 
+        // Failsafe: Should never happen, and will return unnatural values otherwise.
         if (range.Length < length)
             throw new ArgumentOutOfRangeException("range: " + range.Join(", "), "The length of the returned array (" + length + ") is larger than the range specified (" + range.Length + ")!");
 
+        // Add instances linearly since the range has been shuffled anyway.
         for (int i = 0; i < array.Length; i++)
             array[i] = range[i];
 
         return array;
+    }
+
+    /// <summary>
+    /// Creates and returns a subarray of the given array.
+    /// </summary>
+    /// <typeparam name="T">The type of the array.</typeparam>
+    /// <param name="data">The array itself to which to create a subarray of.</param>
+    /// <param name="index">The inclusive starting index.</param>
+    /// <param name="length">The length of the copy.</param>
+    /// <returns></returns>
+    public static T[] SubArray<T>(this T[] data, int length)
+    {
+        T[] result = new T[length];
+        Array.Copy(data, 0, result, 0, length);
+        return result;
     }
 
     /// <summary>
@@ -194,15 +233,14 @@ static class Algorithms
     /// </summary>
     public static string ConvertFromBase10(int value, char[] baseChars)
     {
-        // 32 is the worst cast buffer size for base 2 and int.MaxValue
+        // 32 is the worst cast buffer size for base 2 and int.MaxValue.
         int i = 32;
         char[] buffer = new char[i];
-        int targetBase = baseChars.Length;
 
         do
         {
-            buffer[--i] = baseChars[value % targetBase];
-            value = value / targetBase;
+            buffer[--i] = baseChars[value % baseChars.Length];
+            value = value / baseChars.Length;
         }
         while (value > 0);
 
@@ -219,6 +257,7 @@ static class Algorithms
     /// <returns>A modified string containing vertical bars.</returns>
     internal static string LineBreaks(string text)
     {
+        // 27 is the most amount of characters that can be fit inside the screen.
         const byte jump = 27;
         ushort index = jump;
         StringBuilder sb = new StringBuilder(text);
