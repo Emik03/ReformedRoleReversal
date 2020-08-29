@@ -119,7 +119,7 @@
                             <tr>
                                 <td style="text-align:center;">
                                     Seed <span colspan="2"><input style="width: 106px" type="text" id="Seed" oninput="updateNumbers()"></span>
-                                    using base <span colspan="2"><input style="width: 18px" type="text" id="BaseN" oninput="updateNumbers()"></span>
+                                    in base <span colspan="2"><input style="width: 18px" type="text" id="BaseN" oninput="updateNumbers()"></span>
                                     is in base-10 <span colspan="2"><input style="width: 89px" type="text" id="Base10" oninput="updateBase10Length()"></span>
                                     and in modulo 7 [<span colspan="2" id="Mod7">?</span>].
                                 </td>
@@ -399,8 +399,7 @@
         if (seed.length > 7 || seed === null)
             flag = false;
 
-        else
-        {
+        else {
             seed.split('').forEach(char => {
                 if (!validChars.includes(char)) {
                     flag = false;
@@ -411,10 +410,10 @@
 
         elementSeed.className = flag ? 'green' : 'red';
 
-        if (isValid || !flag)
+        if (!isValid || !flag)
             return;
 
-        const convertedSeed = convertBase(seed, base);
+        const convertedSeed = convertBase(seed, value);
         elementMod7.innerHTML = convertedSeed % 7;
         elementBase10.value = convertedSeed;
 

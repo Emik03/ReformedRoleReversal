@@ -3,6 +3,7 @@ using System.Reflection;
 using UnityEngine;
 using System.Collections;
 using Rnd = System.Random;
+using System.Linq;
 
 /// <summary>
 /// Generates the module and caches the answer.
@@ -55,9 +56,8 @@ internal class HandleManual
 
         // Converts the seed from base 10 to the random base chosen.
         reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
-    
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Running on {1} > Seed in Base {2}: {3} - Seed in Base 10: {4} - # of wires: {5}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), strSeed, wires.Length);
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: Append 0's on the left: {1}, grab leftmost wires: {2}, using lookup {3}.", init.ModuleId, left, leftmost, lookup);
+        
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. # of wires: {5}. Place {6} 0's. Take {7} wires. Lookup: #{8}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), strSeed, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
 
         // Log the list of all wires, converting each index to the respective string.
         string[] log = new string[wires.Length];
@@ -106,32 +106,20 @@ internal class HandleManual
 
         // Generates fake wires for sections with incorrect amount of wires to obfuscate real ones based on the conditions recieved.
         if (!isCorrectIndex)
-        {
-            while (i + 2 != wires.Length)
-            {
-                if (i + 2 > wires.Length)
-                    wires = new int[wires.Length + 1];
-
-                else
-                    wires = new int[wires.Length - 1];
-            }
-
-            for (int k = 0; k < wires.Length; k++)
-                wires[k] = rnd.Next(0, 10);
-        }
+            wires = Enumerable.Repeat(0, i + 2).Select(k => rnd.Next(0, 10)).ToArray();
 
         // Contains all methods in the Manual class.
-        const string randomMethods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string randomMethods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", randomFirstLastMethods = "ABC";
         Type classType = typeof(Manual);
         MethodInfo methodInfo;
 
         switch (j)
         {
             // First case. (Guaranteed edgework)
-            case 0: methodInfo = classType.GetMethod("First" + randomMethods[rnd.Next(0, 3)].ToString()); break;
+            case 0: methodInfo = classType.GetMethod("First" + randomFirstLastMethods[rnd.Next(0, randomFirstLastMethods.Length)].ToString()); break;
 
             // Last case. (Guaranteed no edgework)
-            case 7: methodInfo = classType.GetMethod("Last" + randomMethods[rnd.Next(0, 3)].ToString()); break;
+            case 7: methodInfo = classType.GetMethod("Last" + randomFirstLastMethods[rnd.Next(0, randomFirstLastMethods.Length)].ToString()); break;
 
             // Every other case. (Mixed)
             default: methodInfo = classType.GetMethod(randomMethods[rnd.Next(0, randomMethods.Length)].ToString()); break;
@@ -177,7 +165,7 @@ internal class HandleManual
             }
 
             // If true, the answer has been reached, and the wire to cut is in the Wire property.
-            else if (init.Conditions[wireCount, i].Wire != null)
+            if (init.Conditions[wireCount, i].Wire != null)
             {
                 if (init.Conditions[wireCount, i].Wire < 1 || init.Conditions[wireCount, i].Wire > 9)
                     throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + (wireCount + 2) + ", " + (i + 1) + "] returned " + init.Conditions[wireCount, i].Wire + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");

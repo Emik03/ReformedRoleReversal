@@ -8,7 +8,6 @@ internal class Interact
     {
         this.init = init;
         coroutines = init.Coroutines;
-        manual = init.Manual;
         reversal = init.Reversal;
     }
 
@@ -17,7 +16,6 @@ internal class Interact
     protected internal readonly List<int> ButtonOrder = Enumerable.Range(0, 4).ToList().Shuffle();
 
     private readonly HandleCoroutines coroutines;
-    private readonly HandleManual manual;
     private readonly Init init;
     private readonly ReformedRoleReversal reversal;
 

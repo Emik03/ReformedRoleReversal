@@ -114,7 +114,6 @@ static class Manual
     public static Condition C(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: wires.Length + 1);
-
         Condition condition = new Condition
         {
             Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", Arrays.Ordinals[parameters[0]], Arrays.Ordinals[parameters[1]], Arrays.Ordinals[parameters[2]])
@@ -138,7 +137,7 @@ static class Manual
         };
 
         int[] colors = Algorithms.GetColors(grouped: false, wires: wires);
-
+        
         for (int i = 0; i < colors.Length; i++)
             if (colors[i] >= parameter)
             {
@@ -170,7 +169,7 @@ static class Manual
     public static Condition F(int[] wires, int lookup, KMBombInfo Info)
     {
         int parameter = rnd.Next(1, wires.Length - 1);
-        bool seenNotUnique = false, lowest = rnd.NextDouble() > 0.5;
+        bool seenException = false, lowest = rnd.NextDouble() > 0.5;
 
         Condition condition = new Condition
         {
@@ -182,21 +181,16 @@ static class Manual
             if (number.Count() == 1)
                 continue;
             
-            if (number.Count() == parameter + 1 && !seenNotUnique)
-            {
-                seenNotUnique = true;
-                continue;
-            }
+            if (seenException || number.Count() != parameter + 1)
+                return condition;
 
-            return condition;
+            seenException = true;
         }
 
-        if (seenNotUnique)
-        {
-            Algorithms.RevertLookup(wires, ref lookup);
-            int key = lowest ? wires.Min() : wires.Max();
-            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
-        }
+        Algorithms.RevertLookup(wires, ref lookup);
+
+        int key = lowest ? wires.Min() : wires.Max();
+        condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
 
         return condition;
     }
@@ -227,13 +221,17 @@ static class Manual
         condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
                                   (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
 
-        return new Condition { Wire = condition.Wire == 0 ? null : condition.Wire, SkipTo = null, Text = condition.Text};
+        if (condition.Wire == 0)
+            condition.Wire = null;
+
+        return condition;
     }
 
     public static Condition H(int[] wires, int lookup, KMBombInfo Info)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: Arrays.Colors.Length);
         bool inversion = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If there {0} any {1} wires, cut the first {2}ish wire.", inversion ? "aren't" : "are", Arrays.Colors[parameters[0]], Arrays.GroupedColors[parameters[1]])
@@ -251,6 +249,7 @@ static class Manual
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.GroupedColors.Length);
         parameters[0] = rnd.Next((int)Math.Ceiling((float)wires.Length / 2), wires.Length);
+
         Condition condition = new Condition
         {
             Text = string.Format("If there are {0} or more {1}ish wires, cut the wire after the first {2}ish wire.", parameters[0], Arrays.GroupedColors[parameters[1]], Arrays.GroupedColors[parameters[2]])
@@ -287,6 +286,7 @@ static class Manual
     {
         int parameter = rnd.Next(0, Arrays.Colors.Length);
         bool ascending = rnd.NextDouble() > 0.5, first = rnd.NextDouble() > 0.5, odd = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If all values are in {0} order, cut the wire with the {1} {2} value.", ascending ? "ascending" : "decending", first ? "first" : "last", odd ? "odd" : "even")
@@ -295,17 +295,13 @@ static class Manual
         Algorithms.RevertLookup(wires, ref lookup);
 
         for (int i = 1; i < wires.Length; i++)
-        {
             if ((ascending && wires[i - 1] > wires[i]) || (!ascending && wires[i - 1] < wires[i]))
-                break;
+                return condition;
 
-            if (i == wires.Length - 1)
-            {
-                string method = first ? "first" : "last";
-                method += odd ? "Odd" : "Even";
-                condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
-            }
-        }
+        string method = first ? "first" : "last";
+        method += odd ? "Odd" : "Even";
+
+        condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
 
         return condition;
     }
@@ -332,6 +328,7 @@ static class Manual
     {
         int parameter = rnd.Next(0, wires.Length);
         bool highestIf = rnd.NextDouble() > 0.5, highestThen = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If the {0} wire has the {1} value, cut the first {2}-valued wire.", Arrays.Ordinals[parameter], highestIf ? "highest" : "lowest", highestThen ? "highest" : "lowest")
@@ -349,6 +346,7 @@ static class Manual
     {
         int parameter = rnd.Next(0, wires.Length);
         bool first = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If there's a wire with a value difference of 5 from the {0} wire, cut the {1} wire matching that description.", Arrays.Ordinals[parameter], first ? "first" : "last")
@@ -366,6 +364,7 @@ static class Manual
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: Arrays.Colors.Length);
         parameters[0] = rnd.Next(0, wires.Length);
         bool first = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If the {0} wire is {1}, cut the {2} {1} wire.", Arrays.Ordinals[parameters[0]], Arrays.Colors[parameters[1]], first ? "first" : "last")
@@ -383,6 +382,7 @@ static class Manual
     {
         int parameter = rnd.Next(0, Arrays.Colors.Length);
         int divisible = rnd.Next(2, 7);
+
         Condition condition = new Condition
         {
             Text = string.Format("If the sum of all wire's values are divisible by {0}, cut the last {1}ish wire.", divisible, Arrays.GroupedColors[parameter])
@@ -402,6 +402,7 @@ static class Manual
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: wires.Length);
         bool higher = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
             Text = string.Format("If the {0} wire has a {1} value than the {2} wire, cut the first wire that has a value difference of 5 from any of the other wires.", Arrays.Ordinals[parameters[0]], higher ? "higher" : "lower", Arrays.Ordinals[parameters[1]])
@@ -417,9 +418,6 @@ static class Manual
                 opposites[i] = Algorithms.Find(method: "firstInstanceOfOppositeKey", key: ref wires[i], wires: wires);
 
             condition.Wire = Algorithms.First(opposites);
-
-            if (condition.Wire == 0 || condition.Wire == 10)
-                condition.Wire = null;
         }
         
         return condition;
@@ -437,12 +435,12 @@ static class Manual
 
         if ((more && colors[0] > colors[1]) || (!more && colors[0] < colors[1]))
         {
-            int?[] opposites = new int?[wires.Length];
+            int?[] results = new int?[wires.Length];
 
             for (int i = 0; i < wires.Length; i++)
-                opposites[i] = Algorithms.Find(method: "lastInstanceOfOppositeKey", key: ref wires[i], wires: wires);
+                results[i] = Algorithms.Find(method: "lastInstanceOfOppositeKey", key: ref wires[i], wires: wires);
 
-            condition.Wire = opposites.Max();
+            condition.Wire = results.Max();
 
             if (condition.Wire == 0)
                 condition.Wire = null;
@@ -459,7 +457,9 @@ static class Manual
             Text = string.Format("If an indicator exists containing one of the letters in \"Role\", cut the {0} wire.", Arrays.Ordinals[parameter])
         };
 
-        foreach (Indicator indicator in new Indicator[] { Indicator.BOB, Indicator.CAR, Indicator.CLR, Indicator.FRK, Indicator.FRQ, Indicator.NLL, Indicator.TRN})
+        Indicator[] indicators = new Indicator[] { Indicator.BOB, Indicator.CAR, Indicator.CLR, Indicator.FRK, Indicator.FRQ, Indicator.NLL, Indicator.TRN };
+
+        foreach (Indicator indicator in indicators)
             if (Info.IsIndicatorPresent(indicator))
             {
                 condition.Wire = ++parameter;
@@ -492,9 +492,10 @@ static class Manual
         };
 
         const string name = "ReformedRoleReversal";
-
-        for (int i = 0; i < name.Length; i++)
-            if (Info.GetSerialNumber().Contains(name[i]))
+        string serial = Info.GetSerialNumber();
+        
+        foreach (char n in name)
+            if (serial.Contains(n))
             {
                 condition.Wire = ++parameter;
                 break;
@@ -521,20 +522,15 @@ static class Manual
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Colors.Length);
         parameters[0] = rnd.Next(0, Arrays.Edgework.Length);
+
         Condition condition = new Condition
         {
             Text = string.Format("If there are less {0} than {1} wires, cut the last non-{2}ish wire.", Arrays.Edgework[parameters[0]], Arrays.Colors[parameters[1]], Arrays.GroupedColors[parameters[1]])
         };
 
-        int matches = 0;
-
-        for (int i = 0; i < wires.Length; i++)
-            if (wires[i] == parameters[0])
-                matches++;
-
         string method = parameters[1] < 5 ? "lastInstanceOfPurple" : "lastInstanceOfBlue";
 
-        if (new Arrays(Info).GetNumbers(parameters[0]) < matches)
+        if (new Arrays(Info).GetNumbers(parameters[0]) < wires.Where(x => x.Equals(parameters[0])).Count())
             condition.Wire = Algorithms.Find(method: method, key: ref parameters[1], wires: wires);
 
         return condition;
@@ -562,24 +558,20 @@ static class Manual
         };
 
         int[] colors = Algorithms.GetColors(grouped: false, wires: wires);
+        IEnumerable<int> serial = Info.GetSerialNumberNumbers();
 
         for (int i = 0; i < colors.Length; i++)
-            if (colors[i] != 0 && Info.GetSerialNumberNumbers().Contains(colors[i]))
-                for (int j = 9; j >= 1; j--)
-                {
-                    List<int> potentialWires = new List<int>(0);
+            if (colors[i] != 0 && serial.Contains(colors[i]))
+            {
+                int[] maxWires = wires.ToLookup(n => n).ToLookup(l => l.Count(), l => l.Key).OrderBy(l => l.Key).Last().ToArray();
+                int?[] results = new int?[maxWires.Length];
 
-                    for (int k = 0; k < colors.Length; k++)
-                        if (colors[k] == j)
-                            potentialWires.Add(k);
+                for (int j = 0; j < results.Length; j++)
+                    results[j] = (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref maxWires[j], wires: wires);
 
-                    for (int k = 0; k < potentialWires.Count; k++)
-                    {
-                        int check = potentialWires[k];
-                        potentialWires[k] = (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref check, wires: wires);
-                        condition.Wire = Algorithms.First(potentialWires);
-                    }
-                }
+                condition.Wire = results.Max() == 0 ? null : results.Max();
+                break;
+            }
 
         return condition;
     }
@@ -592,23 +584,18 @@ static class Manual
         };
 
         int[] colors = Algorithms.GetColors(grouped: false, wires: wires);
+        IEnumerable<int> serial = Info.GetSerialNumberNumbers();
 
-        if (Info.GetSerialNumberNumbers().Contains(colors.Max()) || Info.GetSerialNumberNumbers().Contains(wires.Length))
-            for (int i = 1; i <= 9; i++)
-            {
-                List<int> potentialWires = new List<int>(0);
+        if (serial.Contains(colors.Max()) || serial.Contains(wires.Length))
+        {
+            int[] maxWires = wires.ToLookup(n => n).ToLookup(l => l.Count(), l => l.Key).OrderBy(l => l.Key).First().ToArray();
+            int?[] results = new int?[maxWires.Length];
 
-                for (int j = 0; j < colors.Length; j++)
-                    if (colors[j] == i)
-                        potentialWires.Add(j);
+            for (int j = 0; j < results.Length; j++)
+                results[j] = (int)Algorithms.Find(method: "firstInstanceOfKey", key: ref maxWires[j], wires: wires);
 
-                for (int j = 0; j < potentialWires.Count; j++)
-                {
-                    int check = potentialWires[j];
-                    potentialWires[j] = (int)Algorithms.Find(method: "firstInstanceOfKey", key: ref check, wires: wires);
-                    condition.Wire = Algorithms.First(potentialWires);
-                }
-            }
+            condition.Wire = Algorithms.First(results);
+        }
 
         return condition;
     }
@@ -648,7 +635,6 @@ static class Manual
     public static Condition LastC(int[] wires, int lookup, KMBombInfo Info)
     {
         bool highest = rnd.NextDouble() > 0.5, firstLast = rnd.NextDouble() > 0.5;
-
         Condition condition = new Condition
         {
             Text = string.Format("Cut the {0} {1}-valued wire.", highest ? "highest" : "lowest", firstLast ? "first" : "last")
