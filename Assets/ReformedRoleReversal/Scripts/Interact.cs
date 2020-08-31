@@ -87,6 +87,7 @@ internal class Interact
         {
             int lengthShort = init.Conditions.GetLength(1), length = init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
             Instruction = ((Instruction / lengthShort) + 1) * lengthShort % length;
+
             coroutines.UpdateScreen(instructionX: Instruction / lengthShort, instructionY: Instruction % lengthShort, wireSelected: ref WireSelected, isSelectingWire: ref selectWire);
             return;
         }
@@ -98,6 +99,8 @@ internal class Interact
             init.IsSolved = true;
 
             reversal.Module.HandlePass();
+
+            coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref WireSelected, isSelectingWire: ref selectWire);
             return;
         }
 

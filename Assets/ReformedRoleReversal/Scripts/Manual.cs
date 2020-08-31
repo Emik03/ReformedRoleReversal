@@ -19,7 +19,7 @@ static class Manual
 
         Condition condition = new Condition
         {
-            Text = string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "more" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+            Text = string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
         };
 
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))

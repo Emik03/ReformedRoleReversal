@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using UnityEngine;
 using System.Collections;
-using Rnd = System.Random;
 using System.Linq;
+using UnityEngine;
+using Rnd = System.Random;
 
 /// <summary>
 /// Generates the module and caches the answer.

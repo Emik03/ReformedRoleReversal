@@ -40,12 +40,21 @@ public class HandleCoroutines : MonoBehaviour
     /// <returns>It's an animation, it only returns WaitForSeconds().</returns>
     internal protected IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected, bool isSelectingWire)
     {
-        // Either display the current condition in manual mode, or display the currently selected wire in submission mode.
-        string text = isSelectingWire ? string.Format("[Wire Selected: {0}]\n\nPlease press the screen to\ncut the wire.", wireSelected) 
-                                      : string.Format("[{0}{1}]\n\n{2}",
-                                      instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
-                                      instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition",
-                                      Algorithms.LineBreaks(init.Conditions[instructionX, instructionY].Text));
+        string text;
+
+        // Either state it is solved, show the currently submitted wire, or display the manual.
+        if (init.IsSolved)
+            text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId);
+
+        else if (isSelectingWire)
+            text = string.Format("[Wire Selected: {0}]\n\nPlease press the screen\nto cut the wire.", wireSelected);
+
+        else
+            text = string.Format("[{0}{1}]\n\n{2}",
+                                 instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
+                                 instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition",
+                                 Algorithms.LineBreaks(init.Conditions[instructionX, instructionY].Text));
+         
 
         halt = true;
 
@@ -57,19 +66,33 @@ public class HandleCoroutines : MonoBehaviour
         Reversal.ScreenText.text = string.Empty;
         string current = string.Empty;
 
-        for (int i = 0; i < text.Length; i++)
-        {
-            current += text[i].ToString();
+        // Display previous message as it is getting replaced.
+        if (!init.IsSolved && !isSelectingWire)
+            for (int i = 0; i < text.Length; i++)
+            {
+                current += text[i].ToString();
 
-            // The substring for the previous instruction might be negative, so only 'currentText' is used instead in that case.
-            Reversal.ScreenText.text = previous.Length - current.Length >= 0
-                                     ? current + "\n" + previous.Substring(current.Length, previous.Length - current.Length)
-                                     : current;
+                // The substring for the previous instruction might be negative, so only 'currentText' is used instead in that case.
+                Reversal.ScreenText.text = previous.Length - current.Length >= 0
+                                         ? current + "\n" + previous.Substring(current.Length, previous.Length - current.Length)
+                                         : current;
 
-            // This makes characters display 2 at a time.
-            if (i % 2 == 0 && !halt)
-                yield return new WaitForSeconds(0.02f);
-        }
+                // This makes characters display 2 at a time.
+                if (i % 2 == 0 && !halt)
+                    yield return new WaitForSeconds(0.02f);
+            }
+
+        // Instantly clear the previous message.
+        else
+            for (int i = 0; i < text.Length; i++)
+            {
+                current += text[i].ToString();
+                Reversal.ScreenText.text = current;
+
+                // This makes characters display 2 at a time.
+                if (i % 2 == 0 && !halt)
+                    yield return new WaitForSeconds(0.02f);
+            }
 
         for (int j = 0; Reversal.ScreenText.text.Length > current.Length; j++)
         {
@@ -81,7 +104,7 @@ public class HandleCoroutines : MonoBehaviour
                 yield return new WaitForSeconds(0.02f);
         }
 
-        // Sometimes it accidentally removes the last character, this makes it reappear.
+        // Sometimes it removes the last character, this makes it reappear.
         Reversal.ScreenText.text = current;
         previous = current;
     }
