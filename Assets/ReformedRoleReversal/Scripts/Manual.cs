@@ -119,7 +119,9 @@ static class Manual
             Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", Arrays.Ordinals[parameters[0]], Arrays.Ordinals[parameters[1]], Arrays.Ordinals[parameters[2]])
         };
         
-        if (wires[parameters[0]] == wires[parameters[1]] || wires[parameters[1]] == wires[parameters[2]] || wires[parameters[2]] == wires[parameters[0]])
+        if (wires[parameters[0]] == wires[parameters[1]] ||
+            wires[parameters[1]] == wires[parameters[2]] ||
+            wires[parameters[2]] == wires[parameters[0]])
         {
             int matchingWire = wires[parameters[0]] == wires[parameters[1]] ? wires[parameters[0]] : wires[parameters[2]];
             condition.Wire = Algorithms.Find(method: "firstInstanceOfNotKey", key: ref matchingWire, wires: wires);
@@ -158,9 +160,10 @@ static class Manual
 
         if (wires.Distinct().Count() == wires.Count())
         {
-            Algorithms.RevertLookup(wires, ref lookup);
-            int key = highest ? wires.Max() : wires.Min();
-            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
+            int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
+            int key = highest ? revertedWires.Max() : revertedWires.Min();
+
+            condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: revertedWires);
         }
 
         return condition;
@@ -187,10 +190,10 @@ static class Manual
             seenException = true;
         }
 
-        Algorithms.RevertLookup(wires, ref lookup);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
+        int key = lowest ? revertedWires.Min() : revertedWires.Max();
 
-        int key = lowest ? wires.Min() : wires.Max();
-        condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires);
+        condition.Wire = Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: revertedWires);
 
         return condition;
     }
@@ -292,16 +295,16 @@ static class Manual
             Text = string.Format("If all values are in {0} order, cut the wire with the {1} {2} value.", ascending ? "ascending" : "decending", first ? "first" : "last", odd ? "odd" : "even")
         };
 
-        Algorithms.RevertLookup(wires, ref lookup);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
 
-        for (int i = 1; i < wires.Length; i++)
-            if ((ascending && wires[i - 1] > wires[i]) || (!ascending && wires[i - 1] < wires[i]))
+        for (int i = 1; i < revertedWires.Length; i++)
+            if ((ascending && revertedWires[i - 1] > revertedWires[i]) || (!ascending && revertedWires[i - 1] < revertedWires[i]))
                 return condition;
 
         string method = first ? "first" : "last";
         method += odd ? "Odd" : "Even";
 
-        condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
+        condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: revertedWires);
 
         return condition;
     }
@@ -334,10 +337,12 @@ static class Manual
             Text = string.Format("If the {0} wire has the {1} value, cut the first {2}-valued wire.", Arrays.Ordinals[parameter], highestIf ? "highest" : "lowest", highestThen ? "highest" : "lowest")
         };
 
-        Algorithms.RevertLookup(wires, ref lookup);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
 
-        if ((highestIf && wires.Max() == wires[parameter]) || (!highestIf && wires.Min() == wires[parameter]))
-            condition.Wire = highestThen ? wires.ToList().IndexOf(wires.Max()) + 1 : wires.ToList().IndexOf(wires.Min()) + 1;
+        if ((highestIf && revertedWires.Max() == revertedWires[parameter]) || 
+           (!highestIf && revertedWires.Min() == revertedWires[parameter]))
+            condition.Wire = highestThen ? revertedWires.ToList().IndexOf(revertedWires.Max()) + 1
+                                         : revertedWires.ToList().IndexOf(revertedWires.Min()) + 1;
 
         return condition;
     }
@@ -388,12 +393,12 @@ static class Manual
             Text = string.Format("If the sum of all wire's values are divisible by {0}, cut the last {1}ish wire.", divisible, Arrays.GroupedColors[parameter])
         };
 
-        Algorithms.RevertLookup(wires, ref lookup);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
 
         string method = parameter < 5 ? "lastInstanceOfPurple" : "lastInstanceOfBlue";
 
-        if (wires.Sum() % divisible == 0)
-            condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
+        if (revertedWires.Sum() % divisible == 0)
+            condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: revertedWires);
 
         return condition;
     }
@@ -408,14 +413,15 @@ static class Manual
             Text = string.Format("If the {0} wire has a {1} value than the {2} wire, cut the first wire that has a value difference of 5 from any of the other wires.", Arrays.Ordinals[parameters[0]], higher ? "higher" : "lower", Arrays.Ordinals[parameters[1]])
         };
 
-        Algorithms.RevertLookup(wires, ref lookup);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
 
-        if ((higher && wires[parameters[0]] > wires[parameters[1]]) || (!higher && wires[parameters[0]] < wires[parameters[1]]))
+        if ((higher && revertedWires[parameters[0]] > revertedWires[parameters[1]]) ||
+           (!higher && revertedWires[parameters[0]] < revertedWires[parameters[1]]))
         {
-            int?[] opposites = new int?[wires.Length];
+            int?[] opposites = new int?[revertedWires.Length];
 
-            for (int i = 0; i < wires.Length; i++)
-                opposites[i] = Algorithms.Find(method: "firstInstanceOfOppositeKey", key: ref wires[i], wires: wires);
+            for (int i = 0; i < revertedWires.Length; i++)
+                opposites[i] = Algorithms.Find(method: "firstInstanceOfOppositeKey", key: ref revertedWires[i], wires: revertedWires);
 
             condition.Wire = Algorithms.First(opposites);
         }
@@ -640,13 +646,12 @@ static class Manual
             Text = string.Format("Cut the {0} {1}-valued wire.", highest ? "highest" : "lowest", firstLast ? "first" : "last")
         };
 
-        Algorithms.RevertLookup(wires, ref lookup);
-
-        int key = highest ? wires.Max() : wires.Min();
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
+        int key = highest ? revertedWires.Max() : revertedWires.Min();
 
         condition.Wire = firstLast 
-                       ? Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: wires) 
-                       : Algorithms.Find(method: "lastInstanceOfKey", key: ref key, wires: wires);
+                       ? Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: revertedWires) 
+                       : Algorithms.Find(method: "lastInstanceOfKey", key: ref key, wires: revertedWires);
 
         return condition;
     }

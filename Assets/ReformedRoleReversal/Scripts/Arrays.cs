@@ -14,6 +14,7 @@ internal class Arrays
 
     private readonly KMBombInfo info;
 
+    // When updating, change this string!
     private const string version = "v1";
     
     /// <summary>

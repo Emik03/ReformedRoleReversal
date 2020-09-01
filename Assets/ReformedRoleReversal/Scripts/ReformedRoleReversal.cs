@@ -15,7 +15,6 @@ public class ReformedRoleReversal : MonoBehaviour
 
     private void Awake()
     {
-        Init = new Init(Coroutines, this);
-        Module.OnActivate += Init.Activate;
+        Module.OnActivate += (Init = new Init(Coroutines, this)).Activate;
     }
 }

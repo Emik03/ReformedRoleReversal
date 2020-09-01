@@ -121,6 +121,7 @@ static class Algorithms
             default: throw new NotImplementedException("Could not find '" + method + "' for Algorithms.Find(), did you misspell the string?");
         }
 
+        // The wire was unable to be found, and the condition is skipped as a result.
         return null;
     }
 
@@ -165,7 +166,7 @@ static class Algorithms
     /// </summary>
     /// <param name="text">The text to add line breaks with.</param>
     /// <returns>A modified string containing vertical bars.</returns>
-    internal static string LineBreaks(string text)
+    internal static string Format(string text)
     {
         // 27 is the most amount of characters that can be fit inside the screen.
         const byte jump = 27;
@@ -271,11 +272,13 @@ static class Algorithms
     /// <summary>
     /// Undoes the lookup offset by subtracting each index in the wires with the lookup.
     /// </summary>
-    /// <param name="wires">The array to apply to.</param>
-    /// <param name="lookup">The lookup offset to apply with.</param>
-    internal static void RevertLookup(int[] wires, ref int lookup)
+    /// <param name="array">The array to apply to.</param>
+    /// <param name="number">The lookup offset to apply with.</param>
+    internal static int[] RevertLookup(int[] array, ref int number)
     {
-        for (int i = 0; i < wires.Length; i++)
-            wires[i] = (wires[i] - lookup + 10) % 10;
+        int[] newArray = new int[array.Length];
+        for (int i = 0; i < array.Length; i++)
+            array[i] = (array[i] - number + 10) % 10;
+        return array;
     }
 }

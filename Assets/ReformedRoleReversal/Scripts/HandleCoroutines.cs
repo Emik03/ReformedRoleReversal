@@ -53,7 +53,7 @@ public class HandleCoroutines : MonoBehaviour
             text = string.Format("[{0}{1}]\n\n{2}",
                                  instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
                                  instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition",
-                                 Algorithms.LineBreaks(init.Conditions[instructionX, instructionY].Text));
+                                 Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
          
 
         halt = true;

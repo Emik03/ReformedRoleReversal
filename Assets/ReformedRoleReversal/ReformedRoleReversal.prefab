@@ -153,6 +153,7 @@ GameObject:
   - component: {fileID: 4010099718882090}
   - component: {fileID: 33447328297665730}
   - component: {fileID: 23876514502843124}
+  - component: {fileID: 114964647945058752}
   m_Layer: 0
   m_Name: SeedBackingBig
   m_TagString: Untagged
@@ -245,6 +246,7 @@ GameObject:
   - component: {fileID: 4530882941342878}
   - component: {fileID: 33188691402068812}
   - component: {fileID: 23580691987703996}
+  - component: {fileID: 114667046260885616}
   m_Layer: 0
   m_Name: SeedBackingSmall
   m_TagString: Untagged
@@ -1896,6 +1898,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - GUI/KT 3D Text
+--- !u!114 &114667046260885616
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1421371350728948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - KT/Mobile/DiffuseTint
 --- !u!114 &114760871790572906
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2050,6 +2065,19 @@ MonoBehaviour:
   AllowSelectionWrapY: 0
   ForceSelectionHighlight: 0
   ForceInteractionHighlight: 0
+--- !u!114 &114964647945058752
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1215726021305492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - KT/Mobile/DiffuseTint
 --- !u!114 &114981084254699570
 MonoBehaviour:
   m_ObjectHideFlags: 1
