@@ -278,7 +278,7 @@ static class Algorithms
     {
         int[] newArray = new int[array.Length];
         for (int i = 0; i < array.Length; i++)
-            array[i] = (array[i] - number + 10) % 10;
-        return array;
+            newArray[i] = (array[i] - number + 10) % 10;
+        return newArray;
     }
 }

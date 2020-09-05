@@ -22,8 +22,7 @@ internal class Init
     protected internal readonly Interact Interact;
     protected internal readonly ReformedRoleReversal Reversal;
 
-    protected internal static bool LightsOn = false;
-    protected internal bool IsSolved = false;
+    protected internal bool IsSolved = false, LightsOn = false;
     protected internal static int ModuleIdCounter = 1;
     protected internal int ModuleId = 0;
 

@@ -18,7 +18,7 @@ internal class HandleManual
         interact = init.Interact;
     }
 
-    protected internal readonly int Seed = rnd.Next(0, 1000000000);
+    protected internal string Seed = rnd.Next(0, 1000000000).ToString();
 
     private readonly HandleCoroutines coroutines;
     private readonly Init init;
@@ -34,30 +34,29 @@ internal class HandleManual
     /// </summary>
     protected internal void Generate()
     {
-        // The amount of wires is calculated with mod 7, then add 3.
-        int[] wires = new int[(Seed % 7) + 3];
-        string strSeed = Seed.ToString();
-
         // Generate random parameters as rules.
         bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         // 10% of the time, the string is less than 9 characters long. Append accordingly.
-        while (strSeed.Length < 9)
-            strSeed = left ? '0' + strSeed : strSeed + '0';
+        while (Seed.Length < 9)
+            Seed = left ? '0' + Seed : Seed + '0';
+
+        // The amount of wires is calculated with mod 7, then add 3.
+        int[] wires = new int[(int.Parse(Seed) % 7) + 3];
 
         // Random lookup table, which is simply the default with all values added to this variable.
         int lookup = rnd.Next(0, 10);
 
         for (int i = 0; i < wires.Length; i++)
-            wires[i] = (int)(char.GetNumericValue(strSeed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
+            wires[i] = (int)(char.GetNumericValue(Seed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
 
         // Get random base. Base 20 is minimum because it never displays more than 7 characters.
         char[] baseN = Algorithms.SubArray(Arrays.Base62, rnd.Next(20, 63));
 
         // Converts the seed from base 10 to the random base chosen.
-        reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(strSeed), baseChars: baseN);
+        reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(Seed), baseChars: baseN);
         
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. # of wires: {5}. Place {6} 0's. Take {7} wires. Lookup: #{8}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), strSeed, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. # of wires: {5}. Place {6} 0's. Take {7} wires. Lookup: #{8}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
 
         // Log the list of all wires, converting each index to the respective string.
         string[] log = new string[wires.Length];
@@ -75,7 +74,7 @@ internal class HandleManual
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
             for (int j = 0; j < j2; j++)
-                coroutines.GenerateCondition(i, j, wires, ref strSeed, ref lookup);
+                coroutines.GenerateCondition(i, j, wires, ref Seed, ref lookup);
     }
 
     /// <summary>
@@ -84,11 +83,11 @@ internal class HandleManual
     /// <param name="i">The index of the first dimension.</param>
     /// <param name="j">The index of the second dimension.</param>
     /// <param name="wires">The list of wires.</param>
-    /// <param name="strSeed">The seed converted to a string, very similar to wires.</param>
+    /// <param name="Seed">The seed converted to a string, very similar to wires.</param>
     /// <param name="lookup">This variable is needed in case if the lookup offset needs to be reverted.</param>
     /// <param name="isCorrectIndex">To prevent having the user find out the amount of wires by carefully reading the conditions, the wires specified are adjusted per section.</param>
     /// <returns>This is meant for multithreading, and only returns null.</returns>
-    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string strSeed, int lookup, bool isCorrectIndex)
+    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string Seed, int lookup, bool isCorrectIndex)
     {
         yield return null;
 
@@ -135,19 +134,19 @@ internal class HandleManual
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
         if (generated == init.Conditions.GetLength(0) * init.Conditions.GetLength(1))
         {
-            interact.CorrectAnswer = GetAnswer(ref strSeed);
-            Init.LightsOn = true;
+            interact.CorrectAnswer = GetAnswer(ref Seed);
+            init.LightsOn = true;
         }
     }
 
     /// <summary>
     /// Scans through the condition's Wire and SkipTo properties to determine the answer of the module.
     /// </summary>
-    /// <param name="strSeed">The seed in base 10.</param>
+    /// <param name="Seed">The seed in base 10.</param>
     /// <returns>Returns the answer, if the answer is null then any wire can be cut.</returns>
-    private int? GetAnswer(ref string strSeed)
+    private int? GetAnswer(ref string Seed)
     {
-        int wireSelected = 1, wireCount = (int.Parse(strSeed) % 7) + 1, iMax = init.Conditions.GetLength(1);
+        int wireSelected = 1, wireCount = (int.Parse(Seed) % 7) + 1, iMax = init.Conditions.GetLength(1);
         bool isSelectingWire = false;
 
         coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
