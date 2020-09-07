@@ -188,7 +188,7 @@ static class Manual
 
         Condition condition = new Condition
         {
-            Text = string.Format("If all wires are unique except for 1 {0} with matching colors, cut the first wire with the {1} value.", Arrays.Tuplets[parameter], lowest ? "lowest" : "highest")
+            Text = string.Format("If all wires are unique except for 0 or 1 {0} with matching colors, cut the first wire with the {1} value.", Arrays.Tuplets[parameter], lowest ? "lowest" : "highest")
         };
 
         foreach (IGrouping<int, int> number in wires.GroupBy(x => x))
@@ -212,7 +212,7 @@ static class Manual
 
     public static Condition G(int[] wires, int lookup, KMBombInfo Info)
     {
-        int parameter = rnd.Next(1, (wires.Length / 2) + 1);
+        int parameter = rnd.Next(1, (int)Math.Ceiling((float)wires.Length / 2) + 1);
         Array.Sort(wires);
 
         int exceptions = 0,

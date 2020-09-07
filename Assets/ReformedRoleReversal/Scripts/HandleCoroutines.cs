@@ -12,7 +12,7 @@ public class HandleCoroutines : MonoBehaviour
     private Init init;
 
     private string previous = string.Empty;
-    private bool halt;
+    private bool halt, freeze;
 
     private void Start()
     {
@@ -27,11 +27,11 @@ public class HandleCoroutines : MonoBehaviour
     /// <param name="wires">The values of the wires.</param>
     /// <param name="strSeed">The seed in base-10.</param>
     /// <param name="lookup">The lookup table, which might be needed to revert values.</param>
-    internal void GenerateSetOfConditions(int i, int[] wires, ref string strSeed, ref int lookup)
+    internal void GenerateSetOfConditions(int i, int[] wires, ref int lookup)
     {
         int j2 = init.Conditions.GetLength(1);
         for (int j = 0; j < j2; j++)
-            StartCoroutine(manual.GenerateCondition(i, j, wires, strSeed, lookup, i + 2 == wires.Length));
+            StartCoroutine(manual.GenerateCondition(i, j, wires, lookup, i + 2 == wires.Length));
     }
 
     /// <summary>
@@ -70,8 +70,10 @@ public class HandleCoroutines : MonoBehaviour
                                  instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
                                  instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition",
                                  Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
-         
 
+
+        if (!isSelectingWire)
+            freeze = false;
         halt = true;
 
         // This delay should always be twice as much to make sure that an already running coroutine will halt.
@@ -94,7 +96,7 @@ public class HandleCoroutines : MonoBehaviour
                                          : current;
 
                 // This makes characters display 2 at a time.
-                if (i % 2 == 0 && !halt)
+                if (i % 2 == 0 && !halt && !freeze)
                     yield return new WaitForSeconds(0.02f);
             }
 
@@ -106,7 +108,7 @@ public class HandleCoroutines : MonoBehaviour
                 Reversal.ScreenText.text = current;
 
                 // This makes characters display 2 at a time.
-                if (i % 2 == 0 && !halt)
+                if (i % 2 == 0 && !halt && !freeze)
                     yield return new WaitForSeconds(0.02f);
             }
 
@@ -119,6 +121,8 @@ public class HandleCoroutines : MonoBehaviour
             if (j % 2 == 0 && !halt)
                 yield return new WaitForSeconds(0.02f);
         }
+
+        freeze = isSelectingWire;
 
         // Sometimes it removes the last character, this makes it reappear.
         Reversal.ScreenText.text = current;

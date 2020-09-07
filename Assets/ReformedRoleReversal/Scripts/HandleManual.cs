@@ -73,7 +73,7 @@ internal class HandleManual
 
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
-            coroutines.GenerateSetOfConditions(i, wires, ref strSeed, ref lookup);
+            coroutines.GenerateSetOfConditions(i, wires, ref lookup);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ internal class HandleManual
     /// <param name="lookup">This variable is needed in case if the lookup offset needs to be reverted.</param>
     /// <param name="isCorrectIndex">To prevent having the user find out the amount of wires by carefully reading the conditions, the wires specified are adjusted per section.</param>
     /// <returns>This is meant for multithreading, and only returns null.</returns>
-    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, string Seed, int lookup, bool isCorrectIndex)
+    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, int lookup, bool isCorrectIndex)
     {
         yield return null;
 
@@ -141,7 +141,7 @@ internal class HandleManual
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
         if (generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1))
-            interact.CorrectAnswer = GetAnswer(ref strSeed, realWires, ref lookup);
+            interact.CorrectAnswer = GetAnswer(ref Seed, realWires, ref lookup);
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ internal class HandleManual
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are now {1}.", init.ModuleId, log.Join(", "));
 
-                coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref strSeed, ref lookup);
+                coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup);
 
                 // This method will run again from the generate set of conditions. An answer has not been determined yet.
                 return null;
