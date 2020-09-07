@@ -1478,7 +1478,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: bbc70d4485a1c33498120d33f3b9f6d9, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4293848814
+    rgba: 4292914431
 --- !u!102 &102202955529991922
 TextMesh:
   serializedVersion: 3
@@ -1507,7 +1507,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1379633444477292}
-  m_Text: 
+  m_Text: 'Seed: ???????'
   m_OffsetZ: 0
   m_CharacterSize: 0.2
   m_LineSpacing: 1
@@ -1541,7 +1541,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: bbc70d4485a1c33498120d33f3b9f6d9, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4293848814
+    rgba: 4292914431
 --- !u!102 &102417566454299918
 TextMesh:
   serializedVersion: 3
@@ -1562,7 +1562,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: bbc70d4485a1c33498120d33f3b9f6d9, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4293848814
+    rgba: 4292914431
 --- !u!102 &102723577206069256
 TextMesh:
   serializedVersion: 3
@@ -1583,7 +1583,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: bbc70d4485a1c33498120d33f3b9f6d9, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4293848814
+    rgba: 4292914431
 --- !u!114 &114008332644078000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   - {fileID: 114230116753608642}
   - {fileID: 114230116753608642}
   IsPassThrough: 0
-  ChildRowLength: 2
+  ChildRowLength: 4
   Highlight: {fileID: 114760871790572906}
   SelectableColliders: []
   DefaultSelectableIndex: 2

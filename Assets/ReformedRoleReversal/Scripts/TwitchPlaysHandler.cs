@@ -10,7 +10,7 @@ public class TwitchPlaysHandler : MonoBehaviour
     private Interact interact;
 
 #pragma warning disable 414
-    private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' with range: 1-9) and !{0} manual <#> <#> (Left digit with range 3-9 or 'help', right digit refers to page inside the section with range 1-8. If you don't know how this module works, do manual help 2, manual help 3, manual help 4...)";
+    private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' with range: 1-9) and !{0} manual <#> <#> (Left digit with range 3-9 or 'help', right digit refers to page inside the section with range 1-8. If you don't know how this module works, do manual help 2, manual help 3, manual help 4... - be sure to also use !tilt)";
 #pragma warning restore 414
 
     private void Start()
