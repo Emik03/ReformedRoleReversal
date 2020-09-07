@@ -72,7 +72,7 @@ public class HandleCoroutines : MonoBehaviour
                                  Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
 
 
-        if (!isSelectingWire)
+        if (!isSelectingWire || init.Solved)
             freeze = false;
         halt = true;
 
