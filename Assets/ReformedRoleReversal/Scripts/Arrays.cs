@@ -90,7 +90,7 @@ internal class Arrays
         set { Base62 = value; }
     }
 
-    private static readonly string[] strings = new string[17]
+    private static readonly string[] edgework = new string[17]
     {
         "batteries",
         "AA batteries",
@@ -116,7 +116,7 @@ internal class Arrays
     /// </summary>
     internal static string[] Edgework
     {
-        get { return strings; }
+        get { return edgework; }
         set { Edgework = value; }
     }
 
@@ -229,9 +229,9 @@ internal class Arrays
             new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
             new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With lookup #" + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
+            new Condition { Text = "When removing wires during conditions, you have to refer to the conditions with the new amount of wires." },
             new Condition { Text = "Once the first condition that applies has been discovered, enter submission mode by pressing either the " + buttonText[buttonOrder.IndexOf(0)] + " or " + buttonText[buttonOrder.IndexOf(3)] + " arrow button." },
-            new Condition { Text = "NOTE: If a condition is true, but the wire to cut doesn't exist, skip the condition instead." },
-            new Condition { Text = "Good luck!~ (" + version + ")" }
+            new Condition { Text = "NOTE: If the condition specifies to cut a nonexistent wire, skip it instead. Good luck!~ (" + version + ")" }
         };
     }
 

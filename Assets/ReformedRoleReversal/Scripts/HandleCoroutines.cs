@@ -20,11 +20,27 @@ public class HandleCoroutines : MonoBehaviour
         manual = init.Manual;
     }
 
-    internal void GenerateCondition(int i, int j, int[] wires, ref string strSeed, ref int lookup)
+    /// <summary>
+    /// Generates 1 set of conditions from the number of wires provided.
+    /// </summary>
+    /// <param name="i">The index of the first dmiension.</param>
+    /// <param name="wires">The values of the wires.</param>
+    /// <param name="strSeed">The seed in base-10.</param>
+    /// <param name="lookup">The lookup table, which might be needed to revert values.</param>
+    internal void GenerateSetOfConditions(int i, int[] wires, ref string strSeed, ref int lookup)
     {
-        StartCoroutine(manual.GenerateCondition(i, j, wires, strSeed, lookup, i + 2 == wires.Length));
+        int j2 = init.Conditions.GetLength(1);
+        for (int j = 0; j < j2; j++)
+            StartCoroutine(manual.GenerateCondition(i, j, wires, strSeed, lookup, i + 2 == wires.Length));
     }
 
+    /// <summary>
+    /// Starts the coroutine of animating the screen.
+    /// </summary>
+    /// <param name="instructionX">The index of the first dimension.</param>
+    /// <param name="instructionY">The index of the second dimension.</param>
+    /// <param name="wireSelected">The current selected wire.</param>
+    /// <param name="isSelectingWire">Whether the module is in submission mode.</param>
     internal void UpdateScreen(int instructionX, int instructionY, ref int wireSelected, ref bool isSelectingWire)
     {
         StartCoroutine(RenderScreen(instructionX, instructionY, wireSelected, isSelectingWire));
@@ -36,14 +52,14 @@ public class HandleCoroutines : MonoBehaviour
     /// <param name="instructionX">The index of the first dimension.</param>
     /// <param name="instructionY">The index of the second dimension.</param>
     /// <param name="wireSelected">The current selected wire.</param>
-    /// <param name="isSelectingWire">Whether or not the module is in submission mode.</param>
+    /// <param name="isSelectingWire">Whether the module is in submission mode.</param>
     /// <returns>It's an animation, it only returns WaitForSeconds().</returns>
     internal protected IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected, bool isSelectingWire)
     {
         string text;
 
         // Either state it is solved, show the currently submitted wire, or display the manual.
-        if (init.IsSolved)
+        if (init.Solved)
             text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId);
 
         else if (isSelectingWire)
@@ -67,7 +83,7 @@ public class HandleCoroutines : MonoBehaviour
         string current = string.Empty;
 
         // Display previous message as it is getting replaced.
-        if (!init.IsSolved && !isSelectingWire)
+        if (!init.Solved && !isSelectingWire)
             for (int i = 0; i < text.Length; i++)
             {
                 current += text[i].ToString();

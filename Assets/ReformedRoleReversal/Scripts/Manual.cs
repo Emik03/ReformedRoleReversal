@@ -7,66 +7,78 @@ static class Manual
 {
     private static readonly Random rnd = new Random();
 
-    #region First Conditions
-    public static Condition FirstA(int[] wires, int lookup, KMBombInfo Info)
+    #region First/Second Conditions
+    public static Condition FirstA(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework = new Arrays(Info).GetNumbers(parameters[1]);
-        bool inversion = rnd.NextDouble() > 0.5;
+        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
         parameters[2] = (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
-            Text = string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+             Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+                                   : string.Format("If there's at {0} {1} {2}, remove the {3}{4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
-            condition.SkipTo = parameters[2];
+            if (firstCondition)
+                condition.Skip = parameters[2];
+            else
+                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }
 
-    public static Condition FirstB(int[] wires, int lookup, KMBombInfo Info)
+    public static Condition FirstB(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
     {
         Arrays staticArrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
-        bool more = rnd.NextDouble() > 0.5;
+        bool more = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         parameters[2] = (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
-            Text = string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
+            Text = firstCondition ? string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
+                                  : string.Format("If there's {0} {1} than {2}, remove the {3}{4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!more && edgework1 < edgework2) || (more && edgework1 > edgework2))
-            condition.SkipTo = parameters[2];
+            if (firstCondition)
+                condition.Skip = parameters[2];
+            else
+                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }
 
-    public static Condition FirstC(int[] wires, int lookup, KMBombInfo Info)
+    public static Condition FirstC(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
     {
         Arrays staticArrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
-        bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5;
+        bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         parameters[2] = (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
-            Text = string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", parameters[2])
+            Text = firstCondition ? string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", parameters[2])
+                                  : string.Format("If {0} {1} {2} {3} exist, remove the {4}{5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (inversion && ((orAnd && (edgework1 == 0 || edgework2 == 0)) || (!orAnd && edgework1 == 0 && edgework2 == 0))
         || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
-            condition.SkipTo = parameters[2];
+            if (firstCondition)
+                condition.Skip = parameters[2];
+            else
+                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }

@@ -32,7 +32,7 @@ internal class Interact
         reversal.Buttons[num].AddInteractionPunch();
 
         // If lights are off or the module is solved, the buttons should do nothing.
-        if (!Init.LightsOn || init.IsSolved)
+        if (!init.Ready || init.Solved)
             return;
 
         int length = init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
@@ -79,7 +79,7 @@ internal class Interact
         reversal.Screen.AddInteractionPunch(3);
 
         // If lights are off or the module is solved, the buttons should do nothing.
-        if (!Init.LightsOn || init.IsSolved)
+        if (!init.Ready || init.Solved)
             return;
 
         // Jump to next section in manual mode.
@@ -96,7 +96,7 @@ internal class Interact
         if (CorrectAnswer == null || CorrectAnswer == WireSelected)
         {
             UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: The correct wire was cut. Module solved!", init.ModuleId);
-            init.IsSolved = true;
+            init.Solved = true;
 
             reversal.Module.HandlePass();
 

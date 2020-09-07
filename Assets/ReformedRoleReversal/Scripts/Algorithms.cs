@@ -251,7 +251,7 @@ static class Algorithms
             throw new ArgumentOutOfRangeException("range: " + range.Join(", "), "The length of the returned array (" + length + ") is larger than the range specified (" + range.Length + ")!");
 
         // Instance can be pulled linearly since the range has been shuffled anyway.
-        return SubArray(range, length);
+        return SubArray(range, 0, length);
     }
 
     /// <summary>
@@ -262,11 +262,25 @@ static class Algorithms
     /// <param name="index">The inclusive starting index.</param>
     /// <param name="length">The length of the copy.</param>
     /// <returns></returns>
-    public static T[] SubArray<T>(this T[] data, int length)
+    public static T[] SubArray<T>(this T[] data, int index, int length)
     {
         T[] result = new T[length];
-        Array.Copy(data, 0, result, 0, length);
+        Array.Copy(data, index, result, 0, length);
         return result;
+    }
+
+    /// <summary>
+    /// Returns a new copy of the array, which will not be referenced.
+    /// </summary>
+    /// <typeparam name="T">The type the array is.</typeparam>
+    /// <param name="array">The array to copy from.</param>
+    /// <returns>A new independant copy of the array provided.</returns>
+    public static T[] Clone<T>(this T[] array)
+    {
+        var newArray = new T[array.Length];
+        for (var i = 0; i < array.Length; i++)
+            newArray[i] = array[i];
+        return newArray;
     }
 
     /// <summary>
@@ -278,7 +292,7 @@ static class Algorithms
     {
         int[] newArray = new int[array.Length];
         for (int i = 0; i < array.Length; i++)
-            array[i] = (array[i] - number + 10) % 10;
-        return array;
+            newArray[i] = (array[i] - number + 10) % 10;
+        return newArray;
     }
 }
