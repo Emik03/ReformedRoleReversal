@@ -27,7 +27,7 @@ internal class HandleManual
 
     private Condition[] tutorial;
     private static readonly Rnd rnd = new Rnd();
-    private int generated = 0;
+    private int generated;
 
     /// <summary>
     /// Converts the random number generated into wires, and a seed for the module to display.
@@ -110,7 +110,7 @@ internal class HandleManual
             wires = Enumerable.Repeat(0, i + 2).Select(k => rnd.Next(0, 10)).ToArray();
 
         // Contains all methods in the Manual class.
-        const string methods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", specialMethods = "ABC";
+        const string methods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", specialMethods = "ABCD";
         Type classType = typeof(Manual);
         MethodInfo methodInfo;
 
@@ -122,8 +122,9 @@ internal class HandleManual
             // First case. (Guaranteed edgework)
             case 0: methodInfo = classType.GetMethod("First" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString()); break;
 
-            case 1: methodInfo = i > 2 ? classType.GetMethod("First" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString())
-                                       : classType.GetMethod(methods[rnd.Next(0, methods.Length)].ToString()); break;
+            // Second case. (3 wires mixed, any other wires guaranteed edgework)
+            case 1: methodInfo = i != 1 ? classType.GetMethod("First" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString())
+                                        : classType.GetMethod(methods[rnd.Next(0, methods.Length)].ToString()); break;
 
             // Last case. (Guaranteed no edgework)
             case 7: methodInfo = classType.GetMethod("Last" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString()); break;
@@ -133,7 +134,7 @@ internal class HandleManual
         }
         
         // Invoke the random method obtained and assign it into the current variable.
-        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (j == 1 && i > 2) ? specialVariables : variables);
+        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (j == 1 && i != 1) ? specialVariables : variables);
 
         // Wait until the method has finished running.
         yield return new WaitWhile(() => init.Conditions[i, j] == null);
@@ -153,13 +154,13 @@ internal class HandleManual
     {
         int wireSelected = 1, wireCount = wires.Length - 2, iMax = init.Conditions.GetLength(1);
         bool isSelectingWire = false;
-        string[] validRemoves = new[] { "-2", "-1", "1", "2" };
+        string[] discardValues = new[] { "-2", "-1", "1", "2" };
 
         coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
 
         for (int i = 0; i < iMax; i++)
         {
-            // If true, set the current index to the SkipTo property.
+            // If true, set the current index to the Skip property.
             if (init.Conditions[wireCount, i].Skip != null)
             {
                 if (init.Conditions[wireCount, i].Skip < 1 || init.Conditions[wireCount, i].Skip > iMax)
@@ -169,14 +170,15 @@ internal class HandleManual
                 i = (int)init.Conditions[wireCount, i].Skip - 1;
             }
 
-            if (init.Conditions[wireCount, i].Remove != null)
+            // If true, regenerate a set of conditions and refer the index to the new conditions.
+            if (init.Conditions[wireCount, i].Discard != null)
             {
-                if (!validRemoves.Contains(init.Conditions[wireCount, i].Remove.ToString()))
-                    throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Remove + " for parameter \"Remove\"! This should not happen under normal circumstances, as it should only return -2, -1, 1, or 2.");
+                if (!discardValues.Contains(init.Conditions[wireCount, i].Discard.ToString()))
+                    throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Discard + " for parameter \"Discard\"! This should not happen under normal circumstances, as it should only return -2, -1, 1, or 2.");
 
-                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, remove the {4}{5} wire{6}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Math.Abs((int)init.Conditions[wireCount, i].Remove) > 1 ? Math.Abs((int)init.Conditions[wireCount, i].Remove) + " " : string.Empty, init.Conditions[wireCount, i].Remove < 0 ? "leftmost" : "rightmost", Math.Abs((int)init.Conditions[wireCount, i].Remove) > 1 ? "s" : string.Empty);
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, discard the {4}{5} wire{6}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Math.Abs((int)init.Conditions[wireCount, i].Discard) > 1 ? Math.Abs((int)init.Conditions[wireCount, i].Discard) + " " : string.Empty, init.Conditions[wireCount, i].Discard < 0 ? "leftmost" : "rightmost", Math.Abs((int)init.Conditions[wireCount, i].Discard) > 1 ? "s" : string.Empty);
 
-                wires = Algorithms.SubArray(wires, init.Conditions[wireCount, i].Remove < 0 ? Math.Abs((int)init.Conditions[wireCount, i].Remove) : 0, wires.Length - Math.Abs((int)init.Conditions[wireCount, i].Remove));
+                wires = Algorithms.SubArray(wires, init.Conditions[wireCount, i].Discard < 0 ? Math.Abs((int)init.Conditions[wireCount, i].Discard) : 0, wires.Length - Math.Abs((int)init.Conditions[wireCount, i].Discard));
 
                 // Log the list of all wires, converting each index to the respective string.
                 string[] log = new string[wires.Length];

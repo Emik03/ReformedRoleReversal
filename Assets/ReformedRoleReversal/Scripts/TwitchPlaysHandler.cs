@@ -2,6 +2,9 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+/// <summary>
+/// Handles incoming commands in Twitch Plays. Having this be a game object allows the mod to get this script component.
+/// </summary>
 public class TwitchPlaysHandler : MonoBehaviour
 {
     public ReformedRoleReversal Reversal;

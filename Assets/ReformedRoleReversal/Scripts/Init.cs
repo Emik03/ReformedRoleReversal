@@ -22,16 +22,16 @@ internal class Init
     protected internal readonly Interact Interact;
     protected internal readonly ReformedRoleReversal Reversal;
 
-    protected internal bool Solved = false, Ready = false;
-    protected internal static int ModuleIdCounter = 1;
-    protected internal int ModuleId = 0;
+    protected internal bool Solved, Ready;
+    protected internal static int ModuleIdCounter;
+    protected internal int ModuleId;
 
     /// <summary>
     /// Initalizes the module.
     /// </summary>
     protected internal void Activate()
     {
-        ModuleId = ModuleIdCounter++;
+        ModuleId = ++ModuleIdCounter;
 
         Manual.Generate();
 
@@ -44,12 +44,12 @@ internal class Init
         Reversal.Screen.OnInteractEnded += delegate ()
         {
             Reversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, Reversal.Screen.transform);
-            Reversal.Screen.AddInteractionPunch(3);
+            Reversal.Screen.AddInteractionPunch(0.5f);
         };
 
-        for (int i = 0; i < Reversal.Buttons.Length; i++)
+        for (byte i = 0; i < Reversal.Buttons.Length; i++)
         {
-            int j = i;
+            byte j = i;
             Reversal.Buttons[i].OnInteract += delegate ()
             {
                 Interact.PressButton(ref j);

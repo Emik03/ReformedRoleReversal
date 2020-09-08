@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Reformed Role Reversal - A Keep Talking and Nobody Explodes mod by Emik. (@Emik#0001)
+/// </summary>
 public class ReformedRoleReversal : MonoBehaviour
 {
     public HandleCoroutines Coroutines;

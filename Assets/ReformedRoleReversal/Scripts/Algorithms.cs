@@ -192,7 +192,7 @@ static class Algorithms
     /// An optimized method using an array as buffer instead of string concatenation. 
     /// This is faster for return values having a length > 1.
     /// </summary>
-    public static string ConvertFromBase10(int value, char[] baseChars)
+    internal static string ConvertFromBase10(int value, char[] baseChars)
     {
         // 32 is the worst cast buffer size for base 2 and int.MaxValue.
         int i = 32;
@@ -262,7 +262,7 @@ static class Algorithms
     /// <param name="index">The inclusive starting index.</param>
     /// <param name="length">The length of the copy.</param>
     /// <returns></returns>
-    public static T[] SubArray<T>(this T[] data, int index, int length)
+    internal static T[] SubArray<T>(this T[] data, int index, int length)
     {
         T[] result = new T[length];
         Array.Copy(data, index, result, 0, length);
@@ -275,7 +275,7 @@ static class Algorithms
     /// <typeparam name="T">The type the array is.</typeparam>
     /// <param name="array">The array to copy from.</param>
     /// <returns>A new independant copy of the array provided.</returns>
-    public static T[] Clone<T>(this T[] array)
+    internal static T[] Clone<T>(this T[] array)
     {
         var newArray = new T[array.Length];
         for (var i = 0; i < array.Length; i++)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Contains mostly static information and indexable edgework.
+/// Contains mostly static unchanging information and indexable edgework.
 /// </summary>
 internal class Arrays
 {
@@ -14,9 +14,6 @@ internal class Arrays
 
     private readonly KMBombInfo info;
 
-    // When updating, change this string!
-    private const string version = "v1";
-    
     /// <summary>
     /// The version of the module.
     /// </summary>
@@ -24,6 +21,18 @@ internal class Arrays
     {
         get { return version; }
         set { Version = value; }
+    }
+
+    // When updating, change this string!
+    private const string version = "v1";
+
+    /// <summary>
+    /// Indexable array of indicator edgework in alphabetical order.
+    /// </summary>
+    internal static Indicator[] Indicators
+    {
+        get { return indicators; }
+        set { Indicators = value; }
     }
 
     private static readonly Indicator[] indicators = new Indicator[11]
@@ -42,12 +51,12 @@ internal class Arrays
     };
 
     /// <summary>
-    /// Indexable array of indicator edgework in alphabetical order.
+    /// Indexable array of indicator string names in alphabetical order.
     /// </summary>
-    internal static Indicator[] Indicators
+    internal static string[] IndicatorNames
     {
-        get { return indicators; }
-        set { Indicators = value; }
+        get { return indicatorNames; }
+        set { IndicatorNames = value; }
     }
 
     private static readonly string[] indicatorNames = new string[11]
@@ -66,12 +75,12 @@ internal class Arrays
     };
 
     /// <summary>
-    /// Indexable array of indicator string names in alphabetical order.
+    /// 62 length array consisting of 0-9, A-Z, a-z
     /// </summary>
-    internal static string[] IndicatorNames
+    internal static char[] Base62
     {
-        get { return indicatorNames; }
-        set { IndicatorNames = value; }
+        get { return base62; }
+        set { Base62 = value; }
     }
 
     private static readonly char[] base62 = new char[62]
@@ -82,15 +91,15 @@ internal class Arrays
     };
 
     /// <summary>
-    /// 62 length array consisting of 0-9, A-Z, a-z
+    /// Indexable array of edgework string names.
     /// </summary>
-    internal static char[] Base62
+    internal static string[] Edgework
     {
-        get { return base62; }
-        set { Base62 = value; }
+        get { return edgework; }
+        set { Edgework = value; }
     }
 
-    private static readonly string[] edgework = new string[17]
+    private static readonly string[] edgework = new string[20]
     {
         "batteries",
         "AA batteries",
@@ -99,25 +108,28 @@ internal class Arrays
         "indicators",
         "lit indicators",
         "unlit indicators",
+        "indicators not sharing a letter in \"Role\"",
         "port plates",
         "unique ports",
         "duplicate ports",
         "ports",
         "numbers in the serial number",
         "letters in the serial number",
-        "modules (excluding needies)",
-        "modules (including needies)",
+        "vowels in the serial number",
+        "consonants in the serial number",
+        "total modules (excluding needies)",
+        "total modules (including needies)",
         "needy modules",
         "modules with their name containing \"Role Reversal\""
     };
 
     /// <summary>
-    /// Indexable array of edgework string names.
+    /// Indexable array of all colors used.
     /// </summary>
-    internal static string[] Edgework
+    internal static string[] Colors
     {
-        get { return edgework; }
-        set { Edgework = value; }
+        get { return colors; }
+        set { Colors = value; }
     }
 
     private static readonly string[] colors = new string[10]
@@ -135,12 +147,12 @@ internal class Arrays
     };
 
     /// <summary>
-    /// Indexable array of all colors used.
+    /// Indexable array of all colors in an estimated format.
     /// </summary>
-    internal static string[] Colors
+    internal static string[] GroupedColors
     {
-        get { return colors; }
-        set { Colors = value; }
+        get { return groupedColors; }
+        set { GroupedColors = value; }
     }
 
     private static readonly string[] groupedColors = new string[10]
@@ -158,12 +170,12 @@ internal class Arrays
     };
 
     /// <summary>
-    /// Indexable array of all colors in an estimated format.
+    /// Convert index to equivalent ordinal.
     /// </summary>
-    internal static string[] GroupedColors
+    internal static string[] Ordinals
     {
-        get { return groupedColors; }
-        set { GroupedColors = value; }
+        get { return ordinals; }
+        set { Ordinals = value; }
     }
 
     private static readonly string[] ordinals = new string[9]
@@ -180,12 +192,12 @@ internal class Arrays
     };
 
     /// <summary>
-    /// Convert index to equivalent ordinal.
+    /// Convert index to equivalent tuplet.
     /// </summary>
-    internal static string[] Ordinals
+    internal static string[] Tuplets
     {
-        get { return ordinals; }
-        set { Ordinals = value; }
+        get { return tuplets; }
+        set { Tuplets = value; }
     }
 
     private static readonly string[] tuplets = new string[9]
@@ -200,15 +212,6 @@ internal class Arrays
         "octuple",
         "nonuple"
     };
-
-    /// <summary>
-    /// Convert index to equivalent tuplet.
-    /// </summary>
-    internal static string[] Tuplets
-    {
-        get { return tuplets; }
-        set { Tuplets = value; }
-    }
 
     /// <summary>
     /// Generates the tutorial based on a few parameters that dictate the rules.
@@ -229,7 +232,7 @@ internal class Arrays
             new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
             new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With lookup #" + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
-            new Condition { Text = "When removing wires during conditions, you have to refer to the conditions with the new amount of wires." },
+            new Condition { Text = "When told to discard wires during conditions, you then have to refer to the set of conditions with the new amount of wires." },
             new Condition { Text = "Once the first condition that applies has been discovered, enter submission mode by pressing either the " + buttonText[buttonOrder.IndexOf(0)] + " or " + buttonText[buttonOrder.IndexOf(3)] + " arrow button." },
             new Condition { Text = "NOTE: If the condition specifies to cut a nonexistent wire, skip it instead. Good luck!~ (" + version + ")" }
         };
@@ -242,7 +245,7 @@ internal class Arrays
     /// <returns>A number representing the edgework.</returns>
     internal int GetNumbers(int i)
     {
-        return new int[17]
+        return new int[20]
         {
             info.GetBatteryCount(),
             info.GetBatteryCount(Battery.AA) + info.GetBatteryCount(Battery.AAx3) + info.GetBatteryCount(Battery.AAx4),
@@ -251,12 +254,15 @@ internal class Arrays
             info.GetIndicators().Count(),
             info.GetOnIndicators().Count(),
             info.GetOffIndicators().Count(),
+            info.GetIndicators().Where(x => x.Any(y => new[] { 'r', 'o', 'l', 'e' }.Contains(y))).Count(),
             info.GetPortPlateCount(),
             info.GetPorts().Distinct().Count(),
             info.GetPorts().Count() - info.GetPorts().Distinct().Count(),
             info.GetPortCount(),
             info.GetSerialNumberNumbers().Count(),
             info.GetSerialNumberLetters().Count(),
+            info.GetSerialNumberLetters().Where(x => new[] { 'a', 'e', 'i', 'o', 'u' }.Contains(x)).Count(),
+            info.GetSerialNumberLetters().Where(x => !new[] { 'a', 'e', 'i', 'o', 'u' }.Contains(x)).Count(),
             info.GetSolvableModuleNames().Count(),
             info.GetModuleNames().Count(),
             info.GetModuleNames().Count() - info.GetSolvableModuleNames().Count(),

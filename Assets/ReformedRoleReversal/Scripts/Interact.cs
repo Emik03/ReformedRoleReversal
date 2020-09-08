@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Handles the user interactions with the module, striking or solving if necessary.
+/// </summary>
 internal class Interact
 {
     internal Interact(Init init)
@@ -19,13 +22,13 @@ internal class Interact
     private readonly Init init;
     private readonly ReformedRoleReversal reversal;
 
-    private bool selectWire = false;
+    private bool selectWire;
 
     /// <summary>
     /// Cycles through the UI depending on the button pushed.
     /// </summary>
     /// <param name="num">The index for the 4 buttons.</param>
-    protected internal void PressButton(ref int num)
+    protected internal void PressButton(ref byte num)
     {
         // Plays button sound effect.
         reversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, reversal.Buttons[num].transform);

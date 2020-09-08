@@ -58,74 +58,68 @@ public class HandleCoroutines : MonoBehaviour
     {
         string text;
 
-        // Either state it is solved, show the currently submitted wire, or display the manual.
+        // Either state it is solved...
         if (init.Solved)
-            text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId);
+            text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId % 10000);
 
+        ///...show the currently submitted wire...
         else if (isSelectingWire)
             text = string.Format("[Wire Selected: {0}]\n\nPlease press the screen\nto cut the wire.", wireSelected);
 
+        ///...or display the manual.
         else
-            text = string.Format("[{0}{1}]\n\n{2}",
-                                 instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ",
-                                 instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition",
-                                 Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
+            text = string.Format("[{0}{1}]\n\n{2}", instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ", instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition", Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
 
+        halt = true;
+
+        // This delay should always be as much as the delay below to make sure that an already running coroutine will halt.
+        // StopCoroutine() doesn't appear to work, so this is a workaround.
+        const float wait = 0.025f;
+        yield return new WaitForSeconds(wait);
+
+        halt = false;
 
         if (!isSelectingWire || init.Solved)
             freeze = false;
-        halt = true;
 
-        // This delay should always be twice as much to make sure that an already running coroutine will halt.
-        // StopCoroutine() doesn't appear to work, so this is a workaround.
-        yield return new WaitForSeconds(0.04f);
-
-        halt = false;
-        Reversal.ScreenText.text = string.Empty;
+        bool keepAnimating;
+        byte i = 0;
         string current = string.Empty;
 
-        // Display previous message as it is getting replaced.
-        if (!init.Solved && !isSelectingWire)
-            for (int i = 0; i < text.Length; i++)
-            {
-                current += text[i].ToString();
-
-                // The substring for the previous instruction might be negative, so only 'currentText' is used instead in that case.
-                Reversal.ScreenText.text = previous.Length - current.Length >= 0
-                                         ? current + "\n" + previous.Substring(current.Length, previous.Length - current.Length)
-                                         : current;
-
-                // This makes characters display 2 at a time.
-                if (i % 2 == 0 && !halt && !freeze)
-                    yield return new WaitForSeconds(0.02f);
-            }
-
-        // Instantly clear the previous message.
-        else
-            for (int i = 0; i < text.Length; i++)
-            {
-                current += text[i].ToString();
-                Reversal.ScreenText.text = current;
-
-                // This makes characters display 2 at a time.
-                if (i % 2 == 0 && !halt && !freeze)
-                    yield return new WaitForSeconds(0.02f);
-            }
-
-        for (int j = 0; Reversal.ScreenText.text.Length > current.Length; j++)
+        do
         {
-            // Remove any additional characters if the previous instruction was longer than the current.
-            Reversal.ScreenText.text = Reversal.ScreenText.text.Substring(0, Reversal.ScreenText.text.Length - 2);
+            keepAnimating = false;
+            
+            if (previous.Length > 0)
+            {
+                previous = previous.Substring(previous.IndexOf('\n') + 1);
+                keepAnimating = true;
+            }
 
-            // This makes characters display 2 at a time.
-            if (j % 2 == 0 && !halt)
-                yield return new WaitForSeconds(0.02f);
-        }
+            for (; i < text.Length; i++)
+            {
+                current += text[i];
+
+                // If last character is a line break, stop for the time being.
+                if (text[i] == '\n')
+                {
+                    keepAnimating = true;
+                    i++;
+                    break;
+                }
+            }
+
+            if (halt || freeze)
+            {
+                Reversal.ScreenText.text = text;
+                break;
+            }
+
+            Reversal.ScreenText.text = previous + current;
+            yield return new WaitForSeconds(wait);
+        } while (keepAnimating);
 
         freeze = isSelectingWire;
-
-        // Sometimes it removes the last character, this makes it reappear.
-        Reversal.ScreenText.text = current;
-        previous = current;
+        previous = text + '\n';
     }
 }

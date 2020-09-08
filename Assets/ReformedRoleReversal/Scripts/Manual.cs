@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Contains methods that assemble new conditions, tests them, and then store the result in the return.
+/// </summary>
 static class Manual
 {
     private static readonly Random rnd = new Random();
@@ -20,14 +23,16 @@ static class Manual
         Condition condition = new Condition
         {
              Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                   : string.Format("If there's at {0} {1} {2}, remove the {3}{4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                   : string.Format("If there's at {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
+            else if (wires.Length == 4)
+                condition.Discard = leftmost ? -1 : 1;
             else
-                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
+                condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }
@@ -45,14 +50,16 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : string.Format("If there's {0} {1} than {2}, remove the {3}{4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : string.Format("If there's {0} {1} than {2}, discard the {3}{4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!more && edgework1 < edgework2) || (more && edgework1 > edgework2))
             if (firstCondition)
                 condition.Skip = parameters[2];
+            else if (wires.Length == 4)
+                condition.Discard = leftmost ? -1 : 1;
             else
-                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
+                condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }
@@ -70,15 +77,43 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", parameters[2])
-                                  : string.Format("If {0} {1} {2} {3} exist, remove the {4}{5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : string.Format("If {0} {1} {2} {3} exist, discard the {4}{5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (inversion && ((orAnd && (edgework1 == 0 || edgework2 == 0)) || (!orAnd && edgework1 == 0 && edgework2 == 0))
         || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
             if (firstCondition)
                 condition.Skip = parameters[2];
+            else if (wires.Length == 4)
+                condition.Discard = leftmost ? -1 : 1;
             else
-                condition.Remove = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
+                condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
+
+        return condition;
+    }
+
+    public static Condition FirstD(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
+    {
+        int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
+        int edgework = new Arrays(Info).GetNumbers(parameters[1]);
+        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+
+        parameters[0] /= 5;
+        parameters[2] = (parameters[2] % 2) + 3;
+
+        Condition condition = new Condition
+        {
+            Text = firstCondition ? string.Format("If there's {0} {1} {2}, skip to condition {3}.", inversion ? "inexactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+                                   : string.Format("If there's {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "inexactly " : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+        };
+
+        if ((!inversion && parameters[0] == edgework) || (inversion && parameters[0] != edgework))
+            if (firstCondition)
+                condition.Skip = parameters[2];
+            else if (wires.Length == 4)
+                condition.Discard = leftmost ? -1 : 1;
+            else
+                condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
         return condition;
     }
@@ -472,7 +507,7 @@ static class Manual
         int parameter = rnd.Next(0, wires.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If an indicator exists containing one of the letters in \"Role\", cut the {0} wire.", Arrays.Ordinals[parameter])
+            Text = string.Format("If an indicator with vanilla labels exist sharing any letters in \"Role\", cut the {0} wire.", Arrays.Ordinals[parameter])
         };
 
         Indicator[] indicators = new Indicator[] { Indicator.BOB, Indicator.CAR, Indicator.CLR, Indicator.FRK, Indicator.FRQ, Indicator.NLL, Indicator.TRN };
@@ -664,6 +699,24 @@ static class Manual
         condition.Wire = firstLast 
                        ? Algorithms.Find(method: "firstInstanceOfKey", key: ref key, wires: revertedWires) 
                        : Algorithms.Find(method: "lastInstanceOfKey", key: ref key, wires: revertedWires);
+
+        return condition;
+    }
+
+    public static Condition LastD(int[] wires, int lookup, KMBombInfo Info)
+    {
+        int parameter = rnd.Next(0, Arrays.GroupedColors.Length);
+        bool first = rnd.NextDouble() > 0.5, blue = rnd.NextDouble() > 0.5;
+
+        Condition condition = new Condition
+        {
+            Text = string.Format("Cut the {0} {1}ish wire.", first ? "first" : "last", Arrays.GroupedColors[parameter])
+        };
+
+        string method = first ? "firstInstanceOf" : "lastInstanceOf";
+        method += blue ? "Blue" : "Purple";
+
+        condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
 
         return condition;
     }
