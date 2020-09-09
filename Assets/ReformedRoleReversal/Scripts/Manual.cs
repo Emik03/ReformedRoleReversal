@@ -18,7 +18,7 @@ static class Manual
         bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
-        parameters[2] = (parameters[2] % 2) + 3;
+        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
@@ -29,8 +29,6 @@ static class Manual
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else if (wires.Length == 4)
-                condition.Discard = leftmost ? -1 : 1;
             else
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
@@ -45,7 +43,7 @@ static class Manual
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
         bool more = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
-        parameters[2] = (parameters[2] % 2) + 3;
+        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
@@ -56,8 +54,6 @@ static class Manual
         if ((!more && edgework1 < edgework2) || (more && edgework1 > edgework2))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else if (wires.Length == 4)
-                condition.Discard = leftmost ? -1 : 1;
             else
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
@@ -72,7 +68,7 @@ static class Manual
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
         bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
-        parameters[2] = (parameters[2] % 2) + 3;
+        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
@@ -84,8 +80,6 @@ static class Manual
         || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else if (wires.Length == 4)
-                condition.Discard = leftmost ? -1 : 1;
             else
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
@@ -98,8 +92,8 @@ static class Manual
         int edgework = new Arrays(Info).GetNumbers(parameters[1]);
         bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
-        parameters[0] /= 5;
-        parameters[2] = (parameters[2] % 2) + 3;
+        parameters[0] = (parameters[0] / 7) + 2;
+        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
 
         Condition condition = new Condition
         {
@@ -110,8 +104,6 @@ static class Manual
         if ((!inversion && parameters[0] == edgework) || (inversion && parameters[0] != edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else if (wires.Length == 4)
-                condition.Discard = leftmost ? -1 : 1;
             else
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
 
@@ -544,10 +536,10 @@ static class Manual
             Text = string.Format("If the serial number contains a letter in \"Reformed Role Reversal\", cut the {0} wire.", Arrays.Ordinals[parameter])
         };
 
-        const string name = "ReformedRoleReversal";
+        const string moduleNameUnique = "REFORMDLVSA";
         string serial = Info.GetSerialNumber();
         
-        foreach (char n in name)
+        foreach (char n in moduleNameUnique)
             if (serial.Contains(n))
             {
                 condition.Wire = ++parameter;

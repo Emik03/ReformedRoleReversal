@@ -41,12 +41,6 @@ internal class Init
             return false;
         };
 
-        Reversal.Screen.OnInteractEnded += delegate ()
-        {
-            Reversal.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, Reversal.Screen.transform);
-            Reversal.Screen.AddInteractionPunch(0.5f);
-        };
-
         for (byte i = 0; i < Reversal.Buttons.Length; i++)
         {
             byte j = i;

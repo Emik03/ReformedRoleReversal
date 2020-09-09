@@ -14,15 +14,14 @@ MonoBehaviour:
   id: ReformedRoleReversal
   title: Reformed Role Reversal
   author: Emik
-  description: 'Perhaps they didn''t have enough printing paper since most of the
-    instructions lie within the module. Maybe they were environmentalists? Either
-    way, the defuser''s an expert now.
+  description: '"Wait... so you''re telling me that every condition we wrote down
+    only applies to that 1 module?"
 
 
-    moduleId: roleReversal
+    moduleId: ReformedRoleReversal
 
 
-    HTML Manual: https://ktane.timwi.de/HTML/Role%20Reversal.html
+    HTML Manual: https://ktane.timwi.de/HTML/Reformed%20Role%20Reversal.html
 
 
     Twitch Plays is supported.
@@ -30,6 +29,5 @@ MonoBehaviour:
 
     Is there a bug? Do you have a question? Discord: @Emik#0001'
   version: 1
-  outputFolder: C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody
-    Explodes\mods
+  outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
   previewImage: {fileID: 2800000, guid: ca12db878111c414598284b5782de620, type: 3}

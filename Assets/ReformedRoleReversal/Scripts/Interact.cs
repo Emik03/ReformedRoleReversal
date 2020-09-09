@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 /// <summary>
 /// Handles the user interactions with the module, striking or solving if necessary.
@@ -13,15 +15,15 @@ internal class Interact
         coroutines = init.Coroutines;
         reversal = init.Reversal;
     }
-
+    
     protected internal int? CorrectAnswer;
-    protected internal int Instruction, WireSelected = new Random().Next(1, 10);
+    protected internal int Instruction, WireSelected = new System.Random().Next(1, 10);
     protected internal readonly List<int> ButtonOrder = Enumerable.Range(0, 4).ToList().Shuffle();
 
     private readonly HandleCoroutines coroutines;
     private readonly Init init;
     private readonly ReformedRoleReversal reversal;
-
+    
     private bool selectWire;
 
     /// <summary>
@@ -44,12 +46,14 @@ internal class Interact
         {
             // Subtract 1 from the current selected wire.
             case 0:
+                reversal.Audio.PlaySoundAtTransform("Button4", reversal.Buttons[num].transform);
                 WireSelected = ((WireSelected + 7) % 9) + 1;
                 selectWire = true;
                 break;
 
             // Read previous instruction.
             case 1:
+                reversal.Audio.PlaySoundAtTransform("Button2", reversal.Buttons[num].transform);
                 if (selectWire)
                     return;
                 Instruction = (--Instruction + length) % length;
@@ -57,6 +61,7 @@ internal class Interact
 
             // Read next instruction.
             case 2:
+                reversal.Audio.PlaySoundAtTransform("Button1", reversal.Buttons[num].transform);
                 if (selectWire)
                     return;
                 Instruction = ++Instruction % length;
@@ -64,6 +69,7 @@ internal class Interact
 
             // Add 1 to the current selected wire.
             case 3:
+                reversal.Audio.PlaySoundAtTransform("Button3", reversal.Buttons[num].transform);
                 WireSelected = (WireSelected % 9) + 1;
                 selectWire = true;
                 break;
@@ -85,6 +91,8 @@ internal class Interact
         if (!init.Ready || init.Solved)
             return;
 
+        reversal.Audio.PlaySoundAtTransform("Button5", reversal.Screen.transform);
+
         // Jump to next section in manual mode.
         if (!selectWire)
         {
@@ -98,7 +106,8 @@ internal class Interact
         // The answer being correct is done here.
         if (CorrectAnswer == null || CorrectAnswer == WireSelected)
         {
-            UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: The correct wire was cut. Module solved!", init.ModuleId);
+            Debug.LogFormat("[Reformed Role Reversal #{0}]: The correct wire was cut. Module solved!", init.ModuleId);
+            reversal.Audio.PlaySoundAtTransform("Solve", reversal.Screen.transform);
             init.Solved = true;
 
             reversal.Module.HandlePass();
@@ -108,7 +117,7 @@ internal class Interact
         }
 
         // The answer being incorrect is done here.
-        UnityEngine.Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", init.ModuleId, WireSelected);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", init.ModuleId, WireSelected);
         selectWire = false;
         Instruction = 0;
 

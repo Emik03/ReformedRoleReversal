@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -62,11 +63,11 @@ public class HandleCoroutines : MonoBehaviour
         if (init.Solved)
             text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId % 10000);
 
-        ///...show the currently submitted wire...
+        // ...show the currently submitted wire...
         else if (isSelectingWire)
             text = string.Format("[Wire Selected: {0}]\n\nPlease press the screen\nto cut the wire.", wireSelected);
 
-        ///...or display the manual.
+        // ...or display the manual.
         else
             text = string.Format("[{0}{1}]\n\n{2}", instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ", instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition", Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
 
@@ -79,6 +80,7 @@ public class HandleCoroutines : MonoBehaviour
 
         halt = false;
 
+        // If you are selecting the wire, the animation should not play.
         if (!isSelectingWire || init.Solved)
             freeze = false;
 
@@ -90,12 +92,14 @@ public class HandleCoroutines : MonoBehaviour
         {
             keepAnimating = false;
             
-            if (previous.Length > 0)
+            // Cut to next line break.
+            if (previous.IndexOf('\n') != -1)
             {
                 previous = previous.Substring(previous.IndexOf('\n') + 1);
                 keepAnimating = true;
             }
 
+            // Copy current until a line break is met.
             for (; i < text.Length; i++)
             {
                 current += text[i];
@@ -109,16 +113,19 @@ public class HandleCoroutines : MonoBehaviour
                 }
             }
 
+            // If it needs to stop, instantly display text and stop running.
             if (halt || freeze)
             {
                 Reversal.ScreenText.text = text;
                 break;
             }
 
+            // Combine both strings.
             Reversal.ScreenText.text = previous + current;
             yield return new WaitForSeconds(wait);
         } while (keepAnimating);
 
+        // We put it after so that the first time the user selects a wire, it animates normally.
         freeze = isSelectingWire;
         previous = text + '\n';
     }

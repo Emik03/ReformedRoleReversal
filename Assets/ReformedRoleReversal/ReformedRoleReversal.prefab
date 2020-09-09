@@ -11,6 +11,22 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1871006895480042}
   m_IsPrefabParent: 1
+--- !u!1 &1016695547792474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4578602209254290}
+  - component: {fileID: 82140287204817052}
+  m_Layer: 0
+  m_Name: Source
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
 --- !u!1 &1029626657068898
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,6 +499,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4578602209254290}
   - {fileID: 4368794495348106}
   - {fileID: 4447500543380622}
   - {fileID: 4966803973086014}
@@ -570,7 +587,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4447500543380622
 Transform:
@@ -583,7 +600,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4512918756529380
 Transform:
@@ -598,7 +615,7 @@ Transform:
   - {fileID: 4563126487143134}
   - {fileID: 4198443396580808}
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4530882941342878
 Transform:
@@ -627,6 +644,19 @@ Transform:
   m_Father: {fileID: 4512918756529380}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!4 &4578602209254290
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1016695547792474}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4159483512833298}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4670441615048832
 Transform:
   m_ObjectHideFlags: 1
@@ -655,7 +685,7 @@ Transform:
   - {fileID: 4252492884822976}
   - {fileID: 4150768336266082}
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4747403093382282
 Transform:
@@ -696,7 +726,7 @@ Transform:
   - {fileID: 4670441615048832}
   - {fileID: 4256876405135600}
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4849739368377908
 Transform:
@@ -711,7 +741,7 @@ Transform:
   - {fileID: 4368709820991224}
   - {fileID: 4747403093382282}
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4937182537126468
 Transform:
@@ -737,7 +767,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4968037827827434
 Transform:
@@ -752,7 +782,7 @@ Transform:
   - {fileID: 4937182537126468}
   - {fileID: 4833601391243702}
   m_Father: {fileID: 4159483512833298}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &23116495098860880
 MeshRenderer:
@@ -1441,6 +1471,86 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!82 &82140287204817052
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1016695547792474}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 5be18be7cde5b7b48b6b7e3a561e1fc8, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 127
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &95466435894974376
 Animator:
   serializedVersion: 3
@@ -1714,7 +1824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - GUI/KT 3D Text
+  - GUI/KT 3D Text Diffuse
 --- !u!114 &114286330448582846
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1727,7 +1837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - GUI/KT 3D Text
+  - GUI/KT 3D Text Diffuse
 --- !u!114 &114302028301295922
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1884,7 +1994,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - GUI/KT 3D Text
+  - GUI/KT 3D Text Diffuse
 --- !u!114 &114659930296360004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1897,7 +2007,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - GUI/KT 3D Text
+  - GUI/KT 3D Text Diffuse
 --- !u!114 &114667046260885616
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1956,9 +2066,6 @@ MonoBehaviour:
   - {fileID: 114951585367312560}
   - {fileID: 114121976060799066}
   - {fileID: 114230116753608642}
-  - {fileID: 114230116753608642}
-  - {fileID: 114230116753608642}
-  - {fileID: 114230116753608642}
   IsPassThrough: 0
   ChildRowLength: 4
   Highlight: {fileID: 114760871790572906}
@@ -1979,6 +2086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1d2ffbfdc39a884c86dcb81554238c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Source: {fileID: 82140287204817052}
   Coroutines: {fileID: 114408678241625810}
   Audio: {fileID: 114477582686957566}
   Module: {fileID: 114779957456248900}
@@ -1989,6 +2097,7 @@ MonoBehaviour:
   - {fileID: 114951585367312560}
   - {fileID: 114121976060799066}
   Screen: {fileID: 114230116753608642}
+  Base: {fileID: 114803882154086764}
   ScreenText: {fileID: 102202955529991922}
   SeedText: {fileID: 102252846805207492}
 --- !u!114 &114834332799035490
@@ -2029,7 +2138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShaderNames:
-  - GUI/KT 3D Text
+  - GUI/KT 3D Text Diffuse
 --- !u!114 &114936172997351514
 MonoBehaviour:
   m_ObjectHideFlags: 1
