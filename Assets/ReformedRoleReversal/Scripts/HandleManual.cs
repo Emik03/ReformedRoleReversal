@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Rnd = System.Random;
+using System.Collections.Generic;
 
 /// <summary>
 /// Generates the module and caches the answer.
@@ -28,6 +29,10 @@ internal class HandleManual
     private Condition[] tutorial;
     private static readonly Rnd rnd = new Rnd();
     private int generated;
+
+    private static List<MethodInfo> ConditionMethods = new List<MethodInfo>();
+    private static List<MethodInfo> FirstConditionMethods = new List<MethodInfo>();
+    private static List<MethodInfo> LastConditionMethods = new List<MethodInfo>();
 
     /// <summary>
     /// Converts the random number generated into wires, and a seed for the module to display.
@@ -71,9 +76,29 @@ internal class HandleManual
         // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
         tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
 
+        GetManualMethods();
+
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
             coroutines.GenerateSetOfConditions(i, wires, ref lookup);
+    }
+
+    /// <summary>
+    /// Retrieves all methods from the 'Manual' class file, and appends it to method lists.
+    /// </summary>
+    private static void GetManualMethods()
+    {
+        foreach (MethodInfo method in typeof(Manual).GetMethods())
+        {
+            if (method.ReturnType != typeof(Condition))
+                continue;
+            if (method.Name.StartsWith("First"))
+                FirstConditionMethods.Add(method);
+            else if (method.Name.StartsWith("Last"))
+                LastConditionMethods.Add(method);
+            else
+                ConditionMethods.Add(method);
+        }
     }
 
     /// <summary>
@@ -108,10 +133,7 @@ internal class HandleManual
         // Generates fake wires for sections with incorrect amount of wires to obfuscate real ones based on the conditions recieved.
         if (!isCorrectIndex)
             wires = Enumerable.Repeat(0, i + 2).Select(k => rnd.Next(0, 10)).ToArray();
-
-        // Contains all methods in the Manual class.
-        const string methods = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", specialMethods = "ABCD";
-        Type classType = typeof(Manual);
+        
         MethodInfo methodInfo;
 
         object[] variables = new object[] { wires, lookup, reversal.Info },
@@ -119,20 +141,16 @@ internal class HandleManual
 
         switch (j)
         {
-            // First case. (Guaranteed edgework)
-            case 0: methodInfo = classType.GetMethod("First" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString()); break;
+            case 0: methodInfo = FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]; break;
 
-            // Second case. (3 wires mixed, any other wires guaranteed edgework)
-            case 1: methodInfo = i != 1 ? classType.GetMethod("First" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString())
-                                        : classType.GetMethod(methods[rnd.Next(0, methods.Length)].ToString()); break;
+            case 1: methodInfo = methodInfo = i != 1 ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
+                                                     : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
 
-            // Last case. (Guaranteed no edgework)
-            case 7: methodInfo = classType.GetMethod("Last" + specialMethods[rnd.Next(0, specialMethods.Length)].ToString()); break;
+            case 7: methodInfo = LastConditionMethods[rnd.Next(0, LastConditionMethods.Count)]; break;
 
-            // Every other case. (Mixed)
-            default: methodInfo = classType.GetMethod(methods[rnd.Next(0, methods.Length)].ToString()); break;
+            default: methodInfo = ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
         }
-        
+
         // Invoke the random method obtained and assign it into the current variable.
         init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (j == 1 && i != 1) ? specialVariables : variables);
 

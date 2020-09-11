@@ -22,7 +22,7 @@ static class Manual
 
         Condition condition = new Condition
         {
-             Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+            Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
                                    : string.Format("If there's at {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
@@ -157,7 +157,7 @@ static class Manual
         {
             Text = string.Format("If the {0}, {1}, or {2} wire share any color, cut the first wire that isn't the shared color.", Arrays.Ordinals[parameters[0]], Arrays.Ordinals[parameters[1]], Arrays.Ordinals[parameters[2]])
         };
-        
+
         if (wires[parameters[0]] == wires[parameters[1]] ||
             wires[parameters[1]] == wires[parameters[2]] ||
             wires[parameters[2]] == wires[parameters[0]])
@@ -178,7 +178,7 @@ static class Manual
         };
 
         int[] colors = Algorithms.GetColors(grouped: false, wires: wires);
-        
+
         for (int i = 0; i < colors.Length; i++)
             if (colors[i] >= parameter)
             {
@@ -222,7 +222,7 @@ static class Manual
         {
             if (number.Count() == 1)
                 continue;
-            
+
             if (seenException || number.Count() != parameter + 1)
                 return condition;
 
@@ -378,7 +378,7 @@ static class Manual
 
         int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
 
-        if ((highestIf && revertedWires.Max() == revertedWires[parameter]) || 
+        if ((highestIf && revertedWires.Max() == revertedWires[parameter]) ||
            (!highestIf && revertedWires.Min() == revertedWires[parameter]))
             condition.Wire = highestThen ? revertedWires.ToList().IndexOf(revertedWires.Max()) + 1
                                          : revertedWires.ToList().IndexOf(revertedWires.Min()) + 1;
@@ -464,7 +464,7 @@ static class Manual
 
             condition.Wire = Algorithms.First(opposites);
         }
-        
+
         return condition;
     }
 
@@ -538,7 +538,7 @@ static class Manual
 
         const string moduleNameUnique = "REFORMDLVSA";
         string serial = Info.GetSerialNumber();
-        
+
         foreach (char n in moduleNameUnique)
             if (serial.Contains(n))
             {
