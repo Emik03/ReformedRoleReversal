@@ -54,7 +54,7 @@ public class TwitchPlaysHandler : MonoBehaviour
                 while (num != interact.WireSelected)
                 {
                     Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.2f);
                 }
 
                 Reversal.Screen.OnInteract();
@@ -91,13 +91,13 @@ public class TwitchPlaysHandler : MonoBehaviour
                 {
                     Reversal.Screen.OnInteract();
                     Reversal.Screen.OnInteractEnded();
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.2f);
                 }
 
                 while (c2 != interact.Instruction % length)
                 {
                     Reversal.Buttons[c2 < interact.Instruction % length ? interact.ButtonOrder.IndexOf(1) : interact.ButtonOrder.IndexOf(2)].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.2f);
                 }
             }
         }
@@ -117,7 +117,7 @@ public class TwitchPlaysHandler : MonoBehaviour
         while (interact.CorrectAnswer != interact.WireSelected)
         {
             Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.2f);
         }
 
         Reversal.Screen.OnInteract();

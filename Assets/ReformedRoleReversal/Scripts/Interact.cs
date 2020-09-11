@@ -118,6 +118,7 @@ internal class Interact
 
         // The answer being incorrect is done here.
         Debug.LogFormat("[Reformed Role Reversal #{0}]: Wire {1} was cut which was incorrect. Module strike!", init.ModuleId, WireSelected);
+        reversal.Audio.PlaySoundAtTransform("Strike", reversal.Screen.transform);
         selectWire = false;
         Instruction = 0;
 
