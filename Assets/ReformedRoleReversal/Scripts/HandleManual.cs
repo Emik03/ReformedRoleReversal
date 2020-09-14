@@ -42,6 +42,39 @@ internal class HandleManual
         // Generate random parameters as rules.
         bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
 
+        // Random lookup table, which is simply the default with all values added to this variable.
+        int lookup = rnd.Next(0, 10);
+
+        // Get random base. Base 20 is minimum because it never displays more than 7 characters.
+        char[] baseN = Algorithms.SubArray(Arrays.Base62, 0, rnd.Next(20, 63));
+
+        // Assign the seed to the wires.
+        int[] wires = GetWires(ref left, ref leftmost, ref lookup, ref baseN);
+
+        int i2 = init.Conditions.GetLength(0);
+
+        // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
+        tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
+
+        // If the list of methods is unassigned, generate new ones. This is in case there are multiple Reformed Role Reversals.
+        if (ConditionMethods.Count == 0)
+            GetManualMethods();
+
+        // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
+        for (int i = 0; i < i2; i++)
+            coroutines.GenerateSetOfConditions(i, wires, ref lookup);
+    }
+
+    /// <summary>
+    /// Transforms the string seed into an integer array, with the rules based on the parameters described.
+    /// </summary>
+    /// <param name="left">Whether 0's are appended to the left.</param>
+    /// <param name="leftmost">Whether wires get grabbed by leftmost.</param>
+    /// <param name="lookup">The offset applied before changing numbers to colors.</param>
+    /// <param name="baseN">Partial subarray of 0-9A-Za-z that indicates the base.</param>
+    /// <returns></returns>
+    private int[] GetWires(ref bool left, ref bool leftmost, ref int lookup, ref char[] baseN)
+    {
         // 10% of the time, the string is less than 9 characters long. Append accordingly.
         while (Seed.Length < 9)
             Seed = left ? '0' + Seed : Seed + '0';
@@ -49,18 +82,12 @@ internal class HandleManual
         // The amount of wires is calculated with mod 7, then add 3.
         int[] wires = new int[(int.Parse(Seed) % 7) + 3];
 
-        // Random lookup table, which is simply the default with all values added to this variable.
-        int lookup = rnd.Next(0, 10);
-
         for (int i = 0; i < wires.Length; i++)
             wires[i] = (int)(char.GetNumericValue(Seed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
 
-        // Get random base. Base 20 is minimum because it never displays more than 7 characters.
-        char[] baseN = Algorithms.SubArray(Arrays.Base62, 0, rnd.Next(20, 63));
-
         // Converts the seed from base 10 to the random base chosen.
         reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(Seed), baseChars: baseN);
-        
+
         Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. # of wires: {5}. Place {6} 0's. Take {7} wires. Lookup: #{8}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
 
         // Log the list of all wires, converting each index to the respective string.
@@ -71,16 +98,7 @@ internal class HandleManual
 
         Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are {1}.", init.ModuleId, log.Join(", "));
 
-        int i2 = init.Conditions.GetLength(0);
-
-        // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
-        tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
-
-        GetManualMethods();
-
-        // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
-        for (int i = 0; i < i2; i++)
-            coroutines.GenerateSetOfConditions(i, wires, ref lookup);
+        return wires;
     }
 
     /// <summary>
@@ -113,8 +131,6 @@ internal class HandleManual
     /// <returns>This is meant for multithreading, and only returns null.</returns>
     protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, int lookup, bool isCorrectIndex)
     {
-        yield return null;
-
         // In case they get replaced with fake ones.
         int[] realWires = Algorithms.Clone(wires);
 
@@ -143,8 +159,8 @@ internal class HandleManual
         {
             case 0: methodInfo = FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]; break;
 
-            case 1: methodInfo = methodInfo = i != 1 ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
-                                                     : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
+            case 1: methodInfo = i != 1 ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
+                                        : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
 
             case 7: methodInfo = LastConditionMethods[rnd.Next(0, LastConditionMethods.Count)]; break;
 

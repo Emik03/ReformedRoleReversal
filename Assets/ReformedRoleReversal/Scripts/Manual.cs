@@ -97,8 +97,8 @@ static class Manual
 
         Condition condition = new Condition
         {
-            Text = firstCondition ? string.Format("If there's {0} {1} {2}, skip to condition {3}.", inversion ? "inexactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                   : string.Format("If there's {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "inexactly " : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+            Text = firstCondition ? string.Format("If there's {0} {1} {2}, skip to condition {3}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
+                                   : string.Format("If there's {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!inversion && parameters[0] == edgework) || (inversion && parameters[0] != edgework))
