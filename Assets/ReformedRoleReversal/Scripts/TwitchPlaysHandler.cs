@@ -58,7 +58,6 @@ public class TwitchPlaysHandler : MonoBehaviour
                 }
 
                 Reversal.Screen.OnInteract();
-                Reversal.Screen.OnInteractEnded();
             }
         }
 
@@ -71,7 +70,7 @@ public class TwitchPlaysHandler : MonoBehaviour
                                                    : "sendtochaterror Too many parameters specified!";
 
             // If the command has an invalid parameter.
-            else if (parameters[1] != "help" && ( parameters[1].Length != 1 || !char.IsDigit(parameters[1][0]) || !(char.GetNumericValue(parameters[1][0]) >= 3 && char.GetNumericValue(parameters[1][0]) <= 8)))
+            else if (parameters[1] != "help" && ( parameters[1].Length != 1 || !char.IsDigit(parameters[1][0]) || !(char.GetNumericValue(parameters[1][0]) >= 3 && char.GetNumericValue(parameters[1][0]) <= 9)))
                 yield return "sendtochaterror Invalid first instruction!";
 
             // If the command has an invalid parameter.
@@ -90,7 +89,6 @@ public class TwitchPlaysHandler : MonoBehaviour
                 while (c1 != interact.Instruction / length)
                 {
                     Reversal.Screen.OnInteract();
-                    Reversal.Screen.OnInteractEnded();
                     yield return new WaitForSeconds(0.2f);
                 }
 
@@ -121,6 +119,5 @@ public class TwitchPlaysHandler : MonoBehaviour
         }
 
         Reversal.Screen.OnInteract();
-        Reversal.Screen.OnInteractEnded();
     }
 }
