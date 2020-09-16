@@ -178,13 +178,15 @@ static class Algorithms
 
         for (int i = 0; i < seed.Length; i++)
         {
-            if (char.IsDigit(seed[i]) && (i >= wires.Length || newWires[leftmost ? i : newWires.Length - i - 1] != char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1])))
+            if (i >= newWires.Length || i < 0 ||
+                (char.IsDigit(leftmost ? seed[i] : seed[seed.Length - i - 1]) && 
+                newWires[leftmost ? i : newWires.Length - i - 1] != char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1])))
             {
                 newSeed.Remove(i - (seed.Length - newSeed.Length), 1);
-                wiresFound.Add(wires[i]);
+                wiresFound.Add((int)char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1]));
             }
 
-            else if (wiresFound.Count == amount)
+            if (wiresFound.Count == amount)
                 break;
         }
 
