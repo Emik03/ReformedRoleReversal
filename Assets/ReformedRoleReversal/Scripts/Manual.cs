@@ -682,7 +682,7 @@ static class Manual
         bool highest = rnd.NextDouble() > 0.5, firstLast = rnd.NextDouble() > 0.5;
         Condition condition = new Condition
         {
-            Text = string.Format("Cut the {0} {1}-valued wire.", highest ? "highest" : "lowest", firstLast ? "first" : "last")
+            Text = string.Format("Cut the {0} {1}-valued wire.", firstLast ? "first" : "last", highest ? "highest" : "lowest")
         };
 
         int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
