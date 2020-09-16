@@ -120,8 +120,9 @@
                                 <td style="text-align:center;">
                                     Seed <span colspan="2"><input style="width: 106px" type="text" id="Seed" oninput="updateNumbers()"></span>
                                     in base <span colspan="2"><input style="width: 18px" type="text" id="BaseN" oninput="updateNumbers()"></span>
-                                    is in base-10 <span colspan="2"><input style="width: 89px" type="text" id="Base10" oninput="updateBase10Length()"></span>
-                                    and in modulo 7 [<span colspan="2" id="Mod7">?</span>].
+                                    is in base-10 <span colspan="2"><input style="width: 80px" type="text" id="Base10" oninput="updateBase10Length()"></span>
+                                    and in modulo <span colspan="2"><input style="width: 9px" type="text" id="Mod" oninput="updateNumbers()"></span>
+                                    [<span colspan="2" id="ModResult">?</span>].
                                 </td>
                             </tr>
                         </table>
@@ -364,7 +365,8 @@
     const elementBase10 = document.getElementById('Base10');
     const elementBaseN = document.getElementById('BaseN');
     const elementLookup = document.getElementById('Lookup');
-    const elementMod7 = document.getElementById('Mod7');
+    const elementMod = document.getElementById('Mod');
+    const elementModResult = document.getElementById('ModResult');
     const elementSeed = document.getElementById('Seed');
 
     const elementColors = [];
@@ -387,9 +389,13 @@
 
     function updateNumbers() {
         const value = Number(elementBaseN.value);
-        const isValid = between(value, 1, 62);
+        const isBaseValid = between(value, 1, 62);
 
-        elementBaseN.className = isValid ? 'green' : 'red';
+        const modulo = Number(elementMod.value);
+        const isModValid = between(modulo, 1, 9);
+
+        elementBaseN.className = isBaseValid ? 'green' : 'red';
+        elementMod.className = isModValid ? 'green' : 'red';
 
         const validChars = availableChars.substring(0, value);
         let flag = true;
@@ -410,11 +416,11 @@
 
         elementSeed.className = flag ? 'green' : 'red';
 
-        if (!isValid || !flag)
+        if (!isBaseValid || !isModValid || !flag)
             return;
 
         const convertedSeed = convertBase(seed, value);
-        elementMod7.innerHTML = convertedSeed % 7;
+        elementModResult.innerHTML = convertedSeed % modulo;
         elementBase10.value = convertedSeed;
 
         updateBase10Length();

@@ -40,21 +40,21 @@ internal class HandleManual
     protected internal void Generate()
     {
         // Generate random parameters as rules.
-        bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+        bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, discard = rnd.NextDouble() > 0.5, append = rnd.NextDouble() > 0.5;
 
         // Random lookup table, which is simply the default with all values added to this variable.
-        int lookup = rnd.Next(0, 10);
+        int lookup = rnd.Next(0, 10), mod = rnd.Next(3, 8), add = rnd.Next(3, 11 - mod);
 
         // Get random base. Base 20 is minimum because it never displays more than 7 characters.
         char[] baseN = Algorithms.SubArray(Arrays.Base62, 0, rnd.Next(20, 63));
 
         // Assign the seed to the wires.
-        int[] wires = GetWires(ref left, ref leftmost, ref lookup, ref baseN);
+        int[] wires = GetWires(ref left, ref leftmost, ref lookup, ref mod, ref add, ref baseN);
 
         int i2 = init.Conditions.GetLength(0);
 
         // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
-        tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref leftmost, ref lookup);
+        tutorial = new Arrays(reversal.Info).GetTutorial(interact.ButtonOrder, baseN.Length, ref left, ref mod, ref add, ref leftmost, ref lookup, ref discard, ref append);
 
         // If the list of methods is unassigned, generate new ones. This is in case there are multiple Reformed Role Reversals.
         if (ConditionMethods.Count == 0)
@@ -62,7 +62,7 @@ internal class HandleManual
 
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
-            coroutines.GenerateSetOfConditions(i, wires, ref lookup);
+            coroutines.GenerateSetOfConditions(i, wires, ref lookup, ref discard, ref append);
     }
 
     /// <summary>
@@ -73,14 +73,14 @@ internal class HandleManual
     /// <param name="lookup">The offset applied before changing numbers to colors.</param>
     /// <param name="baseN">Partial subarray of 0-9A-Za-z that indicates the base.</param>
     /// <returns></returns>
-    private int[] GetWires(ref bool left, ref bool leftmost, ref int lookup, ref char[] baseN)
+    private int[] GetWires(ref bool left, ref bool leftmost, ref int lookup, ref int mod, ref int add, ref char[] baseN)
     {
         // 10% of the time, the string is less than 9 characters long. Append accordingly.
         while (Seed.Length < 9)
             Seed = left ? '0' + Seed : Seed + '0';
 
-        // The amount of wires is calculated with mod 7, then add 3.
-        int[] wires = new int[(int.Parse(Seed) % 7) + 3];
+        // The amount of wires is calculated with modulo 3 to 7, and then add 3 to 10-modulo (inclusive).
+        int[] wires = new int[(int.Parse(Seed) % mod) + add];
 
         for (int i = 0; i < wires.Length; i++)
             wires[i] = (int)(char.GetNumericValue(Seed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
@@ -88,7 +88,7 @@ internal class HandleManual
         // Converts the seed from base 10 to the random base chosen.
         reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(Seed), baseChars: baseN);
 
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. # of wires: {5}. Place {6} 0's. Take {7} wires. Lookup: #{8}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. Mod: {5}. Add: {6}. # of wires: {7}. Place {8} 0's. Take {9} wires. Lookup: #{10}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, mod, add, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
 
         // Log the list of all wires, converting each index to the respective string.
         string[] log = new string[wires.Length];
@@ -129,7 +129,7 @@ internal class HandleManual
     /// <param name="lookup">This variable is needed in case if the lookup offset needs to be reverted.</param>
     /// <param name="isCorrectIndex">To prevent having the user find out the amount of wires by carefully reading the conditions, the wires specified are adjusted per section.</param>
     /// <returns>This is meant for multithreading, and only returns null.</returns>
-    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, int lookup, bool isCorrectIndex)
+    protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, int lookup, bool discard, bool append, bool isCorrectIndex)
     {
         // In case they get replaced with fake ones.
         int[] realWires = Algorithms.Clone(wires);
@@ -153,14 +153,14 @@ internal class HandleManual
         MethodInfo methodInfo;
 
         object[] variables = new object[] { wires, lookup, reversal.Info },
-                 specialVariables = new object[] { wires, lookup, reversal.Info, j == 0 };
+                 specialVariables = new object[] { wires, Seed, lookup, discard, reversal.Info, j == 0 };
 
         switch (j)
         {
             case 0: methodInfo = FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]; break;
 
-            case 1: methodInfo = i != 1 ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
-                                        : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
+            case 1: methodInfo = (discard ? (j == 1 && i != 1) : (j == 1 && i != 7)) ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
+                                                                                     : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
 
             case 7: methodInfo = LastConditionMethods[rnd.Next(0, LastConditionMethods.Count)]; break;
 
@@ -168,7 +168,7 @@ internal class HandleManual
         }
 
         // Invoke the random method obtained and assign it into the current variable.
-        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (j == 1 && i != 1) ? specialVariables : variables);
+        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (discard ? (j == 1 && i != 1) : (j == 1 && i != 7)) ? specialVariables : variables);
 
         // Wait until the method has finished running.
         yield return new WaitWhile(() => init.Conditions[i, j] == null);
@@ -176,7 +176,7 @@ internal class HandleManual
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
         if (generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1))
-            interact.CorrectAnswer = GetAnswer(ref Seed, realWires, ref lookup);
+            interact.CorrectAnswer = GetAnswer(ref Seed, realWires, ref lookup, ref discard, ref append);
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ internal class HandleManual
     /// </summary>
     /// <param name="Seed">The seed in base 10.</param>
     /// <returns>Returns the answer, if the answer is null then any wire can be cut.</returns>
-    private int? GetAnswer(ref string strSeed, int[] wires, ref int lookup)
+    private int? GetAnswer(ref string strSeed, int[] wires, ref int lookup, ref bool discard, ref bool append)
     {
         int wireSelected = 1, wireCount = wires.Length - 2, iMax = init.Conditions.GetLength(1);
         bool isSelectingWire = false;
@@ -222,7 +222,54 @@ internal class HandleManual
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are now {1}.", init.ModuleId, log.Join(", "));
 
-                coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup);
+                coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup, ref discard, ref append);
+
+                // This method will run again from the generate set of conditions. An answer has not been determined yet.
+                return null;
+            }
+
+            // If true, regenerate a set of conditions and refer the index to the new conditions.
+            if (init.Conditions[wireCount, i].Append != null)
+            {
+                int minValue = 10, maxValue = 0;
+                for (int index = 0; index < init.Conditions[wireCount, i].Append.Length; index++)
+                {
+                    if (init.Conditions[wireCount, i].Append[index] < minValue)
+                        minValue = init.Conditions[wireCount, i].Append[index];
+
+                    if (init.Conditions[wireCount, i].Append[index] > maxValue)
+                        maxValue = init.Conditions[wireCount, i].Append[index];
+                }
+
+                if (minValue < 0 || maxValue > 9)
+                    throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Append.Join(", ") + " for parameter \"Append\"! This should not happen under normal circumstances, as all values should be between 0 through 9.");
+
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, append the wires to the {4}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, append ? "left" : "right");
+
+                Array.Resize(ref wires, wires.Length + init.Conditions[wireCount, i].Append.Length);
+
+                while (Seed.Length < 9)
+                    Seed = append ? 'X' + Seed : Seed + 'X';
+
+                // Append right.
+                if (!append)
+                    Array.Copy(init.Conditions[wireCount, i].Append, 0, wires, wires.Length - init.Conditions[wireCount, i].Append.Length, init.Conditions[wireCount, i].Append.Length);
+                // Append left.
+                else
+                {
+                    Array.Copy(wires, 0, wires, init.Conditions[wireCount, i].Append.Length, wires.Length - init.Conditions[wireCount, i].Append.Length);
+                    Array.Copy(init.Conditions[wireCount, i].Append, 0, wires, 0, init.Conditions[wireCount, i].Append.Length);
+                }
+
+                // Log the list of all wires, converting each index to the respective string.
+                string[] log = new string[wires.Length];
+
+                for (int j = 0; j < wires.Length; j++)
+                    log[j] += j == wires.Length - 1 ? "and " + Arrays.Colors[wires[j]] : Arrays.Colors[wires[j]];
+
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are now {1}.", init.ModuleId, log.Join(", "));
+
+                coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup, ref discard, ref append);
 
                 // This method will run again from the generate set of conditions. An answer has not been determined yet.
                 return null;

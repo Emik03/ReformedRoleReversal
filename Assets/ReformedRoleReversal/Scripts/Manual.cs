@@ -11,102 +11,126 @@ static class Manual
     private static readonly Random rnd = new Random();
 
     #region First/Second Conditions
-    public static Condition FirstA(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
+    public static Condition FirstA(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework = new Arrays(Info).GetNumbers(parameters[1]);
-        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
-        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        int randomColor = rnd.Next(0, 10);
 
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                   : string.Format("If there's at {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's at {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the included", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If there's at {0} {1} {2}, append {3} {4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else
+            else if (discard)
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
-
+            else if (appendFromArray)
+                condition.Append = Algorithms.AppendFromArray(wires, ref seed, leftmost, parameters[2] - 2, lookup);
+            else
+                condition.Append = Algorithms.ArrayFromInt(randomColor, parameters[2] - 2);
+        
         return condition;
     }
 
-    public static Condition FirstB(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
+    public static Condition FirstB(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition)
     {
         Arrays staticArrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
-        bool more = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+        bool more = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
-        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        int randomColor = rnd.Next(0, 10);
 
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : string.Format("If there's {0} {1} than {2}, discard the {3}{4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's {0} {1} than {2}, {3} {4}{5} wire{6}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the included", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If there's {0} {1} than {2}, append the {3} {4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!more && edgework1 < edgework2) || (more && edgework1 > edgework2))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else
+            else if (discard)
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
-
+            else if (appendFromArray)
+                condition.Append = Algorithms.AppendFromArray(wires, ref seed, leftmost, parameters[2] - 2, lookup);
+            else
+                condition.Append = Algorithms.ArrayFromInt(randomColor, parameters[2] - 2);
+        
         return condition;
     }
 
-    public static Condition FirstC(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
+    public static Condition FirstC(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition)
     {
         Arrays staticArrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
-        bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+        bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
-        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        int randomColor = rnd.Next(0, 10);
 
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", parameters[2])
-                                  : string.Format("If {0} {1} {2} {3} exist, discard the {4}{5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If {0} {1} {2} {3} exist, {4} {5}{6} wire{7}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If {0} {1} {2} {3} exist, append the {4} {5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (inversion && ((orAnd && (edgework1 == 0 || edgework2 == 0)) || (!orAnd && edgework1 == 0 && edgework2 == 0))
         || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else
+            else if (discard)
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
-
+            else if (appendFromArray)
+                condition.Append = Algorithms.AppendFromArray(wires, ref seed, leftmost, parameters[2] - 2, lookup);
+            else
+                condition.Append = Algorithms.ArrayFromInt(randomColor, parameters[2] - 2);
+        
         return condition;
     }
 
-    public static Condition FirstD(int[] wires, int lookup, KMBombInfo Info, bool firstCondition)
+    public static Condition FirstD(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
         int edgework = new Arrays(Info).GetNumbers(parameters[1]);
-        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5;
+        bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 7) + 2;
-        parameters[2] = wires.Length == 4 && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
+        int randomColor = rnd.Next(0, 10);
 
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} {2}, skip to condition {3}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                   : string.Format("If there's {0} {1} {2}, discard the {3}{4} wire{5}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If there's {0} {1} {2}, append the {3} {4} wire{5}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if ((!inversion && parameters[0] == edgework) || (inversion && parameters[0] != edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
-            else
+            else if (discard)
                 condition.Discard = leftmost ? -(parameters[2] - 2) : parameters[2] - 2;
-
+            else if (appendFromArray)
+                condition.Append = Algorithms.AppendFromArray(wires, ref seed, leftmost, parameters[2] - 2, lookup);
+            else
+                condition.Append = Algorithms.ArrayFromInt(randomColor, parameters[2] - 2);
+        
         return condition;
     }
     #endregion

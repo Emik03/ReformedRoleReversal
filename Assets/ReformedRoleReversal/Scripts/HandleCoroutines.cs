@@ -28,11 +28,11 @@ public class HandleCoroutines : MonoBehaviour
     /// <param name="wires">The values of the wires.</param>
     /// <param name="strSeed">The seed in base-10.</param>
     /// <param name="lookup">The lookup table, which might be needed to revert values.</param>
-    internal void GenerateSetOfConditions(int i, int[] wires, ref int lookup)
+    internal void GenerateSetOfConditions(int i, int[] wires, ref int lookup, ref bool discard, ref bool append)
     {
         int j2 = init.Conditions.GetLength(1);
         for (int j = 0; j < j2; j++)
-            StartCoroutine(manual.GenerateCondition(i, j, wires, lookup, i + 2 == wires.Length));
+            StartCoroutine(manual.GenerateCondition(i, j, wires, lookup, discard, append, i + 2 == wires.Length));
     }
 
     /// <summary>

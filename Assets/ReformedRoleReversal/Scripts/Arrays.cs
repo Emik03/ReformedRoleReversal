@@ -24,7 +24,7 @@ internal class Arrays
     }
 
     // When updating, change this string!
-    private const string version = "v1";
+    private const string version = "v0.9b";
 
     /// <summary>
     /// Indexable array of indicator edgework in alphabetical order.
@@ -219,9 +219,14 @@ internal class Arrays
     /// <param name="buttonOrder">The indexes used for Interact in reading order.</param>
     /// <param name="baseN">The initial base shown on the module.</param>
     /// <param name="left">Append 0's on the left if true, otherwise right.</param>
+    /// <param name="mod">The number to modulo the seed with.</param>
+    /// <param name="add">The number to add after modulo.</param>
     /// <param name="leftmost">Take leftmost digits if true, otherwise right.</param>
+    /// <param name="offset">The offset to apply for the table.</param>
+    /// <param name="discard">Whether or not to discard wires.</param>
+    /// <param name="append">Which direction to append wires.</param>
     /// <returns>The formatted condition array for the tutorial.</returns>
-    internal Condition[] GetTutorial(List<int> buttonOrder, int baseN, ref bool left, ref bool leftmost, ref int offset)
+    internal Condition[] GetTutorial(List<int> buttonOrder, int baseN, ref bool left, ref int mod, ref int add, ref bool leftmost, ref int offset, ref bool discard, ref bool append)
     {
         string[] buttonText = { "left", "down", "up", "right" };
 
@@ -229,10 +234,10 @@ internal class Arrays
         {
             new Condition { Text = "Welcome to Reformed Role Reversal! Press the " + buttonText[buttonOrder.IndexOf(2)] + " arrow button to advance." },
             new Condition { Text = "Look around the screen and locate the seed. Convert it from Base-" + baseN + " to Base-10. Add 0's to the " + (left ? "left" : "right") + " of this number until you have 9 digits." },
-            new Condition { Text = "Take the seed modulo 7 and add 3. The result is the amount of wires this module has." },
+            new Condition { Text = "Take the seed modulo " + mod + " and add " + add + ". The result is the amount of wires this module has." },
             new Condition { Text = "Take the " + (leftmost ? "leftmost" : "rightmost") + " digits matching the number of wires. With lookup #" + offset + ", convert digits to colors to get the final wires." },
             new Condition { Text = "Jump to the set of conditions with the amount of wires with the bottom screen and press " + buttonText[buttonOrder.IndexOf(2)] + " if the condition is false." },
-            new Condition { Text = "When told to discard wires during conditions, you then have to refer to the set of conditions with the new amount of wires." },
+            new Condition { Text = "When told to " + (discard ? "discard" : "append") + " wires, " + (discard ? string.Empty : "add the wires to the " + (append ? "left, then" : "right, then")) + " refer to the set of conditions with the new amount of wires." },
             new Condition { Text = "Once the first condition that applies has been discovered, enter submission mode by pressing either the " + buttonText[buttonOrder.IndexOf(0)] + " or " + buttonText[buttonOrder.IndexOf(3)] + " arrow button." },
             new Condition { Text = "NOTE: If the condition specifies to cut a nonexistent wire, skip it instead. Good luck!~ (" + version + ")" }
         };

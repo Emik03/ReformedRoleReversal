@@ -162,6 +162,41 @@ static class Algorithms
     }
 
     /// <summary>
+    /// Returns the values not matching the string and int array.
+    /// </summary>
+    /// <param name="wires">The wires of the module.</param>
+    /// <param name="seed">The seed, which contains external wires.</param>
+    /// <param name="leftmost">Whether to check leftmost.</param>
+    /// <param name="amount">The amount to find.</param>
+    /// <param name="lookup">The lookup, since it has to be reverted.</param>
+    /// <returns></returns>
+    internal static int[] AppendFromArray(int[] wires, ref string seed, bool leftmost, int amount, int lookup)
+    {
+        int[] newWires = RevertLookup(wires, ref lookup);
+        List<int> wiresFound = new List<int>();
+        StringBuilder newSeed = new StringBuilder(seed);
+
+        for (int i = 0; i < seed.Length; i++)
+        {
+            if (char.IsDigit(seed[i]) && (i >= wires.Length || newWires[leftmost ? i : newWires.Length - i - 1] != char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1])))
+            {
+                newSeed.Remove(i - (seed.Length - newSeed.Length), 1);
+                wiresFound.Add(wires[i]);
+            }
+
+            else if (wiresFound.Count == amount)
+                break;
+        }
+
+        // We need it in reading order, and this has been extracted right-to-left.
+        if (!leftmost)
+            wiresFound.Reverse();
+
+        seed = newSeed.ToString();
+        return wiresFound.ToArray();
+    }
+
+    /// <summary>
     /// Adds vertical bar characters which are placeholders for line breaks to the submitted string.
     /// </summary>
     /// <param name="text">The text to add line breaks with.</param>
@@ -281,6 +316,20 @@ static class Algorithms
         for (var i = 0; i < array.Length; i++)
             newArray[i] = array[i];
         return newArray;
+    }
+
+    /// <summary>
+    /// Creates and returns an array consisting of the same value.
+    /// </summary>
+    /// <param name="value">The value to use.</param>
+    /// <param name="length">The length of the array.</param>
+    /// <returns>The array consisting of the value provided on each index.</returns>
+    internal static T[] ArrayFromInt<T>(this T value, int length)
+    {
+        T[] array = new T[length];
+        for (int i = 0; i < array.Length; i++)
+            array[i] = value;
+        return array;
     }
 
     /// <summary>

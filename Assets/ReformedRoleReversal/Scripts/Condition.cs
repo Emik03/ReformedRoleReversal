@@ -4,14 +4,10 @@
 sealed class Condition
 {
     /// <summary>
-    /// If the condition is true, the wire to cut gets stored here.
+    /// If the condition is true, the wires to append gets stored here.
+    /// IMPORTANT: Each digit is treated seperately, and negative means left, positive right!
     /// </summary>
-    public int? Wire { get; set; }
-
-    /// <summary>
-    /// If the condition is true, the condition to skip to gets stored here.
-    /// </summary>
-    public int? Skip { get; set; }
+    public int[] Append { get; set; }
 
     /// <summary>
     /// If the condition is true, the amount of wires to discard gets stored here.
@@ -20,7 +16,17 @@ sealed class Condition
     public int? Discard { get; set; }
 
     /// <summary>
+    /// If the condition is true, the condition to skip to gets stored here.
+    /// </summary>
+    public int? Skip { get; set; }
+
+    /// <summary>
     /// The text from the condition that will be displayed on the module's screen.
     /// </summary>
     public string Text { get; set; }
+
+    /// <summary>
+    /// If the condition is true, the wire to cut gets stored here.
+    /// </summary>
+    public int? Wire { get; set; }
 }
