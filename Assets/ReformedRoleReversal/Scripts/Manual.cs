@@ -721,8 +721,8 @@ static class Manual
 
     public static Condition LastD(int[] wires, int lookup, KMBombInfo Info)
     {
-        int parameter = rnd.Next(0, Arrays.GroupedColors.Length);
-        bool first = rnd.NextDouble() > 0.5, blue = rnd.NextDouble() > 0.5;
+        int parameter = wires[rnd.Next(0, wires.Length)];
+        bool first = rnd.NextDouble() > 0.5, blue = parameter < 5;
 
         Condition condition = new Condition
         {
