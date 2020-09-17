@@ -309,7 +309,7 @@ static class Algorithms
     /// <summary>
     /// Returns a new copy of the array, which will not be referenced.
     /// </summary>
-    /// <typeparam name="T">The type the array is.</typeparam>
+    /// <typeparam name="T">The type the array it is.</typeparam>
     /// <param name="array">The array to copy from.</param>
     /// <returns>A new independant copy of the array provided.</returns>
     internal static T[] Clone<T>(this T[] array)
@@ -321,8 +321,9 @@ static class Algorithms
     }
 
     /// <summary>
-    /// Creates and returns an array consisting of the same value.
+    /// Creates and returns an array consisting of the same values.
     /// </summary>
+    /// <typeparam name="T">The type of array it is.</typeparam>
     /// <param name="value">The value to use.</param>
     /// <param name="length">The length of the array.</param>
     /// <returns>The array consisting of the value provided on each index.</returns>

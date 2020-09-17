@@ -106,7 +106,7 @@
                 <div class="page-content">
                     <img src="img/Component/ReformedRoleReversal.svg" class="diagram">
                     <h2>Regarding Reformed Role Reversal</h2>
-                    <p class="flavour-text">References remain remotely removed. Report reforming rules remarkably rigorously; refrain registering racks respecting ruthless rockets round ripping reconditive ropes. Regulate reason rightfully, renowned reputation raised regarding receptively repaired regions.</p>
+                    <p class="flavour-text">References remain remotely removed. Report reforming rules remarkably rigorously, remembering recherché regulations; refrain registering racks respecting ruthless rockets round ripping reconditive ropes. Regulate reason rightfully, renowned reputation raised regarding receptively repaired regions.</p>
 
                     <p class="appendix-reference">
                         See Appendix A for indicator identification reference.<br>
@@ -416,14 +416,15 @@
 
         elementSeed.className = flag ? 'green' : 'red';
 
-        if (!isBaseValid || !isModValid || !flag)
+        if (!isBaseValid || !flag)
             return;
 
         const convertedSeed = convertBase(seed, value);
-        elementModResult.innerHTML = convertedSeed % modulo;
         elementBase10.value = convertedSeed;
 
         updateBase10Length();
+
+        elementModResult.innerHTML = isModValid? convertedSeed % modulo : '?';
     }
 
     function updateBase10Length() {

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Rnd = System.Random;
-using System.Collections.Generic;
 
 /// <summary>
 /// Generates the module and caches the answer.
@@ -81,6 +81,7 @@ internal class HandleManual
 
         // The amount of wires is calculated with modulo 3 to 7, and then add 3 to 10-modulo (inclusive).
         int[] wires = new int[(int.Parse(Seed) % mod) + add];
+        wires = new int[4];
 
         for (int i = 0; i < wires.Length; i++)
             wires[i] = (int)(char.GetNumericValue(Seed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
@@ -290,7 +291,7 @@ internal class HandleManual
         }
         
         // Failsafe: If the answer isn't found, any wire can be cut.
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> Unreachable code detected, please cut any wire to solve the module.", init.ModuleId);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: An internal error has occured whilst trying to calculate the answer. Any submitted answer will solve the module.", init.ModuleId);
         init.Ready = true;
         return null;
     }

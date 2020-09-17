@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -61,7 +60,8 @@ public class HandleCoroutines : MonoBehaviour
 
         // Either state it is solved...
         if (init.Solved)
-            text = string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId % 10000);
+            text = init.Interact.CorrectAnswer == null ? string.Format("[Reformed Role Reversal #{0}]\n\nAn internal error has occured\nwhilst trying to calculate the\nanswer. Module solved!", init.ModuleId % 10000)
+                                                       : string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId % 10000);
 
         // ...show the currently submitted wire...
         else if (isSelectingWire)
