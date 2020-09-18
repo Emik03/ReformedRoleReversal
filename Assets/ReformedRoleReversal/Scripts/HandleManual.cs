@@ -81,7 +81,6 @@ internal class HandleManual
 
         // The amount of wires is calculated with modulo 3 to 7, and then add 3 to 10-modulo (inclusive).
         int[] wires = new int[(int.Parse(Seed) % mod) + add];
-        wires = new int[4];
 
         for (int i = 0; i < wires.Length; i++)
             wires[i] = (int)(char.GetNumericValue(Seed[leftmost ? i : i + (9 - wires.Length)]) + lookup) % 10;
@@ -89,7 +88,7 @@ internal class HandleManual
         // Converts the seed from base 10 to the random base chosen.
         reversal.SeedText.text = "Seed: " + Algorithms.ConvertFromBase10(value: int.Parse(Seed), baseChars: baseN);
 
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1} -> Seed in Base {2}: {3}. Seed in Base 10: {4}. Mod: {5}. Add: {6}. # of wires: {7}. Place {8} 0's. Take {9} wires. Lookup: #{10}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, mod, add, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
+        Debug.LogFormat("[Reformed Role Reversal #{0}]: {1}: Base-{2} Seed: {3}. Base-10 Seed: {4}. Mod: {5}. Add: {6}. # Wires: {7}. Place {8} 0's. Take {9}. Lookup: #{10}.", init.ModuleId, Arrays.Version, baseN.Length, reversal.SeedText.text.Substring(6, reversal.SeedText.text.Length - 6), Seed, mod, add, wires.Length, left ? "left" : "right", leftmost ? "leftmost" : "rightmost", lookup);
 
         // Log the list of all wires, converting each index to the respective string.
         string[] log = new string[wires.Length];
@@ -193,27 +192,30 @@ internal class HandleManual
 
         coroutines.UpdateScreen(instructionX: 0, instructionY: 0, wireSelected: ref wireSelected, isSelectingWire: ref isSelectingWire);
 
-        for (int i = 0; i < iMax; i++)
+        bool shouldRun = wireCount >= 0 && wireCount <= 7;
+        for (int i = 0; i < iMax && shouldRun; i++)
         {
             // If true, set the current index to the Skip property.
             if (init.Conditions[wireCount, i].Skip != null)
             {
-                if (init.Conditions[wireCount, i].Skip < 1 || init.Conditions[wireCount, i].Skip > iMax)
+                int? skipValue = init.Conditions[wireCount, i].Skip;
+                if (skipValue < 1 || skipValue > iMax)
                     throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Skip + " for parameter \"Skip\"! This should not happen under normal circumstances, as the specified condition doesn't exist.");
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, skip to section {4}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, init.Conditions[wireCount, i].Skip);
-                i = (int)init.Conditions[wireCount, i].Skip - 1;
+                i = (int)skipValue - 1;
             }
 
             // If true, regenerate a set of conditions and refer the index to the new conditions.
             if (init.Conditions[wireCount, i].Discard != null)
             {
-                if (!discardValues.Contains(init.Conditions[wireCount, i].Discard.ToString()))
-                    throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Discard + " for parameter \"Discard\"! This should not happen under normal circumstances, as it should only return -2, -1, 1, or 2.");
+                int? discardValue = init.Conditions[wireCount, i].Discard;
+                if (!discardValues.Contains(discardValue.ToString()))
+                    throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + discardValue + " for parameter \"Discard\"! This should not happen under normal circumstances, as it should only return -2, -1, 1, or 2.");
 
-                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, discard the {4}{5} wire{6}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Math.Abs((int)init.Conditions[wireCount, i].Discard) > 1 ? Math.Abs((int)init.Conditions[wireCount, i].Discard) + " " : string.Empty, init.Conditions[wireCount, i].Discard < 0 ? "leftmost" : "rightmost", Math.Abs((int)init.Conditions[wireCount, i].Discard) > 1 ? "s" : string.Empty);
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, discard the {4}{5} wire{6}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Math.Abs((int)discardValue) > 1 ? Math.Abs((int)discardValue) + " " : string.Empty, discardValue < 0 ? "leftmost" : "rightmost", Math.Abs((int)discardValue) > 1 ? "s" : string.Empty);
 
-                wires = Algorithms.SubArray(wires, init.Conditions[wireCount, i].Discard < 0 ? Math.Abs((int)init.Conditions[wireCount, i].Discard) : 0, wires.Length - Math.Abs((int)init.Conditions[wireCount, i].Discard));
+                wires = Algorithms.SubArray(wires, discardValue < 0 ? Math.Abs((int)discardValue) : 0, wires.Length - Math.Abs((int)discardValue));
 
                 // Log the list of all wires, converting each index to the respective string.
                 string[] log = new string[wires.Length];
@@ -232,34 +234,35 @@ internal class HandleManual
             // If true, regenerate a set of conditions and refer the index to the new conditions.
             if (init.Conditions[wireCount, i].Append != null)
             {
+                int[] appendValue = init.Conditions[wireCount, i].Append;
                 int minValue = 10, maxValue = 0;
-                for (int index = 0; index < init.Conditions[wireCount, i].Append.Length; index++)
+                for (int index = 0; index < appendValue.Length; index++)
                 {
-                    if (init.Conditions[wireCount, i].Append[index] < minValue)
-                        minValue = init.Conditions[wireCount, i].Append[index];
+                    if (appendValue[index] < minValue)
+                        minValue = appendValue[index];
 
-                    if (init.Conditions[wireCount, i].Append[index] > maxValue)
-                        maxValue = init.Conditions[wireCount, i].Append[index];
+                    if (appendValue[index] > maxValue)
+                        maxValue = appendValue[index];
                 }
 
-                if (minValue < 0 || maxValue > 9)
+                if (appendValue.Min() < 0 || appendValue.Max() > 9)
                     throw new ArgumentOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + wireCount + ", " + i + "] returned " + init.Conditions[wireCount, i].Append.Join(", ") + " for parameter \"Append\"! This should not happen under normal circumstances, as all values should be between 0 through 9.");
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, append the wires to the {4}.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, append ? "left" : "right");
 
-                Array.Resize(ref wires, wires.Length + init.Conditions[wireCount, i].Append.Length);
+                Array.Resize(ref wires, wires.Length + appendValue.Length);
 
                 while (Seed.Length < 9)
                     Seed = append ? 'X' + Seed : Seed + 'X';
 
                 // Append right.
                 if (!append)
-                    Array.Copy(init.Conditions[wireCount, i].Append, 0, wires, wires.Length - init.Conditions[wireCount, i].Append.Length, init.Conditions[wireCount, i].Append.Length);
+                    Array.Copy(appendValue, 0, wires, wires.Length - appendValue.Length, appendValue.Length);
                 // Append left.
                 else
                 {
-                    Array.Copy(wires, 0, wires, init.Conditions[wireCount, i].Append.Length, wires.Length - init.Conditions[wireCount, i].Append.Length);
-                    Array.Copy(init.Conditions[wireCount, i].Append, 0, wires, 0, init.Conditions[wireCount, i].Append.Length);
+                    Array.Copy(wires, 0, wires, appendValue.Length, wires.Length - appendValue.Length);
+                    Array.Copy(appendValue, 0, wires, 0, appendValue.Length);
                 }
 
                 // Log the list of all wires, converting each index to the respective string.
@@ -279,19 +282,20 @@ internal class HandleManual
             // If true, the answer has been reached, and the wire to cut is in the Wire property.
             if (init.Conditions[wireCount, i].Wire != null)
             {
-                if (init.Conditions[wireCount, i].Wire < 1 || init.Conditions[wireCount, i].Wire > 9)
-                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + (wireCount + 2) + ", " + (i + 1) + "] returned " + init.Conditions[wireCount, i].Wire + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");
+                int? wireValue = init.Conditions[wireCount, i].Wire;
+                if (wireValue < 1 || wireValue > 9)
+                    throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + (wireCount + 2) + ", " + (i + 1) + "] returned " + wireValue + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");
 
-                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Arrays.Ordinals[(int)init.Conditions[wireCount, i].Wire - 1]);
+                Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Arrays.Ordinals[(int)wireValue - 1]);
                 init.Ready = true;
-                return (int)init.Conditions[wireCount, i].Wire;
+                return (int)wireValue;
             }
 
             Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is false.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text);
         }
         
         // Failsafe: If the answer isn't found, any wire can be cut.
-        Debug.LogFormat("[Reformed Role Reversal #{0}]: An internal error has occured whilst trying to calculate the answer. Any submitted answer will solve the module.", init.ModuleId);
+        Debug.LogWarningFormat("[Reformed Role Reversal #{0}]: An internal error has occured whilst trying to calculate the answer. Any submitted answer will solve the module.", init.ModuleId);
         init.Ready = true;
         return null;
     }
