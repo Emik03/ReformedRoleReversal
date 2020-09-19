@@ -29,6 +29,7 @@ internal class HandleManual
     private Condition[] tutorial;
     private static readonly Rnd rnd = new Rnd();
     private int generated;
+    private static readonly int[] correct = new int[10];
 
     private static List<MethodInfo> ConditionMethods = new List<MethodInfo>();
     private static List<MethodInfo> FirstConditionMethods = new List<MethodInfo>();
@@ -288,6 +289,7 @@ internal class HandleManual
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Arrays.Ordinals[(int)wireValue - 1]);
                 init.Ready = true;
+                Debug.Log(correct.Join(", "));
                 return (int)wireValue;
             }
 
