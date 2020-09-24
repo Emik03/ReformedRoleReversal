@@ -29,7 +29,6 @@ internal class HandleManual
     private Condition[] tutorial;
     private static readonly Rnd rnd = new Rnd();
     private int generated;
-    private static readonly int[] correct = new int[10];
 
     private static List<MethodInfo> ConditionMethods = new List<MethodInfo>();
     private static List<MethodInfo> FirstConditionMethods = new List<MethodInfo>();
@@ -115,7 +114,7 @@ internal class HandleManual
                 FirstConditionMethods.Add(method);
             else if (method.Name.StartsWith("Last"))
                 LastConditionMethods.Add(method);
-            else
+            else //if (method.Name == "Y")
                 ConditionMethods.Add(method);
         }
     }
@@ -129,7 +128,7 @@ internal class HandleManual
     /// <param name="Seed">The seed converted to a string, very similar to wires.</param>
     /// <param name="lookup">This variable is needed in case if the lookup offset needs to be reverted.</param>
     /// <param name="isCorrectIndex">To prevent having the user find out the amount of wires by carefully reading the conditions, the wires specified are adjusted per section.</param>
-    /// <returns>This is meant for multithreading, and only returns null.</returns>
+    /// <returns>This is meant for multithreading, and therefore only returns null.</returns>
     protected internal IEnumerator GenerateCondition(int i, int j, int[] wires, int lookup, bool discard, bool append, bool isCorrectIndex)
     {
         // In case they get replaced with fake ones.
@@ -153,8 +152,8 @@ internal class HandleManual
         
         MethodInfo methodInfo;
 
-        object[] variables = new object[] { wires, lookup, reversal.Info },
-                 specialVariables = new object[] { wires, Seed, lookup, discard, reversal.Info, j == 0 };
+        object[] variables = new object[] { wires, lookup, reversal.Info, isCorrectIndex },
+                 specialVariables = new object[] { wires, Seed, lookup, discard, reversal.Info, j == 0, isCorrectIndex };
 
         switch (j)
         {
@@ -181,7 +180,7 @@ internal class HandleManual
     }
 
     /// <summary>
-    /// Scans through the condition's Wire and SkipTo properties to determine the answer of the module.
+    /// Scans through the condition's properties to determine the answer of the module.
     /// </summary>
     /// <param name="Seed">The seed in base 10.</param>
     /// <returns>Returns the answer, if the answer is null then any wire can be cut.</returns>
@@ -225,7 +224,7 @@ internal class HandleManual
                     log[j] += j == wires.Length - 1 ? "and " + Arrays.Colors[wires[j]] : Arrays.Colors[wires[j]];
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: The wires are now {1}.", init.ModuleId, log.Join(", "));
-
+                
                 coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup, ref discard, ref append);
 
                 // This method will run again from the generate set of conditions. An answer has not been determined yet.
@@ -237,13 +236,13 @@ internal class HandleManual
             {
                 int[] appendValue = init.Conditions[wireCount, i].Append;
                 int minValue = 10, maxValue = 0;
-                for (int index = 0; index < appendValue.Length; index++)
+                for (int j = 0; j < appendValue.Length; j++)
                 {
-                    if (appendValue[index] < minValue)
-                        minValue = appendValue[index];
+                    if (appendValue[j] < minValue)
+                        minValue = appendValue[j];
 
-                    if (appendValue[index] > maxValue)
-                        maxValue = appendValue[index];
+                    if (appendValue[j] > maxValue)
+                        maxValue = appendValue[j];
                 }
 
                 if (appendValue.Min() < 0 || appendValue.Max() > 9)
@@ -276,7 +275,7 @@ internal class HandleManual
 
                 coroutines.GenerateSetOfConditions(wires.Length - 2, wires, ref lookup, ref discard, ref append);
 
-                // This method will run again from the generate set of conditions. An answer has not been determined yet.
+                // This method will run again from the generate set of conditions. An answer has not yet been determined.
                 return null;
             }
 
@@ -289,7 +288,6 @@ internal class HandleManual
 
                 Debug.LogFormat("[Reformed Role Reversal #{0}]: <Condition {1}, {2}> \"{3}\" is true, cut the {4} wire.", init.ModuleId, wireCount + 2, i + 1, init.Conditions[wireCount, i].Text, Arrays.Ordinals[(int)wireValue - 1]);
                 init.Ready = true;
-                Debug.Log(correct.Join(", "));
                 return (int)wireValue;
             }
 

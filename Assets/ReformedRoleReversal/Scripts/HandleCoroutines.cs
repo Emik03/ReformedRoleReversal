@@ -60,22 +60,30 @@ public class HandleCoroutines : MonoBehaviour
 
         // Either state it is solved...
         if (init.Solved)
+        {
             text = init.Interact.CorrectAnswer == null ? string.Format("[Reformed Role Reversal #{0}]\n\nAn internal error has occured\nwhilst trying to calculate the\nanswer. Module solved!", init.ModuleId % 10000)
                                                        : string.Format("[Reformed Role Reversal #{0}]\n\nThe correct wire was cut.\nModule solved!", init.ModuleId % 10000);
+        }
 
         // ...show the currently submitted wire...
         else if (isSelectingWire)
+        {
             text = string.Format("[Wire Selected: {0}]\n\nPlease press the screen\nto cut the wire.", wireSelected);
+            Reversal.ScreenText.color = new Color32((byte)(192 + (wireSelected * 7)), 192, (byte)(255 - (wireSelected * 7)), 255);
+        }
 
         // ...or display the manual.
         else
+        {
             text = string.Format("[{0}{1}]\n\n{2}", instructionX == 0 ? "Tutorial" : (instructionX + 2).ToString() + " wires, ", instructionX == 0 ? string.Empty : Arrays.Ordinals[instructionY] + " condition", Algorithms.Format(init.Conditions[instructionX, instructionY].Text));
+            Reversal.ScreenText.color = new Color32((byte)(192 + (instructionX * 9)), 192, (byte)(192 + (instructionY * 9)), 255);
+        }
 
         halt = true;
 
         // This delay should always be as much as the delay below to make sure that an already running coroutine will halt.
         // StopCoroutine() doesn't appear to work, so this is a workaround.
-        const float wait = 0.025f;
+        const float wait = 0.03f;
         yield return new WaitForSeconds(wait);
 
         halt = false;
@@ -91,11 +99,16 @@ public class HandleCoroutines : MonoBehaviour
         do
         {
             keepAnimating = false;
-            
+
+            // Fade out when solved.
+            if (init.Solved)
+                Reversal.ScreenText.color = new Color32((byte)((255 * Reversal.ScreenText.color.r) - 1), (byte)((255 * Reversal.ScreenText.color.g) - 1), (byte)((255 * Reversal.ScreenText.color.b) - 1), 255);
+
             // Cut to next line break.
             if (previous.IndexOf('\n') != -1)
             {
-                previous = previous.Substring(previous.IndexOf('\n') + 1);
+                previous = init.Solved ? previous.Substring(1)
+                                       : previous.Substring(previous.IndexOf('\n') + 1);
                 keepAnimating = true;
             }
 
@@ -105,7 +118,7 @@ public class HandleCoroutines : MonoBehaviour
                 current += text[i];
 
                 // If last character is a line break, stop for the time being.
-                if (text[i] == '\n')
+                if (text[i] == '\n' || init.Solved)
                 {
                     keepAnimating = true;
                     i++;
