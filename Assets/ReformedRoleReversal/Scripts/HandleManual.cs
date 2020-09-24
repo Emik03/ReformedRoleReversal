@@ -155,12 +155,14 @@ internal class HandleManual
         object[] variables = new object[] { wires, lookup, reversal.Info, isCorrectIndex },
                  specialVariables = new object[] { wires, Seed, lookup, discard, reversal.Info, j == 0, isCorrectIndex };
 
+        bool isSecondSpecial = discard ? (j == 1 && i != 1 && !append) : (j == 1 && i != 7 && append);
+
         switch (j)
         {
             case 0: methodInfo = FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]; break;
 
-            case 1: methodInfo = (discard ? (j == 1 && i != 1) : (j == 1 && i != 7)) ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
-                                                                                     : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
+            case 1: methodInfo = isSecondSpecial ? FirstConditionMethods[rnd.Next(0, FirstConditionMethods.Count)]
+                                                 : ConditionMethods[rnd.Next(0, ConditionMethods.Count)]; break;
 
             case 7: methodInfo = LastConditionMethods[rnd.Next(0, LastConditionMethods.Count)]; break;
 
@@ -168,7 +170,7 @@ internal class HandleManual
         }
 
         // Invoke the random method obtained and assign it into the current variable.
-        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (discard ? (j == 1 && i != 1) : (j == 1 && i != 7)) ? specialVariables : variables);
+        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (discard ? (j == 1 && i != 1 && !append) : (j == 1 && i != 7 && append)) ? specialVariables : variables);
 
         // Wait until the method has finished running.
         yield return new WaitWhile(() => init.Conditions[i, j] == null);

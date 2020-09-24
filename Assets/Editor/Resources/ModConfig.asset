@@ -14,8 +14,8 @@ MonoBehaviour:
   id: ReformedRoleReversal
   title: Reformed Role Reversal
   author: Emik
-  description: '"Wait... so you''re telling me that every condition we wrote down
-    only applies to that 1 module?"
+  description: '"Hold on, you''re telling me that every condition we wrote down only
+    applies to that 1 module?"
 
 
     moduleId: ReformedRoleReversal
@@ -30,4 +30,4 @@ MonoBehaviour:
     Is there a bug? Do you have a question? Discord: @Emik#0001'
   version: 1
   outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
-  previewImage: {fileID: 2800000, guid: ca12db878111c414598284b5782de620, type: 3}
+  previewImage: {fileID: 2800000, guid: 9e2e9472bf3a4c44a8086d3013fe76fb, type: 3}
