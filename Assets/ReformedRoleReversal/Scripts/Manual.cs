@@ -420,15 +420,17 @@ static class Manual
     public static Condition L(int[] wires, int lookup, KMBombInfo Info, bool isCorrectIndex)
     {
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: Arrays.Colors.Length);
+        bool first = rnd.NextDouble() > 0.5;
+
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0}ish wire neighbours 2 {1}ish wires, cut that middle wire.", Arrays.GroupedColors[parameters[0]], Arrays.GroupedColors[parameters[1]])
+            Text = string.Format("If a {0}ish wire neighbours 2 {1}ish wires, cut the {2} instance of that middle wire.", Arrays.GroupedColors[parameters[0]], Arrays.GroupedColors[parameters[1]], first ? "first" : "last") 
         };
 
         if (!isCorrectIndex)
             return condition;
 
-        for (int i = 1; i < wires.Length - 1; i++)
+        for (int i = first ? 1 : wires.Length - 2; first ? i < wires.Length - 1 : i > 0; i += first ? 1 : -1)
             if (wires[i - 1] / 5 == parameters[1] / 5 && wires[i] / 5 == parameters[0] / 5 && wires[i + 1] / 5 == parameters[1] / 5)
             {
                 condition.Wire = ++i;

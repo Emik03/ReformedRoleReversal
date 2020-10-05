@@ -13,7 +13,7 @@ public class TwitchPlaysHandler : MonoBehaviour
     private Interact interact;
 
 #pragma warning disable 414
-    private const string TwitchHelpMessage = @"!{0} cut <#> (Cuts the wire '#' with range: 1-9) and !{0} manual <#> <#> (Left digit with range 3-9 or 'help', right digit refers to page inside the section with range 1-8. If you don't know how this module works, do manual help 2, manual help 3, manual help 4... - be sure to also use !tilt)";
+    private const string TwitchHelpMessage = @"!{0} cut <#> (Range 1-9) -- !{0} manual <#> <#> (1st '#' Range 3-9 or 'help', 2nd '#' Range 1-8) Start with 'manual help 2', 'manual help 3', 'manual help 4'... and find the seed with !{0} zoom tilt right";
 #pragma warning restore 414
 
     private void Start()
@@ -108,7 +108,7 @@ public class TwitchPlaysHandler : MonoBehaviour
     private IEnumerator TwitchHandleForcedSolve()
     {
         yield return null;
-        Debug.LogFormat("[Role Reversal #{0}] A forced solve has been initiated...", init.ModuleId);
+        Debug.LogFormat("[Reformed Role Reversal #{0}] A forced solve has been initiated...", init.ModuleId);
 
         Reversal.Buttons[interact.ButtonOrder.IndexOf(3)].OnInteract();
 

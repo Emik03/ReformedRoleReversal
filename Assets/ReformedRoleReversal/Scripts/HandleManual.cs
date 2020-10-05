@@ -114,7 +114,7 @@ internal class HandleManual
                 FirstConditionMethods.Add(method);
             else if (method.Name.StartsWith("Last"))
                 LastConditionMethods.Add(method);
-            else //if (method.Name == "Y")
+            else //if (method.Name == "L")
                 ConditionMethods.Add(method);
         }
     }
