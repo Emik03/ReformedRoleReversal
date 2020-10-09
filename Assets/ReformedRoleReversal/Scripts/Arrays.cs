@@ -24,7 +24,7 @@ internal class Arrays
     }
 
     // When updating, change this string!
-    private const string version = "v1.0.2";
+    private const string version = "v1.0.3";
 
     /// <summary>
     /// Indexable array of indicator edgework in alphabetical order.
@@ -259,15 +259,15 @@ internal class Arrays
             info.GetIndicators().Count(),
             info.GetOnIndicators().Count(),
             info.GetOffIndicators().Count(),
-            info.GetIndicators().Where(x => x.Any(y => new[] { 'r', 'o', 'l', 'e' }.Contains(y))).Count(),
+            info.GetIndicators().Count(x => x.ToLower().Any(y => new[] { 'r', 'o', 'l', 'e' }.Contains(y))),
             info.GetPortPlateCount(),
             info.GetPorts().Distinct().Count(),
             info.GetPorts().Count() - info.GetPorts().Distinct().Count(),
             info.GetPortCount(),
             info.GetSerialNumberNumbers().Count(),
             info.GetSerialNumberLetters().Count(),
-            info.GetSerialNumberLetters().Where(x => new[] { 'a', 'e', 'i', 'o', 'u' }.Contains(x)).Count(),
-            info.GetSerialNumberLetters().Where(x => !new[] { 'a', 'e', 'i', 'o', 'u', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }.Contains(x)).Count(),
+            info.GetSerialNumberLetters().Count(x => new[] { 'a', 'e', 'i', 'o', 'u' }.Contains(x.ToString().ToLower().ToCharArray()[0])),
+            info.GetSerialNumberLetters().Count(x => !new[] { 'a', 'e', 'i', 'o', 'u', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }.Contains(x.ToString().ToLower().ToCharArray()[0])),
             info.GetSolvableModuleNames().Count(),
             info.GetModuleNames().Count(),
             info.GetModuleNames().Count() - info.GetSolvableModuleNames().Count(),

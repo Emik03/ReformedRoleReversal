@@ -24,7 +24,7 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : appendFromArray || discard ? string.Format("If there's at {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the included", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's at {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
                                                                : string.Format("If there's at {0} {1} {2}, append {3} {4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
@@ -58,7 +58,7 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : appendFromArray || discard ? string.Format("If there's {0} {1} than {2}, {3} {4}{5} wire{6}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the included", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's {0} {1} than {2}, {3} {4}{5} wire{6}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
                                                                : string.Format("If there's {0} {1} than {2}, append the {3} {4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
