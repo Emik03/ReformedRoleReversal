@@ -19,6 +19,9 @@ internal class HandleManual
         interact = init.Interact;
     }
 
+    internal int[] SouvenirWires;
+    internal readonly int[] SouvenirIndex = new int[2];
+
     protected internal string Seed = rnd.Next(0, 1000000000).ToString();
 
     private readonly HandleCoroutines coroutines;
@@ -39,6 +42,9 @@ internal class HandleManual
     /// </summary>
     protected internal void Generate()
     {
+        // Display loading screen.
+        coroutines.LoadingScreen(0);
+
         // Generate random parameters as rules.
         bool left = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, discard = rnd.NextDouble() > 0.5, append = rnd.NextDouble() > 0.5;
 
@@ -141,7 +147,7 @@ internal class HandleManual
 
             // Theoretically generateCondition++ could run before the previous instruction has finished running.
             yield return new WaitWhile(() => init.Conditions[i, j] == null);
-            generated++;
+            coroutines.LoadingScreen(++generated);
 
             yield break;
         }
@@ -174,10 +180,18 @@ internal class HandleManual
 
         // Wait until the method has finished running.
         yield return new WaitWhile(() => init.Conditions[i, j] == null);
-        generated++;
+
+        bool hasGenerated = generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
+
+        // If the conditions are regenerating, it shouldn't give a tell by flickering the screen.
+        yield return new WaitForSeconds((float)rnd.NextDouble() / 10 * Convert.ToByte(!hasGenerated));
+        coroutines.LoadingScreen(++generated);
+
+        // Reset it.
+        hasGenerated = generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
-        if (generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1))
+        if (hasGenerated)
             interact.CorrectAnswer = GetAnswer(ref Seed, realWires, ref lookup, ref discard, ref append);
     }
 
@@ -198,7 +212,7 @@ internal class HandleManual
         for (int i = 0; i < iMax && shouldRun; i++)
         {
             // If true, set the current index to the Skip property.
-            if (init.Conditions[wireCount, i].Skip != null)
+            if (init.Conditions[wireCount, i].Skip != null && false)
             {
                 int? skipValue = init.Conditions[wireCount, i].Skip;
                 if (skipValue < 1 || skipValue > iMax)
@@ -284,6 +298,10 @@ internal class HandleManual
             // If true, the answer has been reached, and the wire to cut is in the Wire property.
             if (init.Conditions[wireCount, i].Wire != null)
             {
+                SouvenirWires = wires;
+                SouvenirIndex[0] = wireCount;
+                SouvenirIndex[1] = i;
+
                 int? wireValue = init.Conditions[wireCount, i].Wire;
                 if (wireValue < 1 || wireValue > 9)
                     throw new IndexOutOfRangeException("[Reformed Role Reversal #" + init.ModuleId + "]: Condition [" + (wireCount + 2) + ", " + (i + 1) + "] returned " + wireValue + " for parameter \"Wire\"! This should not happen under normal circumstances, as the wire specified to cut doesn't exist.");

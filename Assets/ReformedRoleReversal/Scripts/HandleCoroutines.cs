@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -46,6 +47,20 @@ public class HandleCoroutines : MonoBehaviour
         StartCoroutine(RenderScreen(instructionX, instructionY, wireSelected, isSelectingWire));
     }
 
+    protected internal void LoadingScreen(int generated)
+    {
+        if (generated > 64)
+            return;
+
+        Reversal.ScreenText.text = "Loading...\n";
+
+        for (int i = 0; i < generated; i++)
+            Reversal.ScreenText.text += i % 32 == 0 ? "\n|" : "|";
+
+        Reversal.ScreenText.text += "\n\n" + generated + '/' + "64" + " (" + (float)(generated * 1.5625) + "%)";
+        Reversal.ScreenText.color = new Color32((byte)(191 + Math.Min(generated, 64)), 192, (byte)(255 - Math.Min(generated, 64)), 255);
+    }
+
     /// <summary>
     /// Renders the screen with animating by displaying the text 1 character at a time.
     /// </summary>
@@ -54,7 +69,7 @@ public class HandleCoroutines : MonoBehaviour
     /// <param name="wireSelected">The current selected wire.</param>
     /// <param name="isSelectingWire">Whether the module is in submission mode.</param>
     /// <returns>It's an animation, it only returns WaitForSeconds().</returns>
-    internal protected IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected, bool isSelectingWire)
+    protected internal IEnumerator RenderScreen(int instructionX, int instructionY, int wireSelected, bool isSelectingWire)
     {
         string text;
 
