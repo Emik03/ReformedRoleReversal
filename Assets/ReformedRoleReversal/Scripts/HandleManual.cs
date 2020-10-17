@@ -143,6 +143,7 @@ internal class HandleManual
         // If the current condition is in the tutorial section, assign it to the tutorial already generated before.
         if (i == 0)
         {
+            // Clones the tutorial.
             init.Conditions[i, j] = tutorial[j];
 
             // Theoretically generateCondition++ could run before the previous instruction has finished running.
@@ -161,7 +162,7 @@ internal class HandleManual
         object[] variables = new object[] { wires, lookup, reversal.Info, isCorrectIndex },
                  specialVariables = new object[] { wires, Seed, lookup, discard, reversal.Info, j == 0, isCorrectIndex };
 
-        bool isSecondSpecial = discard ? (j == 1 && i != 1 && !append) : (j == 1 && i != 7 && append);
+        bool isSecondSpecial = discard ? (j == 1 && i != 1) : (j == 1 && i != 7);
 
         switch (j)
         {
@@ -176,19 +177,17 @@ internal class HandleManual
         }
 
         // Invoke the random method obtained and assign it into the current variable.
-        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || (discard ? (j == 1 && i != 1 && !append) : (j == 1 && i != 7 && append)) ? specialVariables : variables);
+        init.Conditions[i, j] = (Condition)methodInfo.Invoke(this, j == 0 || isSecondSpecial ? specialVariables : variables);
 
         // Wait until the method has finished running.
         yield return new WaitWhile(() => init.Conditions[i, j] == null);
 
-        bool hasGenerated = generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
-
         // If the conditions are regenerating, it shouldn't give a tell by flickering the screen.
-        yield return new WaitForSeconds((float)rnd.NextDouble() / 10 * Convert.ToByte(!hasGenerated));
+        yield return new WaitForSeconds((float)rnd.NextDouble() / 10 * Convert.ToByte(!(generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1))));
         coroutines.LoadingScreen(++generated);
 
         // Reset it.
-        hasGenerated = generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
+        bool hasGenerated = generated % 8 == 0 && generated >= init.Conditions.GetLength(0) * init.Conditions.GetLength(1);
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
         if (hasGenerated)

@@ -153,7 +153,7 @@ static class Manual
         int[] parameters = Algorithms.Random(length: 2, min: 0, max: Arrays.Colors.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0} wire is right of a {1} wire, cut the first {0} wire.", Arrays.Colors[parameters[0]], Arrays.Colors[parameters[1]])
+            Text = string.Format("If a {0} wire is directly right of a {1} wire, cut the first {0} wire.", Arrays.Colors[parameters[0]], Arrays.Colors[parameters[1]])
         };
 
         if (!isCorrectIndex)
@@ -174,7 +174,7 @@ static class Manual
         int[] parameters = Algorithms.Random(length: 4, min: 0, max: Arrays.Colors.Length);
         Condition condition = new Condition
         {
-            Text = string.Format("If a {0} wire is left of a {1}, {2}, or {3} wire, cut the first {1}, {2}, or {3} wire.", Arrays.Colors[parameters[0]], Arrays.Colors[parameters[1]], Arrays.Colors[parameters[2]], Arrays.Colors[parameters[3]])
+            Text = string.Format("If a {0} wire is directly left of a {1}, {2}, or {3} wire, cut the first {1}, {2}, or {3} wire.", Arrays.Colors[parameters[0]], Arrays.Colors[parameters[1]], Arrays.Colors[parameters[2]], Arrays.Colors[parameters[3]])
         };
 
         if (!isCorrectIndex)
@@ -339,7 +339,7 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
-        string method = parameters[1] < 5 ? "firstInstanceOfPurple" : "firstInstanceOfBlue";
+        string method = parameters[1] < 5 ? "firstInstanceOfBlue" : "firstInstanceOfPurple";
 
         if (inversion ^ wires.Contains(parameters[0]))
             condition.Wire = Algorithms.Find(method: method, key: ref parameters[0], wires: wires);
