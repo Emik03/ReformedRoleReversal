@@ -28,6 +28,6 @@ MonoBehaviour:
 
 
     Is there a bug? Do you have a question? Discord: @Emik#0001'
-  version: 1.0.5
-  outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
+  version: 1.0.6
+  outputFolder: build
   previewImage: {fileID: 2800000, guid: 9e2e9472bf3a4c44a8086d3013fe76fb, type: 3}

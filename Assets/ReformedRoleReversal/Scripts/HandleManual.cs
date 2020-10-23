@@ -211,7 +211,7 @@ internal class HandleManual
         for (int i = 0; i < iMax && shouldRun; i++)
         {
             // If true, set the current index to the Skip property.
-            if (init.Conditions[wireCount, i].Skip != null && false)
+            if (init.Conditions[wireCount, i].Skip != null)
             {
                 int? skipValue = init.Conditions[wireCount, i].Skip;
                 if (skipValue < 1 || skipValue > iMax)

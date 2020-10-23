@@ -14,7 +14,6 @@ static class Manual
     public static Condition FirstA(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition, bool isCorrectIndex)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
-        int edgework = new Arrays(Info).GetNumbers(parameters[1]);
         bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 5) + 2;
@@ -31,6 +30,8 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
+        int edgework = new Arrays(Info).GetEdgework(parameters[1]);
+
         if ((!inversion && parameters[0] <= edgework) || (inversion && parameters[0] >= edgework))
             if (firstCondition)
                 condition.Skip = parameters[2];
@@ -46,10 +47,9 @@ static class Manual
 
     public static Condition FirstB(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition, bool isCorrectIndex)
     {
-        Arrays staticArrays = new Arrays(Info);
+        Arrays arrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
-        int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
         bool more = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
@@ -65,6 +65,8 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
+        int edgework1 = arrays.GetEdgework(parameters[0]), edgework2 = arrays.GetEdgework(parameters[1]);
+
         if ((!more && edgework1 < edgework2) || (more && edgework1 > edgework2))
             if (firstCondition)
                 condition.Skip = parameters[2];
@@ -74,16 +76,15 @@ static class Manual
                 condition.Append = Algorithms.AppendFromArray(wires, ref seed, leftmost, parameters[2] - 2, lookup);
             else
                 condition.Append = Algorithms.ArrayFromInt(randomColor, parameters[2] - 2);
-        
+
         return condition;
     }
 
     public static Condition FirstC(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition, bool isCorrectIndex)
     {
-        Arrays staticArrays = new Arrays(Info);
+        Arrays arrays = new Arrays(Info);
 
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
-        int edgework1 = staticArrays.GetNumbers(parameters[0]), edgework2 = staticArrays.GetNumbers(parameters[1]);
         bool orAnd = rnd.NextDouble() > 0.5, inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[2] = (wires.Length == 4 || wires.Length == 8) && !firstCondition ? 3 : (parameters[2] % 2) + 3;
@@ -98,6 +99,8 @@ static class Manual
 
         if (!isCorrectIndex)
             return condition;
+
+        int edgework1 = arrays.GetEdgework(parameters[0]), edgework2 = arrays.GetEdgework(parameters[1]);
 
         if (inversion && ((orAnd && (edgework1 == 0 || edgework2 == 0)) || (!orAnd && edgework1 == 0 && edgework2 == 0))
         || !inversion && ((orAnd && (edgework1 != 0 || edgework2 != 0)) || (!orAnd && edgework1 != 0 && edgework2 != 0)))
@@ -116,7 +119,6 @@ static class Manual
     public static Condition FirstD(int[] wires, ref string seed, int lookup, bool discard, KMBombInfo Info, bool firstCondition, bool isCorrectIndex)
     {
         int[] parameters = Algorithms.Random(length: 3, min: 0, max: Arrays.Edgework.Length);
-        int edgework = new Arrays(Info).GetNumbers(parameters[1]);
         bool inversion = rnd.NextDouble() > 0.5, leftmost = rnd.NextDouble() > 0.5, appendFromArray = rnd.NextDouble() > 0.5;
 
         parameters[0] = (parameters[0] / 7) + 2;
@@ -132,6 +134,8 @@ static class Manual
 
         if (!isCorrectIndex)
             return condition;
+
+        int edgework = new Arrays(Info).GetEdgework(parameters[1]);
 
         if ((!inversion && parameters[0] == edgework) || (inversion && parameters[0] != edgework))
             if (firstCondition)
@@ -619,7 +623,7 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
-        if (new Arrays(Info).GetNumbers(16) > 1)
+        if (new Arrays(Info).GetEdgework(16) > 1)
             condition.Wire = ++parameter;
 
         return condition;
@@ -681,7 +685,7 @@ static class Manual
 
         string method = parameters[1] < 5 ? "lastInstanceOfPurple" : "lastInstanceOfBlue";
 
-        if (new Arrays(Info).GetNumbers(parameters[0]) < wires.Where(x => x.Equals(parameters[0])).Count())
+        if (new Arrays(Info).GetEdgework(parameters[0]) < wires.Where(x => x.Equals(parameters[0])).Count())
             condition.Wire = Algorithms.Find(method: method, key: ref parameters[1], wires: wires);
 
         return condition;
@@ -700,7 +704,7 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
-        if (new Arrays(Info).GetNumbers(parameters[0]) < wires.Where(x => x.Equals(parameters[1])).Count())
+        if (new Arrays(Info).GetEdgework(parameters[0]) < wires.Where(x => x.Equals(parameters[1])).Count())
             condition.Wire = Algorithms.Find(method: "firstInstanceOfNotKey", key: ref parameters[1], wires: wires);
 
         return condition;

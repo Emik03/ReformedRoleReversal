@@ -24,7 +24,7 @@ internal class Arrays
     }
 
     // When updating, change this string!
-    private const string version = "v1.0.5";
+    private const string version = "v1.0.6";
 
     /// <summary>
     /// Indexable array of indicator edgework in alphabetical order.
@@ -248,7 +248,7 @@ internal class Arrays
     /// </summary>
     /// <param name="i">The index for the numbers array.</param>
     /// <returns>A number representing the edgework.</returns>
-    internal int GetNumbers(int i)
+    internal int GetEdgework(int i)
     {
         return new int[20]
         {
