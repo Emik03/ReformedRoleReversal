@@ -118,9 +118,9 @@ internal class HandleManual
                 continue;
             if (method.Name.StartsWith("First"))
                 FirstConditionMethods.Add(method);
-            else if (method.Name.StartsWith("Last"))
+            else if (method.Name.StartsWith("LastC"))
                 LastConditionMethods.Add(method);
-            else //if (method.Name == "L")
+            else if (method.Name != "ReturnEmptyCondition")
                 ConditionMethods.Add(method);
         }
     }
@@ -191,7 +191,7 @@ internal class HandleManual
 
         // If this is the last time the coroutine is running, get the answer, and consider the module ready.
         if (hasGenerated)
-            interact.CorrectAnswer = GetAnswer(ref Seed, realWires, ref lookup, ref discard, ref append);
+            interact.CorrectAnswer = GetAnswer(realWires, ref lookup, ref discard, ref append);
     }
 
     /// <summary>
@@ -199,7 +199,7 @@ internal class HandleManual
     /// </summary>
     /// <param name="Seed">The seed in base 10.</param>
     /// <returns>Returns the answer, if the answer is null then any wire can be cut.</returns>
-    private int? GetAnswer(ref string strSeed, int[] wires, ref int lookup, ref bool discard, ref bool append)
+    private int? GetAnswer(int[] wires, ref int lookup, ref bool discard, ref bool append)
     {
         int wireSelected = 1, wireCount = wires.Length - 2, iMax = init.Conditions.GetLength(1);
         bool isSelectingWire = false;

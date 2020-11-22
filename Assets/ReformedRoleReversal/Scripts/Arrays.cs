@@ -24,7 +24,7 @@ internal class Arrays
     }
 
     // When updating, change this string!
-    private const string version = "v1.0.7";
+    private const string version = "v1.0.8";
 
     /// <summary>
     /// Indexable array of indicator edgework in alphabetical order.

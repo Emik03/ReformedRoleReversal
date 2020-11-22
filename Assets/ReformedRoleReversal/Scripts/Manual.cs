@@ -298,31 +298,32 @@ static class Manual
     public static Condition G(int[] wires, int lookup, KMBombInfo Info, bool isCorrectIndex)
     {
         int parameter = rnd.Next(1, (int)Math.Ceiling((float)wires.Length / 2) + 1);
-        Array.Sort(wires);
+        int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
+        Array.Sort(revertedWires);
 
         int exceptions = 0,
-            middleWire1 = wires[wires.Length / 2],
-            middleWire2 = wires.Length % 2 == 0
-                        ? wires[(wires.Length / 2) - 1]
+            middleWire1 = revertedWires[wires.Length / 2],
+            middleWire2 = revertedWires.Length % 2 == 0
+                        ? revertedWires[(wires.Length / 2) - 1]
                         : middleWire1;
 
         Condition condition = new Condition
         {
-            Text = string.Format("If all wires aren't unique excluding {0} of them, cut the last wire whose value {1} the median{2}.", parameter, wires.Length % 2 == 1 ? "is" : "are", wires.Length % 2 == 1 ? string.Empty : "s")
+            Text = string.Format("If all wires aren't unique excluding {0} of them, cut the last wire whose value {1} the median{2}.", parameter, revertedWires.Length % 2 == 1 ? "is" : "are", wires.Length % 2 == 1 ? string.Empty : "s")
         };
 
         if (!isCorrectIndex)
             return condition;
 
-        foreach (IGrouping<int, int> number in wires.GroupBy(x => x))
+        foreach (IGrouping<int, int> number in revertedWires.GroupBy(x => x))
             if (number.Count() == 1)
                 exceptions++;
 
         if (exceptions != parameter)
             return condition;
 
-        condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: wires),
-                                  (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: wires));
+        condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: revertedWires),
+                                  (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: revertedWires));
 
         if (condition.Wire == 0)
             condition.Wire = null;
@@ -886,6 +887,9 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
+        wires = new[] { 3, 5, 1 };
+        lookup = 6;
+
         int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
         int key = highest ? revertedWires.Max() : revertedWires.Min();
 
@@ -915,6 +919,14 @@ static class Manual
         condition.Wire = Algorithms.Find(method: method, key: ref parameter, wires: wires);
 
         return condition;
+    }
+
+    public static Condition ReturnEmptyCondition(int[] wires, int lookup, KMBombInfo Info, bool isCorrectIndex)
+    {
+        return new Condition()
+        {
+            Text = string.Empty
+        };
     }
     #endregion
 }
