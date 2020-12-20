@@ -13,7 +13,7 @@ public class TwitchPlaysHandler : MonoBehaviour
     private Interact interact;
 
 #pragma warning disable 414
-    private const string TwitchHelpMessage = @"!{0} cut <#> (Range 1-9) -- !{0} manual <#> <#> (1st '#' Range 3-9 or 'help', 2nd '#' Range 1-8) Start with 'manual help 2', 'manual help 3', 'manual help 4'... and find the seed with !{0} zoom tilt right";
+    private const string TwitchHelpMessage = @"!{0} cut <#> (Range 1-9) -- !{0} manual <#> <#> (1st '#' Range 3-9 or 'help', 2nd '#' Range 1-8) Start with 'manual help 2', 'manual help 3', 'manual help 4'... and find the seed with !{0} zoom tilt left/down/right";
 #pragma warning restore 414
 
     private void Start()

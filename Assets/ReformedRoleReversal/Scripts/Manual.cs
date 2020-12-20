@@ -23,7 +23,7 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's at {0} {1} {2}, skip to condition {3}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : appendFromArray || discard ? string.Format("If there's at {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's at {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], discard ? (rnd.NextDouble() > 0.5 ? "discard the" : "append the unincluded") : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
                                                                : string.Format("If there's at {0} {1} {2}, append {3} {4} wire{5}.", inversion ? "most" : "least", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
@@ -58,8 +58,8 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} than {2}, skip to condition {3}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : appendFromArray || discard ? string.Format("If there's {0} {1} than {2}, {3} {4}{5} wire{6}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
-                                                               : string.Format("If there's {0} {1} than {2}, append the {3} {4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's {0} {1} than {2}, {3} {4}{5} wire{6}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], discard ? (rnd.NextDouble() > 0.5 ? "discard the" : "append the unincluded") : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If there's {0} {1} than {2}, append {3} {4} wire{5}.", more ? "more" : "less", Arrays.Edgework[parameters[0]], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (!isCorrectIndex)
@@ -93,8 +93,8 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If {0} {1} {2} {3} exist, skip to condition {4}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", parameters[2])
-                                  : appendFromArray || discard ? string.Format("If {0} {1} {2} {3} exist, {4} {5}{6} wire{7}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
-                                                               : string.Format("If {0} {1} {2} {3} exist, append the {4} {5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If {0} {1} {2} {3} exist, {4} {5}{6} wire{7}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", discard ? (rnd.NextDouble() > 0.5 ? "discard the" : "append the unincluded") : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If {0} {1} {2} {3} exist, append {4} {5} wire{6}.", Arrays.Edgework[parameters[0]], orAnd ? "or" : "and", Arrays.Edgework[parameters[1]], inversion ? "don't" : "do", Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (!isCorrectIndex)
@@ -128,8 +128,8 @@ static class Manual
         Condition condition = new Condition
         {
             Text = firstCondition ? string.Format("If there's {0} {1} {2}, skip to condition {3}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], parameters[2])
-                                  : appendFromArray || discard ? string.Format("If there's {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], discard ? "discard the" : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
-                                                               : string.Format("If there's {0} {1} {2}, append the {3} {4} wire{5}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                  : appendFromArray || discard ? string.Format("If there's {0} {1} {2}, {3} {4}{5} wire{6}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], discard ? (rnd.NextDouble() > 0.5 ? "discard the" : "append the unincluded") : "append the unincluded", Math.Abs(parameters[2]) - 2 != 1 ? Math.Abs(parameters[2] - 2).ToString() + ' ' : string.Empty, leftmost ? "leftmost" : "rightmost", Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
+                                                               : string.Format("If there's {0} {1} {2}, append {3} {4} wire{5}.", inversion ? "not exactly" : "exactly", parameters[0], Arrays.Edgework[parameters[1]], Math.Abs(parameters[2] - 2).ToString(), Arrays.Colors[randomColor], Math.Abs(parameters[2]) - 2 != 1 ? "s" : string.Empty)
         };
 
         if (!isCorrectIndex)
@@ -925,7 +925,7 @@ static class Manual
     {
         return new Condition()
         {
-            Text = string.Empty
+            Text = wires.Join("") + '\n' + lookup + '\n' + Info + '\n' + isCorrectIndex
         };
     }
     #endregion

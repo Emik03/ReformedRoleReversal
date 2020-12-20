@@ -57,6 +57,9 @@ internal class HandleManual
         // Assign the seed to the wires.
         int[] wires = GetWires(ref left, ref leftmost, ref lookup, ref mod, ref add, ref baseN);
 
+        if (Application.isEditor)
+            Override(out wires, out lookup, out mod, out add, out left, out leftmost, out discard, out append, out baseN);
+
         int i2 = init.Conditions.GetLength(0);
 
         // Formats the tutorial, this needs to run before the conditions are generated because it assigns the first set using this variable.
@@ -69,6 +72,20 @@ internal class HandleManual
         // Runs through the entire 2-dimensional array and assign a condition to each and every single one.
         for (int i = 0; i < i2; i++)
             coroutines.GenerateSetOfConditions(i, wires, ref lookup, ref discard, ref append);
+    }
+
+    private void Override(out int[] wires, out int lookup, out int mod, out int add, out bool left, out bool leftmost, out bool discard, out bool append, out char[] baseN)
+    {
+        lookup = 4;
+        mod = 5;
+        add = 4;
+        left = false;
+        leftmost = false;
+        discard = false;
+        append = false;
+        Seed = "000010000";
+        baseN = Algorithms.SubArray(Arrays.Base62, 0, 41);
+        wires = GetWires(ref left, ref leftmost, ref lookup, ref mod, ref add, ref baseN);
     }
 
     /// <summary>
@@ -118,7 +135,7 @@ internal class HandleManual
                 continue;
             if (method.Name.StartsWith("First"))
                 FirstConditionMethods.Add(method);
-            else if (method.Name.StartsWith("LastC"))
+            else if (method.Name.StartsWith("Last"))
                 LastConditionMethods.Add(method);
             else if (method.Name != "ReturnEmptyCondition")
                 ConditionMethods.Add(method);
@@ -247,7 +264,7 @@ internal class HandleManual
             }
 
             // If true, regenerate a set of conditions and refer the index to the new conditions.
-            if (init.Conditions[wireCount, i].Append != null)
+            if (init.Conditions[wireCount, i].Append != null && init.Conditions[wireCount, i].Append != null)
             {
                 int[] appendValue = init.Conditions[wireCount, i].Append;
                 int minValue = 10, maxValue = 0;

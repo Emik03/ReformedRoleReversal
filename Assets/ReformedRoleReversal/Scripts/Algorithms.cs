@@ -172,18 +172,17 @@ static class Algorithms
     /// <returns></returns>
     internal static int[] AppendFromArray(int[] wires, ref string seed, bool leftmost, int amount, int lookup)
     {
-        int[] newWires = RevertLookup(wires, ref lookup);
+        int[] revertedWires = RevertLookup(wires, ref lookup);
         List<int> wiresFound = new List<int>();
         StringBuilder newSeed = new StringBuilder(seed);
 
         for (int i = 0; i < seed.Length; i++)
         {
-            if (i >= newWires.Length || i < 0 ||
-                (char.IsDigit(leftmost ? seed[i] : seed[seed.Length - i - 1]) && 
-                newWires[leftmost ? i : newWires.Length - i - 1] != char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1])))
+            if (char.IsDigit(leftmost ? seed[i] : seed[seed.Length - i - 1]) && 
+                !revertedWires.Contains((int)char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1])))
             {
                 newSeed.Remove(i - (seed.Length - newSeed.Length), 1);
-                wiresFound.Add((int)char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1]));
+                wiresFound.Add((int)(char.GetNumericValue(seed[leftmost ? i : seed.Length - i - 1]) + lookup) % 10);
             }
 
             if (wiresFound.Count == amount)
@@ -195,7 +194,7 @@ static class Algorithms
             wiresFound.Reverse();
 
         seed = newSeed.ToString();
-        return wiresFound.ToArray();
+        return wiresFound.Count == 0 ? null : wiresFound.ToArray();
     }
 
     /// <summary>

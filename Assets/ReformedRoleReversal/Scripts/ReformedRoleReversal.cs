@@ -11,13 +11,14 @@ public class ReformedRoleReversal : MonoBehaviour
     public KMBombInfo Info;
     public KMSelectable[] Buttons;
     public KMSelectable Screen;
-    public TextMesh ScreenText;
-    public TextMesh SeedText;
+    public TextMesh ScreenText, SeedText;
+    public Transform SeedPosition;
 
     internal Init Init;
 
     private void Awake()
     {
+        SeedPosition.transform.localRotation = Quaternion.Euler(0, 90 * Random.Range(0, 3), 0);
         Module.OnActivate += (Init = new Init(Coroutines, this)).Activate;
     }
 }
