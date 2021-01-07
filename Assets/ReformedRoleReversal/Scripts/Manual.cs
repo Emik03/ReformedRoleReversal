@@ -299,13 +299,8 @@ static class Manual
     {
         int parameter = rnd.Next(1, (int)Math.Ceiling((float)wires.Length / 2) + 1);
         int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
-        Array.Sort(revertedWires);
 
-        int exceptions = 0,
-            middleWire1 = revertedWires[wires.Length / 2],
-            middleWire2 = revertedWires.Length % 2 == 0
-                        ? revertedWires[(wires.Length / 2) - 1]
-                        : middleWire1;
+        int exceptions = 0;
 
         Condition condition = new Condition
         {
@@ -321,6 +316,15 @@ static class Manual
 
         if (exceptions != parameter)
             return condition;
+
+        int[] sortedWires = new int[revertedWires.Length];
+        Array.Copy(revertedWires, sortedWires, revertedWires.Length);
+        Array.Sort(sortedWires);
+
+        int middleWire1 = sortedWires[sortedWires.Length / 2],
+            middleWire2 = sortedWires.Length % 2 == 0
+                        ? sortedWires[(sortedWires.Length / 2) - 1]
+                        : middleWire1;
 
         condition.Wire = Math.Max((int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire1, wires: revertedWires),
                                   (int)Algorithms.Find(method: "lastInstanceOfKey", key: ref middleWire2, wires: revertedWires));
