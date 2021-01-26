@@ -891,9 +891,6 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
-        wires = new[] { 3, 5, 1 };
-        lookup = 6;
-
         int[] revertedWires = Algorithms.RevertLookup(wires, ref lookup);
         int key = highest ? revertedWires.Max() : revertedWires.Min();
 

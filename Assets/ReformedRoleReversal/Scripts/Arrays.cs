@@ -21,7 +21,7 @@ internal class Arrays
     internal static string Version { get { return version; } }
 
     // When updating, change this string!
-    private const string version = "v1.1.1";
+    private const string version = "v1.1.2";
 
     /// <summary>
     /// Indexable array of indicator edgework in alphabetical order.
