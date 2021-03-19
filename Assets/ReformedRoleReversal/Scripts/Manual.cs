@@ -628,7 +628,7 @@ static class Manual
         if (!isCorrectIndex)
             return condition;
 
-        if (new Arrays(Info).GetEdgework(16) > 1)
+        if (new Arrays(Info).GetEdgework(19) > 1)
             condition.Wire = ++parameter;
 
         return condition;
